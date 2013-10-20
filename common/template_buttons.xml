@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="button_toggle">
+		<genericcontrol>
+			<script file="common/scripts/button_toggle.lua" />
+		</genericcontrol>
+	</template>
+	<template name="button_toggle_text">
+		<genericcontrol>
+			<script file="common/scripts/button_toggle_text.lua" />
+		</genericcontrol>
+	</template>
+	<template name="button_text">
+		<genericcontrol>
+			<script file="common/scripts/button_text.lua" />
+		</genericcontrol>
+	</template>
+	<template name="button_icon">
+		<buttoncontrol>
+			<script>
+				function onInit()
+					setFrame("buttonup", 4, 4, 4, 4);
+				end
+
+				function onClickDown(button, x, y)
+					setFrame("buttondown", 4, 4, 4, 4);
+				end
+
+				function onClickRelease(button, x, y)
+					setFrame("buttonup", 4, 4, 4, 4);
+				end
+			</script>
+		</buttoncontrol>
+	</template>
+	
+	<template name="button_expand">
+		<buttoncontrol>
+			<icon>
+				<normal>expand_icon</normal>
+				<pressed>expand_icon</pressed>
+			</icon>
+			<tooltip>
+				<text>Expand All</text>
+			</tooltip>
+			<targets mergerule="replace">grouplist,list</targets>
+			<expand />
+			<script file="common/scripts/button_expand_collapse.lua" />
+		</buttoncontrol>
+	</template>
+
+	<template name="button_collapse">
+		<buttoncontrol>
+			<icon>
+				<normal>collapse_icon</normal>
+				<pressed>collapse_icon</pressed>
+			</icon>
+			<tooltip>
+				<text>Collapse All</text>
+			</tooltip>
+			<targets mergerule="replace">grouplist,list</targets>
+			<collapse />
+			<script file="common/scripts/button_expand_collapse.lua" />
+		</buttoncontrol>
+	</template>
+
+	<template name="button_add">
+		<buttoncontrol>
+			<icon>
+				<normal>button_add</normal>
+				<pressed>button_add_down</pressed>
+			</icon>
+		</buttoncontrol>
+	</template>
+	
+	<template name="button_iconcycler">
+		<genericcontrol>
+			<script file="common/scripts/button_iconcycler.lua" />
+		</genericcontrol>
+	</template>
+
+	<template name="button_stringcycler">
+		<genericcontrol>
+			<stateframe mergerule="replace">
+				<hover>
+					<name>sheetfocus</name>
+					<offset>6,5,6,5</offset>
+				</hover>
+			</stateframe>
+			<script file="common/scripts/button_labelcycler.lua" />
+		</genericcontrol>
+	</template>
+
+	<template name="button_checkbox">
+		<button_iconcycler>
+			<source>
+				<type>number</type>
+			</source>
+			<parameters>
+				<icons mergerule="replace">indicator_checkon</icons>
+				<values mergerule="replace">on</values>
+				<defaulticon mergerule="replace">indicator_checkoff</defaulticon>
+			</parameters>
+			<script>
+				function onInit()
+					if checked and not sourceless then
+						local srcname = getName();
+						if sourcename then
+							srcname = sourcename[1];
+						end
+
+						local nodeInitial = nil;
+						local nodeParent = window.getDatabaseNode();
+						if nodeParent then
+							nodeInitial = nodeParent.getChild(srcname);
+						end
+						
+						super.onInit();
+						
+						if getSourceNode() then
+							if not nodeInitial and not isReadOnly() then
+								setIndex(1);
+							end
+						else
+							setIndex(1);
+						end
+					else
+						super.onInit();
+					end
+				end
+				
+				function getState()
+					return (getIndex() ~= 0);
+				end
+				
+				function setState(varState)
+					if varState == nil or varState == false or varState == 0 then
+						setIndex(0);
+					else
+						setIndex(1);
+					end
+				end
+			</script>
+		</button_iconcycler>
+	</template>
+	
+	<template name="buttongroup_checkcounter">
+		<genericcontrol>
+			<stateicons>
+				<on>indicator_checkon</on>
+				<off>indicator_checkoff</off>
+			</stateicons>
+			<spacing mergerule="replace">10</spacing>
+			<script file="common/scripts/buttongroup_checkcounter.lua" />
+		</genericcontrol>
+	</template>
+	
+	<template name="buttongroup_radio">
+		<genericcontrol>
+			<stateicons>
+				<on>indicator_checkon</on>
+				<off>indicator_checkoff</off>
+			</stateicons>
+			<script file="common/scripts/buttongroup_radio.lua" />
+		</genericcontrol>
+	</template>
+
+	<template name="buttongroup_tabs">
+		<genericcontrol>
+			<anchored>
+				<top><offset>50</offset></top>
+				<right mergerule="replace"><offset>-4</offset></right>
+				<size>
+					<width>18</width>
+					<height>92</height>
+				</size>
+			</anchored>
+			<frame>
+				<name>tabs</name>
+			</frame>
+			<tab mergerule="resetandadd" />
+			<script file="common/scripts/buttongroup_tabs.lua" />
+		</genericcontrol>
+	</template>
+	<template name="buttongroup_tabs_long">
+		<genericcontrol>
+			<anchored>
+				<top><offset>50</offset></top>
+				<right mergerule="replace"><offset>-4</offset></right>
+				<size>
+					<width>18</width>
+					<height>113</height>
+				</size>
+			</anchored>
+			<frame>
+				<name>tabs_long</name>
+			</frame>
+			<tab mergerule="resetandadd" />
+			<tablong />
+			<script file="common/scripts/buttongroup_tabs.lua" />
+		</genericcontrol>
+	</template>
+
+	<template name="close">
+		<buttoncontrol>
+			<anchored>
+				<top>
+					<anchor>top</anchor>
+				</top>
+				<right>
+					<anchor>right</anchor>
+				</right>
+				<size>
+					<height>24</height>
+					<width>24</width>
+				</size>
+			</anchored>
+			<icon>
+				<normal>button_close</normal>
+				<pressed>button_close_down</pressed>
+				<hover>button_close_hover</hover>
+			</icon>
+			<script>
+				function onButtonPress()
+					window.close();
+				end
+			</script>
+		</buttoncontrol>
+	</template>
+</root>

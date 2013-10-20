@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="identitylist_entry">
+		<genericcontrol>
+			<anchored>
+				<left>
+					<parent>anchor</parent>
+					<anchor>right</anchor>
+					<relation>relative</relation>
+					<offset>3</offset>
+				</left>
+				<top>
+					<parent>anchor</parent>
+					<anchor>top</anchor>
+					<offset>2</offset>
+				</top>
+				<size>
+					<width>70</width>
+					<height>16</height>
+				</size>
+			</anchored>
+			<frame>
+				<name>mini_name</name>
+			</frame>
+			<script file="desktop/scripts/identitylist_entry.lua" />
+		</genericcontrol>
+	</template>
+
+	<template name="characterlist_entry">
+		<genericcontrol>
+			<anchored>
+				<left>
+					<parent>anchor</parent>
+					<anchor>right</anchor>
+					<relation>relative</relation>
+					<offset>3</offset>
+				</left>
+				<top>
+					<parent>anchor</parent>
+					<anchor>top</anchor>
+				</top>
+				<size>
+					<width>75</width>
+					<height>75</height>
+				</size>
+			</anchored>
+			<script file="desktop/scripts/characterlist_entry.lua" />
+		</genericcontrol>
+	</template>
+
+	<template name="desktop_stackitem">	
+		<windowreferencecontrol>
+			<bounds>0,0,47,27</bounds>
+			<nodrag />
+			<noreset />
+			<closetoggle />
+		</windowreferencecontrol>
+	</template>
+
+	<template name="desktop_dockitem">	
+		<windowreferencecontrol>
+			<bounds>0,0,100,95</bounds>
+			<nodrag />
+			<noreset />
+			<closetoggle />
+		</windowreferencecontrol>
+	</template>
+
+	<template name="statchatdieslot">
+		<numbercontrol>
+			<anchored>
+				<top>
+					<parent>dieslotanchor</parent>
+					<anchor>top</anchor>
+				</top>
+				<left>
+					<parent>dieslotanchor</parent>
+					<anchor>right</anchor>
+					<relation>relative</relation>
+				</left>
+				<size>
+					<width>46</width>
+					<height>34</height>
+				</size>
+			</anchored>
+			<frame>
+				<name>bonus</name>
+				<offset>2,2,2,2</offset>
+			</frame>
+			<stateframe>
+				<keyedit>
+					<name>sheetfocus</name>
+					<offset>2,2,2,2</offset>
+				</keyedit>
+				<drophover>
+					<name>sheetfocus</name>
+					<offset>2,2,2,2</offset>
+				</drophover>
+			</stateframe>
+			<font>diemod</font>
+			<hideonvalue>0</hideonvalue>
+			<droptypes>
+				<type>statdieslot</type>
+			</droptypes>
+			<script file="desktop/scripts/statchat_dieslot.lua" />
+		</numbercontrol>
+	</template>
+</root>

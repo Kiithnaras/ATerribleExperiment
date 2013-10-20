@@ -1,0 +1,2456 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="spell_action">
+		<sizelimits>
+			<minimum>
+				<height>0</height>
+				<width>0</width>
+			</minimum>
+		</sizelimits>
+		<script file="common/scripts/spell_action.lua" />
+		<sheetdata>
+			<hn name="order" />
+			
+			<icon_spellaction name="type" />
+			<spacer>
+				<anchor>type</anchor>
+				<height>3</height>
+			</spacer>
+			
+			<!-- CAST -->
+			<stringcontrol name="castlabel">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>3</offset>
+					</top>
+					<left>
+						<parent>type</parent>
+						<anchor>right</anchor>
+						<offset>5</offset>
+					</left>
+					<size>
+						<width>25</width>
+						<height>16</height>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>Cast:</static>
+			</stringcontrol>
+			<buttoncontrol name="castbutton">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>1</offset>
+					</top>
+					<left>
+						<parent>castlabel</parent>
+						<anchor>right</anchor>
+						<offset>5</offset>
+					</left>
+					<size>
+						<height>20</height>
+						<width>20</width>
+					</size>
+				</anchored>
+				<icon>
+					<normal>button_roll</normal>
+					<pressed>button_roll_down</pressed>
+				</icon>
+				<script>
+					function action(draginfo)
+						local nodeAction = window.getDatabaseNode();
+						local rActor = ActorManager.getActor(window.getActorType(), nodeAction.getChild("........."));
+						SpellsManager.onSpellAction(rActor, nodeAction, draginfo);
+					end
+					
+					function onButtonPress()
+						action();
+					end
+					
+					function onDragStart(button, x, y, draginfo)
+						action(draginfo);
+						return true;
+					end
+				</script>
+			</buttoncontrol>
+			
+			<stringcontrol name="attackviewlabel">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>3</offset>
+					</top>
+					<left>
+						<parent>castbutton</parent>
+						<anchor>right</anchor>
+						<offset>7</offset>
+					</left>
+					<size>
+						<width>30</width>
+						<height>16</height>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>Atk:</static>
+			</stringcontrol>
+			<string_spellactionview name="attackview">
+				<anchored>
+					<to>attackviewlabel</to>
+					<position>right</position>
+					<offset>5,0</offset>
+				</anchored>
+				<subroll>atk</subroll>
+			</string_spellactionview>
+			<button_spellactiontoggle name="toggle_attack">
+				<anchored>
+					<to>attackview</to>
+				</anchored>
+			</button_spellactiontoggle>
+
+			<stringcontrol name="levelcheckviewlabel">
+				<anchored>
+					<to>attackview</to>
+					<position>right</position>
+					<offset>27,0</offset>
+					<size>
+						<width>50</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>LvlChk:</static>
+			</stringcontrol>
+			<string_spellactionview name="levelcheckview">
+				<anchored>
+					<to>levelcheckviewlabel</to>
+					<position>right</position>
+					<offset>5,0</offset>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<subroll>clc</subroll>
+			</string_spellactionview>
+			<button_spellactiontoggle name="toggle_levelcheck">
+				<anchored>
+					<to>levelcheckview</to>
+				</anchored>
+			</button_spellactiontoggle>
+
+			<stringcontrol name="saveviewlabel">
+				<anchored>
+					<to>levelcheckview</to>
+					<position>right</position>
+					<offset>27,0</offset>
+					<size>
+						<width>40</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>Save:</static>
+			</stringcontrol>
+			<string_spellactionview name="saveview">
+				<anchored>
+					<to>saveviewlabel</to>
+					<position>right</position>
+					<offset>5,0</offset>
+					<size>
+						<width>60</width>
+					</size>
+				</anchored>
+				<subroll>save</subroll>
+			</string_spellactionview>
+			<button_spellactiontoggle name="toggle_save">
+				<anchored>
+					<to>saveview</to>
+				</anchored>
+			</button_spellactiontoggle>
+
+			<stringcontrol name="atklabel">
+				<anchored>
+					<top>
+						<parent>type</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>8</offset>
+					</top>
+					<left>
+						<parent>castlabel</parent>
+						<anchor>left</anchor>
+					</left>
+					<size>
+						<width>60</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>Attack:</static>
+			</stringcontrol>
+			<cycler_ability_sm name="atktype">
+				<anchored>
+					<to>atklabel</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>60</width>
+					</size>
+				</anchored>
+				<parameters>
+					<defaultlabel>None</defaultlabel>
+					<labels>Melee|Ranged|M touch|R Touch|CMB</labels>
+					<values>melee|ranged|mtouch|rtouch|cm</values>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.onCastChanged();
+					end
+				</script>
+			</cycler_ability_sm>
+			<stringcontrol name="atkplus">
+				<anchored>
+					<to>atktype</to>
+					<position>right</position>
+					<offset>8</offset>
+					<size>
+						<width>10</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>+</static>
+			</stringcontrol>
+			<basicnumber name="atkmod">
+				<anchored>
+					<to>atkplus</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<hideonvalue value="0" />
+				<script>
+					function onValueChanged()
+						window.onCastChanged();
+					end
+				</script>
+			</basicnumber>
+			
+			<stringcontrol name="clclabel">
+				<anchored>
+					<top>
+						<parent>type</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>8</offset>
+					</top>
+					<left>
+						<parent>castlabel</parent>
+						<anchor>left</anchor>
+					</left>
+					<size>
+						<width>60</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>Lvl Chk:</static>
+			</stringcontrol>
+			<number_linked name="clcbase">
+				<anchored>
+					<to>clclabel</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>20</width>
+					</size>
+				</anchored>
+				<font>sheetnumbersmall</font>
+				<source>
+					<name>.......cl</name>
+					<op>+</op>
+				</source>
+				<source>
+					<name>.......sp</name>
+					<op>+</op>
+				</source>
+			</number_linked>
+			<stringcontrol name="clcplus">
+				<anchored>
+					<to>clcbase</to>
+					<position>right</position>
+					<offset>0</offset>
+					<size>
+						<width>10</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>+</static>
+			</stringcontrol>
+			<basicnumber name="clcmod">
+				<anchored>
+					<to>clcplus</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<hideonvalue value="0" />
+				<script>
+					function onValueChanged()
+						window.onCastChanged();
+					end
+				</script>
+			</basicnumber>
+			<stringcontrol name="srlabel">
+				<anchored>
+					<to>clclabel</to>
+					<position>right</position>
+					<offset>95</offset>
+					<size>
+						<width>60</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>SR Allowed?</static>
+			</stringcontrol>
+			<button_checkbox name="srnotallowed">
+				<anchored>
+					<to>srlabel</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>12</width>
+					</size>
+				</anchored>
+				<parameters>
+					<icons>indicator_checkoff</icons>
+					<values>off</values>
+					<defaulticon>indicator_checkon</defaulticon>
+				</parameters>
+			</button_checkbox>
+			
+			<stringcontrol name="savelabel">
+				<anchored>
+					<top>
+						<parent>type</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>8</offset>
+					</top>
+					<left>
+						<parent>castlabel</parent>
+						<anchor>left</anchor>
+					</left>
+					<size>
+						<width>60</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>Save:</static>
+			</stringcontrol>
+			<cycler_ability_sm name="savetype">
+				<anchored>
+					<to>savelabel</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>40</width>
+					</size>
+				</anchored>
+				<parameters>
+					<defaultlabel>None</defaultlabel>
+					<labels>Fort|Ref|Will</labels>
+					<values>fortitude|reflex|will</values>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.onCastChanged();
+					end
+				</script>
+			</cycler_ability_sm>
+			<stringcontrol name="savedclabel">
+				<anchored>
+					<to>savetype</to>
+					<position>right</position>
+					<offset>8</offset>
+					<size>
+						<width>15</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>DC</static>
+			</stringcontrol>
+			<number_linked name="savedcbase">
+				<anchored>
+					<to>savedclabel</to>
+					<position>right</position>
+					<offset>0</offset>
+					<size>
+						<width>20</width>
+					</size>
+				</anchored>
+				<font>sheetnumbersmall</font>
+				<source>
+					<name>.......dc.total</name>
+					<op>+</op>
+				</source>
+				<source>
+					<name>.....level</name>
+					<op>+</op>
+				</source>
+				<script>
+					function onValueChanged()
+						window.onCastChanged();
+					end
+				</script>
+			</number_linked>
+			<stringcontrol name="saveplus">
+				<anchored>
+					<to>savedcbase</to>
+					<position>right</position>
+					<offset>0</offset>
+					<size>
+						<width>10</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>+</static>
+			</stringcontrol>
+			<basicnumber name="savedcmod">
+				<anchored>
+					<to>saveplus</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<hideonvalue value="0" />
+				<script>
+					function onValueChanged()
+						window.onCastChanged();
+					end
+				</script>
+			</basicnumber>
+	
+			<!-- DAMAGE -->
+			<stringcontrol name="damagelabel">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>3</offset>
+					</top>
+					<left>
+						<parent>type</parent>
+						<anchor>right</anchor>
+						<offset>5</offset>
+					</left>
+					<size>
+						<width>35</width>
+						<height>16</height>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>Dmg:</static>
+			</stringcontrol>
+			<string_spellactionview name="damageview">
+				<anchored>
+					<to>damagelabel</to>
+					<position>right</position>
+					<offset>5,0</offset>
+					<size>
+						<width>180</width>
+					</size>
+				</anchored>
+			</string_spellactionview>
+			<button_spellactiontoggle name="toggle_damage">
+				<anchored>
+					<to>damageview</to>
+				</anchored>
+			</button_spellactiontoggle>
+
+			<stringcontrol name="dmglabel">
+				<anchored>
+					<top>
+						<parent>type</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>8</offset>
+					</top>
+					<left>
+						<parent>damagelabel</parent>
+						<anchor>left</anchor>
+					</left>
+					<size>
+						<width>60</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>Damage:</static>
+			</stringcontrol>
+			<dice name="dmgdice">
+				<anchored>
+					<to>dmglabel</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>50</width>
+					</size>
+				</anchored>
+				<shadow>
+					<offset>0,2</offset>
+					<size>50,20</size>
+				</shadow>
+				<frame>
+					<name>bonus</name>
+					<offset>6,5,6,5</offset>
+				</frame>
+				<stateframe>
+					<drophilight>
+						<name>sheetfocus</name>
+						<offset>6,5,6,5</offset>
+					</drophilight>
+				</stateframe>
+				<script>
+					function onInit()
+						registerMenuItem("Clear Dice", "erase", 4);
+					end
+					
+					function onMenuSelection(selection)
+						if selection == 4 then
+							reset();
+						end
+					end
+					
+					function onValueChanged()
+						window.onDamageChanged();
+						super.onValueChanged();
+					end
+				</script>
+			</dice>
+			<button_stringcycler name="dmgdicemult">
+				<anchored>
+					<to>dmgdice</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>50</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<frame>
+					<name>bonus</name>
+					<offset>6,5,6,5</offset>
+				</frame>
+				<stateframe>
+					<hover>
+						<name>sheetfocus</name>
+						<offset>6,5,6,5</offset>
+					</hover>
+				</stateframe>
+				<parameters>
+					<defaultlabel>-</defaultlabel>
+					<labels>CL|Even CLs|Odd CLs</labels>
+					<values>cl|halfcl|oddcl</values>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.onDamageChanged();
+					end
+				</script>
+			</button_stringcycler>
+			<stringcontrol name="dmgdicemultmaxparen">
+				<anchored>
+					<to>dmgdicemult</to>
+					<position>right</position>
+					<offset>8</offset>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>(</static>
+			</stringcontrol>
+			<basicnumber name="dmgdicemultmax">
+				<anchored>
+					<to>dmgdicemultmaxparen</to>
+					<position>right</position>
+					<offset>3</offset>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<hideonvalue value="0" />
+				<tooltip>
+					<text>Maximum dice by caster level</text>
+				</tooltip>
+				<script>
+					function onValueChanged()
+						window.onDamageChanged();
+					end
+				</script>
+			</basicnumber>
+			<stringcontrol name="dmgdicemultmaxparen2">
+				<anchored>
+					<to>dmgdicemultmax</to>
+					<position>right</position>
+					<offset>3</offset>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>)</static>
+			</stringcontrol>
+			<stringcontrol name="dmgplus">
+				<anchored>
+					<to>dmgdicemultmaxparen2</to>
+					<position>right</position>
+					<offset>8</offset>
+					<size>
+						<width>10</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>+</static>
+			</stringcontrol>
+			<basicnumber name="dmgstatmult">
+				<anchored>
+					<to>dmgplus</to>
+					<position>right</position>
+					<offset>3</offset>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<default>1</default>
+				<min>1</min>
+				<hideonvalue value="0" />
+				<tooltip>
+					<text>Multiple of CL or statistic to apply</text>
+				</tooltip>
+				<script>
+					function onValueChanged()
+						window.onDamageChanged();
+					end
+				</script>
+			</basicnumber>
+			<stringcontrol name="dmgstatmultx">
+				<anchored>
+					<to>dmgstatmult</to>
+					<position>right</position>
+					<offset>5</offset>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>x</static>
+			</stringcontrol>
+			<cycler_ability_sm name="dmgstat">
+				<anchored>
+					<to>dmgstatmultx</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>50</width>
+					</size>
+				</anchored>
+				<parameters>
+					<defaultlabel>-</defaultlabel>
+					<labels>CL|Even CLs|Odd CLs|Str|Dex|Con|Int|Wis|Cha</labels>
+					<values>cl|halfcl|oddcl|strength|dexterity|constitution|intelligence|wisdom|charisma</values>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.onDamageChanged();
+					end
+				</script>
+			</cycler_ability_sm>
+			<stringcontrol name="dmgmaxparen">
+				<anchored>
+					<to>dmgstat</to>
+					<position>right</position>
+					<offset>8</offset>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>(</static>
+			</stringcontrol>
+			<basicnumber name="dmgmaxstat">
+				<anchored>
+					<to>dmgmaxparen</to>
+					<position>right</position>
+					<offset>3</offset>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<hideonvalue value="0" />
+				<tooltip>
+					<text>Maximum ability or caster level value</text>
+				</tooltip>
+				<script>
+					function onValueChanged()
+						window.onDamageChanged();
+					end
+				</script>
+			</basicnumber>
+			<stringcontrol name="dmgmaxparen2">
+				<anchored>
+					<to>dmgmaxstat</to>
+					<position>right</position>
+					<offset>3</offset>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>)</static>
+			</stringcontrol>
+			<stringcontrol name="dmgplus2">
+				<anchored>
+					<to>dmgmaxparen2</to>
+					<position>right</position>
+					<offset>8</offset>
+					<size>
+						<width>10</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>+</static>
+			</stringcontrol>
+			<basicnumber name="dmgmod">
+				<anchored>
+					<to>dmgplus2</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<hideonvalue value="0" />
+				<script>
+					function onValueChanged()
+						window.onDamageChanged();
+					end
+				</script>
+			</basicnumber>
+			<stringcontrol name="dmgtypelabel">
+				<anchored>
+					<top>
+						<parent>type</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>8</offset>
+					</top>
+					<left>
+						<parent>damagelabel</parent>
+						<anchor>left</anchor>
+					</left>
+					<size>
+						<width>60</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>Dmg Type:</static>
+			</stringcontrol>
+			<string_spell name="dmgtype">
+				<anchored>
+					<to>dmgtypelabel</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>120</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<script>
+					function onValueChanged()
+						window.onDamageChanged();
+					end
+				</script>
+			</string_spell>
+			<stringcontrol name="dmgnotspell_label">
+				<anchored>
+					<to>dmgtypelabel</to>
+					<position>right</position>
+					<offset>135</offset>
+					<size>
+						<width>80</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>Spell Damage?</static>
+			</stringcontrol>
+			<button_checkbox name="dmgnotspell">
+				<anchored>
+					<to>dmgtypelabel</to>
+					<position>right</position>
+					<offset>215</offset>
+					<size>
+						<width>12</width>
+					</size>
+				</anchored>
+				<parameters>
+					<icons>indicator_checkoff</icons>
+					<values>off</values>
+					<defaulticon>indicator_checkon</defaulticon>
+				</parameters>
+			</button_checkbox>
+			<stringcontrol name="dmgmetalabel">
+				<anchored>
+					<top>
+						<parent>type</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>8</offset>
+					</top>
+					<left>
+						<parent>damagelabel</parent>
+						<anchor>left</anchor>
+					</left>
+					<size>
+						<width>70</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>Metamagic?</static>
+			</stringcontrol>
+			<button_stringcycler name="dmgmeta">
+				<anchored>
+					<top>
+						<parent>dmgmetalabel</parent>
+					</top>
+					<left>
+						<parent>dmgmetalabel</parent>
+						<anchor>right</anchor>
+						<offset>5</offset>
+					</left>
+					<size>
+						<width>60</width>
+						<height>16</height>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<frame>
+					<name>bonus</name>
+					<offset>6,5,6,5</offset>
+				</frame>
+				<parameters>
+					<defaultlabel>-</defaultlabel>
+					<labels>Empower|Maximize</labels>
+					<values>empower|maximize</values>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.onDamageChanged();
+					end
+				</script>
+			</button_stringcycler>
+
+			<!-- HEAL -->
+			<stringcontrol name="heallabel">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>3</offset>
+					</top>
+					<left>
+						<parent>type</parent>
+						<anchor>right</anchor>
+						<offset>5</offset>
+					</left>
+					<size>
+						<width>35</width>
+						<height>16</height>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>Heal:</static>
+			</stringcontrol>
+			<string_spellactionview name="healview">
+				<anchored>
+					<to>heallabel</to>
+					<position>right</position>
+					<offset>5,0</offset>
+					<size>
+						<width>120</width>
+					</size>
+				</anchored>
+			</string_spellactionview>
+			<button_spellactiontoggle name="toggle_heal">
+				<anchored>
+					<to>healview</to>
+				</anchored>
+			</button_spellactiontoggle>
+
+			<stringcontrol name="healtypelabel">
+				<anchored>
+					<to>healview</to>
+					<position>right</position>
+					<offset>35,0</offset>
+					<size>
+						<width>50</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>Type:</static>
+			</stringcontrol>
+			<button_stringcycler name="healtype">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>3</offset>
+					</top>
+					<left>
+						<parent>healview</parent>
+						<anchor>right</anchor>
+						<offset>70</offset>
+					</left>
+					<size>
+						<width>40</width>
+						<height>16</height>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<frame>
+					<name>bonus</name>
+					<offset>6,5,6,5</offset>
+				</frame>
+				<parameters>
+					<defaultlabel>HP</defaultlabel>
+					<labels>TEMP</labels>
+					<values>temp</values>
+				</parameters>
+			</button_stringcycler>
+
+			<stringcontrol name="hlabel">
+				<anchored>
+					<top>
+						<parent>type</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>8</offset>
+					</top>
+					<left>
+						<parent>heallabel</parent>
+						<anchor>left</anchor>
+					</left>
+					<size>
+						<width>60</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>Heal:</static>
+			</stringcontrol>
+			<dice name="hdice">
+				<anchored>
+					<to>hlabel</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>50</width>
+					</size>
+				</anchored>
+				<shadow>
+					<offset>0,2</offset>
+					<size>50,20</size>
+				</shadow>
+				<frame>
+					<name>bonus</name>
+					<offset>6,5,6,5</offset>
+				</frame>
+				<script>
+					function onInit()
+						registerMenuItem("Clear Dice", "erase", 4);
+					end
+					
+					function onMenuSelection(selection)
+						if selection == 4 then
+							reset();
+						end
+					end
+					
+					function onValueChanged()
+						window.onHealChanged();
+						super.onValueChanged();
+					end
+				</script>
+			</dice>
+			<button_stringcycler name="hdicemult">
+				<anchored>
+					<to>hdice</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>50</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<frame>
+					<name>bonus</name>
+					<offset>6,5,6,5</offset>
+				</frame>
+				<stateframe>
+					<hover>
+						<name>sheetfocus</name>
+						<offset>6,5,6,5</offset>
+					</hover>
+				</stateframe>
+				<parameters>
+					<defaultlabel>-</defaultlabel>
+					<labels>CL|Even CLs|Odd CLs</labels>
+					<values>cl|halfcl|oddcl</values>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.onHealChanged();
+					end
+				</script>
+			</button_stringcycler>
+			<stringcontrol name="hdicemultmaxparen">
+				<anchored>
+					<to>hdicemult</to>
+					<position>right</position>
+					<offset>8</offset>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>(</static>
+			</stringcontrol>
+			<basicnumber name="hdicemultmax">
+				<anchored>
+					<to>hdicemultmaxparen</to>
+					<position>right</position>
+					<offset>3</offset>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<hideonvalue value="0" />
+				<tooltip>
+					<text>Maximum dice by caster level</text>
+				</tooltip>
+				<script>
+					function onValueChanged()
+						window.onHealChanged();
+					end
+				</script>
+			</basicnumber>
+			<stringcontrol name="hdicemultmaxparen2">
+				<anchored>
+					<to>hdicemultmax</to>
+					<position>right</position>
+					<offset>3</offset>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>)</static>
+			</stringcontrol>
+			<stringcontrol name="hplus">
+				<anchored>
+					<to>hdicemultmaxparen2</to>
+					<position>right</position>
+					<offset>8</offset>
+					<size>
+						<width>10</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>+</static>
+			</stringcontrol>
+			<basicnumber name="hstatmult">
+				<anchored>
+					<to>hplus</to>
+					<position>right</position>
+					<offset>3</offset>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<default>1</default>
+				<min>1</min>
+				<hideonvalue value="0" />
+				<tooltip>
+					<text>Multiple of CL or statistic to apply</text>
+				</tooltip>
+				<script>
+					function onValueChanged()
+						window.onDamageChanged();
+					end
+				</script>
+			</basicnumber>
+			<stringcontrol name="hstatmultx">
+				<anchored>
+					<to>hstatmult</to>
+					<position>right</position>
+					<offset>5</offset>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>x</static>
+			</stringcontrol>
+			<cycler_ability_sm name="hstat">
+				<anchored>
+					<to>hstatmultx</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>50</width>
+					</size>
+				</anchored>
+				<parameters>
+					<defaultlabel>-</defaultlabel>
+					<labels>CL|Even CLs|Odd CLs|Str|Dex|Con|Int|Wis|Cha</labels>
+					<values>cl|halfcl|oddcl|strength|dexterity|constitution|intelligence|wisdom|charisma</values>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.onHealChanged();
+					end
+				</script>
+			</cycler_ability_sm>
+			<stringcontrol name="hmaxparen">
+				<anchored>
+					<to>hstat</to>
+					<position>right</position>
+					<offset>8</offset>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>(</static>
+			</stringcontrol>
+			<basicnumber name="hmaxstat">
+				<anchored>
+					<to>hmaxparen</to>
+					<position>right</position>
+					<offset>3</offset>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<hideonvalue value="0" />
+				<tooltip>
+					<text>Maximum ability or level value</text>
+				</tooltip>
+				<script>
+					function onValueChanged()
+						window.onHealChanged();
+					end
+				</script>
+			</basicnumber>
+			<stringcontrol name="hmaxparen2">
+				<anchored>
+					<to>hmaxstat</to>
+					<position>right</position>
+					<offset>3</offset>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>)</static>
+			</stringcontrol>
+			<stringcontrol name="hplus2">
+				<anchored>
+					<to>hmaxparen2</to>
+					<position>right</position>
+					<offset>8</offset>
+					<size>
+						<width>10</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>+</static>
+			</stringcontrol>
+			<basicnumber name="hmod">
+				<anchored>
+					<to>hplus2</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<hideonvalue value="0" />
+				<script>
+					function onValueChanged()
+						window.onHealChanged();
+					end
+				</script>
+			</basicnumber>
+			<stringcontrol name="healmetalabel">
+				<anchored>
+					<top>
+						<parent>type</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>8</offset>
+					</top>
+					<left>
+						<parent>hlabel</parent>
+						<anchor>left</anchor>
+					</left>
+					<size>
+						<width>70</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>Metamagic?</static>
+			</stringcontrol>
+			<button_stringcycler name="healmeta">
+				<anchored>
+					<top>
+						<parent>healmetalabel</parent>
+					</top>
+					<left>
+						<parent>healmetalabel</parent>
+						<anchor>right</anchor>
+						<offset>5</offset>
+					</left>
+					<size>
+						<width>60</width>
+						<height>16</height>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<frame>
+					<name>bonus</name>
+					<offset>6,5,6,5</offset>
+				</frame>
+				<parameters>
+					<defaultlabel>-</defaultlabel>
+					<labels>Empower|Maximize</labels>
+					<values>empower|maximize</values>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.onHealChanged();
+					end
+				</script>
+			</button_stringcycler>
+			
+			<!-- EFFECT -->
+			<button_iconcycler name="targeting">
+				<anchored>
+					<left>
+						<parent>type</parent>
+						<anchor>right</anchor>
+						<offset>5</offset>
+					</left>
+					<top>
+						<anchor>top</anchor>
+						<offset>1</offset>
+					</top>
+					<size>
+						<width>24</width>
+						<height>10</height>
+					</size>
+				</anchored>
+				<parameters>
+					<icons>button_toggle_self</icons>
+					<values>self</values>
+					<tooltips>Apply to self</tooltips>
+					<defaulticon>button_toggle_trgt</defaulticon>
+					<defaulttooltip>Apply to current target</defaulttooltip>
+				</parameters>
+			</button_iconcycler>
+			<button_iconcycler name="apply">
+				<anchored>
+					<left>
+						<parent>targeting</parent>
+						<anchor>left</anchor>
+					</left>
+					<top>
+						<parent>targeting</parent>
+						<anchor>bottom</anchor>
+						<offset>1</offset>
+					</top>
+					<size>
+						<width>24</width>
+						<height>10</height>
+					</size>
+				</anchored>
+				<parameters>
+					<icons>button_toggle_action|button_toggle_roll|button_toggle_single</icons>
+					<values>action|roll|single</values>
+					<tooltips>One Action|One Roll|Apply Each Once</tooltips>
+					<defaulticon>button_toggle_all</defaulticon>
+					<defaulttooltip>All Rolls</defaulttooltip>
+				</parameters>
+			</button_iconcycler>
+			
+			<stringcontrol name="durationview">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>3</offset>
+					</top>
+					<right>
+						<anchor>right</anchor>
+						<offset>-20</offset>
+					</right>
+					<size>
+						<width>75</width>
+						<height>16</height>
+					</size>
+				</anchored>
+				<nodrag />
+				<readonly />
+				<font>sheettextblock</font>
+				<frame>
+					<name>modifier</name>
+					<offset>10,7,7,4</offset>
+				</frame>
+			</stringcontrol>
+			<button_spellactiontoggle name="toggle_duration">
+				<anchored>
+					<to>durationview</to>
+				</anchored>
+			</button_spellactiontoggle>
+			
+			<stringu_sm name="label">
+				<anchored>
+					<top><offset>4</offset></top>
+					<left>
+						<parent>apply</parent>
+						<anchor>right</anchor>
+						<offset>6</offset>
+					</left>
+					<right>
+						<parent>durationview</parent>
+						<anchor>left</anchor>
+						<offset>-12</offset>
+					</right>
+					<size>
+						<height>16</height>
+					</size>
+				</anchored>
+				<script>
+					function onInit()
+						setHoverCursor("hand");
+					end
+					
+					function action(draginfo)
+						local nodeAction = window.getDatabaseNode();
+						local rActor = ActorManager.getActor(window.getActorType(), nodeAction.getChild("........."));
+						SpellsManager.onSpellAction(rActor, nodeAction, draginfo);
+					end
+					
+					function onDoubleClick(x, y)
+						action();
+						return true;
+					end
+
+					function onDragStart(button, x, y, draginfo)
+						action(draginfo);
+						return true;
+					end
+				</script>
+			</stringu_sm>
+
+			<stringcontrol name="durlabel">
+				<anchored>
+					<top>
+						<parent>type</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>8</offset>
+					</top>
+					<left>
+						<parent>targeting</parent>
+						<anchor>left</anchor>
+					</left>
+					<size>
+						<width>60</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>Duration:</static>
+			</stringcontrol>
+			<basicnumber name="durmult">
+				<anchored>
+					<to>durlabel</to>
+					<position>right</position>
+					<offset>2</offset>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<hideonvalue value="0" />
+				<tooltip>
+					<text>Stat duration multiple</text>
+				</tooltip>
+				<script>
+					function onValueChanged()
+						window.onEffectChanged();
+					end
+				</script>
+			</basicnumber>
+			<cycler_ability_sm name="durstat">
+				<anchored>
+					<to>durmult</to>
+					<position>right</position>
+					<offset>8</offset>
+					<size>
+						<width>50</width>
+					</size>
+				</anchored>
+				<parameters>
+					<defaultlabel></defaultlabel>
+					<labels>CL|Even CLs|Odd CLs|Str|Dex|Con|Int|Wis|Cha</labels>
+					<values>cl|halfcl|oddcl|strength|dexterity|constitution|intelligence|wisdom|charisma</values>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.onEffectChanged();
+					end
+				</script>
+			</cycler_ability_sm>
+			<stringcontrol name="dmaxparen">
+				<anchored>
+					<to>durstat</to>
+					<position>right</position>
+					<offset>3</offset>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>(</static>
+			</stringcontrol>
+			<basicnumber name="dmaxstat">
+				<anchored>
+					<to>dmaxparen</to>
+					<position>right</position>
+					<offset>3</offset>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<hideonvalue value="0" />
+				<tooltip>
+					<text>Max stat duration value</text>
+				</tooltip>
+				<script>
+					function onValueChanged()
+						window.onEffectChanged();
+					end
+				</script>
+			</basicnumber>
+			<stringcontrol name="dmaxparen2">
+				<anchored>
+					<to>dmaxstat</to>
+					<position>right</position>
+					<offset>3</offset>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>)</static>
+			</stringcontrol>
+			<stringcontrol name="durplus">
+				<anchored>
+					<to>dmaxparen2</to>
+					<position>right</position>
+					<offset>8</offset>
+					<size>
+						<width>10</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>+</static>
+			</stringcontrol>
+			<dice name="durdice">
+				<anchored>
+					<to>durplus</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>50</width>
+					</size>
+				</anchored>
+				<shadow>
+					<offset>2,0</offset>
+					<size>50,20</size>
+				</shadow>
+				<frame>
+					<name>bonus</name>
+					<offset>6,5,6,5</offset>
+				</frame>
+				<stateframe>
+					<drophilight>
+						<name>sheetfocus</name>
+						<offset>6,5,6,5</offset>
+					</drophilight>
+				</stateframe>
+				<script>
+					function onInit()
+						registerMenuItem("Clear Dice", "erase", 4);
+					end
+					
+					function onMenuSelection(selection)
+						if selection == 4 then
+							reset();
+						end
+					end
+					
+					function onValueChanged()
+						window.onEffectChanged();
+						super.onValueChanged();
+					end
+				</script>
+			</dice>
+			<stringcontrol name="durplus2">
+				<anchored>
+					<to>durdice</to>
+					<position>right</position>
+					<offset>8</offset>
+					<size>
+						<width>10</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<static>+</static>
+			</stringcontrol>
+			<basicnumber name="durmod">
+				<anchored>
+					<to>durplus2</to>
+					<position>right</position>
+					<offset>5</offset>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<hideonvalue value="0" />
+				<script>
+					function onValueChanged()
+						window.onEffectChanged();
+					end
+				</script>
+			</basicnumber>
+			<cycler_ability_sm name="durunit">
+				<anchored>
+					<to>durmod</to>
+					<position>right</position>
+					<offset>15</offset>
+					<size>
+						<width>35</width>
+					</size>
+				</anchored>
+				<parameters>
+					<defaultlabel>RND</defaultlabel>
+					<labels>MIN|HR|DAY</labels>
+					<values>minute|hour|day</values>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.onEffectChanged();
+					end
+				</script>
+			</cycler_ability_sm>
+
+			<spacer name="spacer">
+				<anchor>type</anchor>
+				<relative />
+				<height>6</height>
+			</spacer>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="spell_item">
+		<sizelimits>
+			<minimum>
+				<height>18</height>
+				<width>0</width>
+			</minimum>
+		</sizelimits>
+		<script file="common/scripts/spell.lua" />
+		<sheetdata>
+			<string_spell name="name">
+				<anchored>
+					<position>insidetopleft</position>
+					<offset>5,5</offset>
+					<size>
+						<width>110</width>
+						<height>14</height>
+					</size>
+				</anchored>
+				<empty>&#171; Name &#187;</empty>
+				<script>
+					function onDoubleClick(x, y)
+						window.activatePower();
+						
+						return true;
+					end
+					
+					function onDragStart(button, x, y, draginfo)
+						local node = window.getDatabaseNode();
+						if not node then
+							return false;
+						end
+						
+						local nLevel = 0;
+						local nodeSpellLevel = node.getChild("...");
+						if nodeSpellLevel then
+							nLevel = tonumber(string.sub(nodeSpellLevel.getName(), 6)) or 0;
+						end
+						
+						draginfo.setType("spellmove");
+						draginfo.setStringData(getValue());
+						draginfo.setNumberData(nLevel);
+						draginfo.setDatabaseNode(node);
+						
+						return true;
+					end
+				</script>
+			</string_spell>
+			
+			<genericcontrol name="usespacer">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>6</offset>
+					</top>
+					<left>
+						<parent>name</parent>
+						<anchor>right</anchor>
+						<relation>relative</relation>
+						<offset>5</offset>
+					</left>
+					<size>
+						<height>10</height>
+						<width>10</width>
+					</size>
+				</anchored>
+			</genericcontrol>
+			<icon_usepower name="usepower">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>6</offset>
+					</top>
+					<left>
+						<parent>name</parent>
+						<anchor>right</anchor>
+						<relation>relative</relation>
+						<offset>5</offset>
+					</left>
+				</anchored>
+				<invisible />
+			</icon_usepower>
+			<basicnumber_sm name="cost">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>3</offset>
+					</top>
+					<left>
+						<parent>name</parent>
+						<anchor>right</anchor>
+						<relation>relative</relation>
+						<offset>3</offset>
+					</left>
+					<size>
+						<width>32</width>
+						<height>16</height>
+					</size>
+				</anchored>
+				<min>0</min>
+				<invisible />
+			</basicnumber_sm>
+			<state_spellcounter name="counter">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>6</offset>
+					</top>
+					<left>
+						<parent>name</parent>
+						<anchor>right</anchor>
+						<relation>relative</relation>
+						<offset>5</offset>
+					</left>
+					<size>
+						<width>20</width>
+						<height>10</height>
+					</size>
+				</anchored>
+				<invisible />
+			</state_spellcounter>
+			
+			<link_spell name="shortcut">
+				<bounds>-22,0,20,20</bounds>
+			</link_spell>
+
+			<button_chartoggleactions name="activateactions">
+				<anchored>
+					<position>insidetopright</position>
+					<offset>25,0</offset>
+				</anchored>
+			</button_chartoggleactions>
+
+			<string_spell name="shortdescription">
+				<anchored>
+					<left>
+						<parent>name</parent>
+						<anchor>right</anchor>
+						<relation>relative</relation>
+						<offset>8</offset>
+					</left>
+					<right>
+						<parent>activateactions</parent>
+						<anchor>left</anchor>
+						<offset>-4</offset>
+					</right>
+					<top>
+						<anchor>top</anchor>
+						<offset>5</offset>
+					</top>
+				</anchored>
+				<empty>&#171; Short Description &#187;</empty>
+			</string_spell>
+			
+			<windowlist name="actions">
+				<anchored>
+					<top>
+						<parent>name</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>5</offset>
+					</top>
+					<left>
+						<parent>name</parent>
+						<anchor>left</anchor>
+					</left>
+					<right>
+						<anchor>right</anchor>
+						<offset>-5</offset>
+					</right>
+				</anchored>
+				<skipempty />
+				<noscroll />
+				<datasource>.actions</datasource>
+				<class>spell_action</class>
+				<invisible />
+				<sortby><control>order</control></sortby>
+				<script>
+					function reset()
+						for k,v in pairs(getWindows()) do
+							local node = v.getDatabaseNode();
+							if node then
+								node.delete();
+							else
+								v.close();
+							end
+						end
+					end
+
+					function setOrder(node)
+						if DB.getValue(node, "order", 0) == 0 then
+							local aOrder = {};
+
+							for _,v in pairs(DB.getChildren(getDatabaseNode(), "")) do
+								aOrder[DB.getValue(v, "order", 0)] = true;
+							end
+							
+							local i = 1;
+							while aOrder[i] do
+								i = i + 1;
+							end
+							
+							DB.setValue(node, "order", "number", i);
+						end
+					end
+				</script>
+			</windowlist>
+			
+			<spacer name="spacer">
+				<anchor>name</anchor>
+				<relative />
+				<height>8</height>
+			</spacer>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="spell_level">
+		<sizelimits>
+			<minimum>
+				<height>18</height>
+				<width>0</width>
+			</minimum>
+			<maximum>
+				<height>100000</height>
+			</maximum>
+		</sizelimits>
+		<script file="common/scripts/spell_level.lua" />
+		<sheetdata>
+			<genericcontrol>
+				<anchored>
+					<top />
+					<left />
+					<right />
+					<size><height>16</height></size>
+				</anchored>
+				<frame>
+					<name>rowshade</name>
+				</frame>
+				<script>
+					function onClickDown(button, x, y)
+						return window.onClickDown(button, x, y);
+					end
+					
+					function onClickRelease(button, x, y)
+						return window.onClickRelease(button, x, y);
+					end
+				</script>
+			</genericcontrol>
+			
+			<stringcontrol name="label">
+				<anchored>
+					<position>insidetopleft</position>
+					<offset>9,2</offset>
+					<size>
+						<width>60</width>
+					</size>
+				</anchored>
+				<font>sheetlabelsmallbold</font>
+				<static />
+				<disabled />
+			</stringcontrol>
+			<stringcontrol name="stats">
+				<anchored>
+					<to>label</to>
+					<position>right</position>
+					<offset>10,0</offset>
+				</anchored>
+				<font>sheetlabelsmall</font>
+				<static />
+				<disabled />
+			</stringcontrol>
+
+			<list_spellitem name="spells">
+				<anchored>
+					<left>
+						<anchor>left</anchor>
+					</left>
+					<right>
+						<anchor>right</anchor>
+					</right>
+					<top>
+						<anchor>top</anchor>
+						<offset>18</offset>
+					</top>
+				</anchored>
+				<class>spell_item</class>
+			</list_spellitem>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="spell_class">
+		<sizelimits>
+			<minimum>
+				<height>30</height>
+				<width>0</width>
+			</minimum>
+			<maximum>
+				<height>100000</height>
+			</maximum>
+		</sizelimits>
+		<script file="common/scripts/spell_class.lua" />
+		<sheetdata>
+			<button_iconcycler name="castertype">
+				<bounds>10,10,20,20</bounds>
+				<parameters>
+					<defaulticon>indicator_casterprep</defaulticon>
+					<defaulttooltip>Prepared spell caster (Wizard)</defaulttooltip>
+					<icons>indicator_casterspontaneous|indicator_casterpoints</icons>
+					<tooltips>Spontaneous spell caster (Sorcerer)|Points spell caster (Psion)</tooltips>
+					<values>spontaneous|points</values>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.onCasterTypeChanged();
+					end
+				</script>
+			</button_iconcycler>
+
+			<button_chartoggledetail name="activatedetail">
+				<anchored>
+					<position>insidetopright</position>
+					<offset>5,10</offset>
+				</anchored>
+			</button_chartoggledetail>
+
+			<basicnumber name="pointsused">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>12</offset>
+					</top>
+					<right>
+						<parent>activatedetail</parent>
+						<relation>relative</relation>
+						<anchor>left</anchor>
+						<offset>-8</offset>
+					</right>
+					<size>
+						<width>32</width>
+						<height>16</height>
+					</size>
+				</anchored>
+				<min>0</min>
+				<tooltip>
+					<text>Power Points Used</text>
+				</tooltip>
+				<tabtarget next="availablelevel0" prev="points"/>
+				<script>
+					function onValueChanged()
+						window.onSpellCounterUpdate();
+					end
+				</script>
+			</basicnumber>
+			<label name="label_pointsused">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>12</offset>
+					</top>
+					<right>
+						<parent>activatedetail</parent>
+						<relation>relative</relation>
+						<anchor>left</anchor>
+						<offset>-5</offset>
+					</right>
+				</anchored>
+				<static>/</static>
+			</label>
+			<basicnumber name="points">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>12</offset>
+					</top>
+					<right>
+						<parent>activatedetail</parent>
+						<relation>relative</relation>
+						<anchor>left</anchor>
+						<offset>-5</offset>
+					</right>
+					<size>
+						<width>32</width>
+						<height>16</height>
+					</size>
+				</anchored>
+				<min>0</min>
+				<tooltip>
+					<text>Power Points Max</text>
+				</tooltip>
+				<tabtarget next="pointsused" prev="cl"/>
+				<script>
+					function onValueChanged()
+						window.onSpellCounterUpdate();
+					end
+				</script>
+			</basicnumber>
+			<label name="label_points">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>12</offset>
+					</top>
+					<right>
+						<parent>activatedetail</parent>
+						<relation>relative</relation>
+						<anchor>left</anchor>
+						<offset>-5</offset>
+					</right>
+				</anchored>
+				<static>PP:</static>
+			</label>
+			<button_cc name="button_cc">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>10</offset>
+					</top>
+					<right>
+						<parent>activatedetail</parent>
+						<relation>relative</relation>
+						<anchor>left</anchor>
+						<offset>-6</offset>
+					</right>
+					<size>
+						<width>20</width>
+						<height>20</height>
+					</size>
+				</anchored>
+			</button_cc>
+			<label name="label_cc">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>12</offset>
+					</top>
+					<right>
+						<parent>activatedetail</parent>
+						<relation>relative</relation>
+						<anchor>left</anchor>
+						<offset>-5</offset>
+					</right>
+				</anchored>
+				<static>CC:</static>
+			</label>
+			<basicnumber name="cl">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>12</offset>
+					</top>
+					<right>
+						<parent>activatedetail</parent>
+						<relation>relative</relation>
+						<anchor>left</anchor>
+						<offset>-8</offset>
+					</right>
+					<size>
+						<width>32</width>
+						<height>16</height>
+					</size>
+				</anchored>
+				<min>0</min>
+				<tooltip>
+					<text>Caster Level</text>
+				</tooltip>
+				<tabtarget next="points" prev="label"/>
+				<script>
+					function onValueChanged()
+						window.onStatUpdate();
+					end
+				</script>
+			</basicnumber>
+			<label name="label_cl">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>12</offset>
+					</top>
+					<right>
+						<parent>activatedetail</parent>
+						<relation>relative</relation>
+						<anchor>left</anchor>
+						<offset>-5</offset>
+					</right>
+				</anchored>
+				<static>CL:</static>
+			</label>
+			<stringu name="label">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>12</offset>
+					</top>
+					<left>
+						<parent>castertype</parent>
+						<anchor>right</anchor>
+						<offset>5</offset>
+					</left>
+					<right>
+						<parent>label_cl</parent>
+						<anchor>left</anchor>
+						<offset>-5</offset>
+					</right>
+				</anchored>
+				<font>sheetlabel</font>
+				<empty>&#171; Class &#187;</empty>
+				<tabtarget next="cl" />
+			</stringu>
+
+			<genericcontrol name="detailanchor">
+				<bounds>0,30,0,0</bounds>
+			</genericcontrol>
+
+			<genericcontrol name="frame_levels">
+				<anchored>
+					<top>
+						<parent>detailanchor</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+					</top>
+					<left><offset>5</offset></left>
+					<size>
+						<height>50</height>
+						<width>305</width>
+					</size>
+				</anchored>
+				<frame><name>sheetgroup3</name></frame>
+			</genericcontrol>
+			
+			<label_sm name="availablelevel_label">
+				<anchored>
+					<to>frame_levels</to>
+					<position>insidetopleft</position>
+					<offset>15,23</offset>
+				</anchored>
+				<static>Level:</static>
+			</label_sm>
+			<genericcontrol name="availablelevel">
+				<anchored>
+					<to>frame_levels</to>
+					<position>insidetopleft</position>
+					<offset>55,23</offset>
+					<size>
+						<height>25</height>
+						<width>1</width>
+					</size>
+				</anchored>
+			</genericcontrol>
+			<number_spellsavailable name="availablelevel0">
+				<tabtarget next="availablelevel1" prev="pointsused"/>
+			</number_spellsavailable>
+			<number_spellsavailable name="availablelevel1">
+				<tabtarget next="availablelevel2" prev="availablelevel0"/>
+			</number_spellsavailable>
+			<number_spellsavailable name="availablelevel2">
+				<tabtarget next="availablelevel3" prev="availablelevel1"/>
+			</number_spellsavailable>
+			<number_spellsavailable name="availablelevel3">
+				<tabtarget next="availablelevel4" prev="availablelevel2"/>
+			</number_spellsavailable>
+			<number_spellsavailable name="availablelevel4">
+				<tabtarget next="availablelevel5" prev="availablelevel3"/>
+			</number_spellsavailable>
+			<number_spellsavailable name="availablelevel5">
+				<tabtarget next="availablelevel6" prev="availablelevel4"/>
+			</number_spellsavailable>
+			<number_spellsavailable name="availablelevel6">
+				<tabtarget next="availablelevel7" prev="availablelevel5"/>
+			</number_spellsavailable>
+			<number_spellsavailable name="availablelevel7">
+				<tabtarget next="availablelevel8" prev="availablelevel6"/>
+			</number_spellsavailable>
+			<number_spellsavailable name="availablelevel8">
+				<tabtarget next="availablelevel9" prev="availablelevel7"/>
+			</number_spellsavailable>
+			<number_spellsavailable name="availablelevel9">
+				<tabtarget next="dcmisc" prev="availablelevel8"/>
+			</number_spellsavailable>
+			<label_fieldtop name="availablelevel0_label">
+				<anchored>
+					<to>availablelevel0</to>
+					<offset>0,-4</offset>
+				</anchored>
+				<static>0</static>
+			</label_fieldtop>
+			<label_fieldtop name="availablelevel1_label">
+				<anchored>
+					<to>availablelevel1</to>
+					<offset>0,-4</offset>
+				</anchored>
+				<static>1</static>
+			</label_fieldtop>
+			<label_fieldtop name="availablelevel2_label">
+				<anchored>
+					<to>availablelevel2</to>
+					<offset>0,-4</offset>
+				</anchored>
+				<static>2</static>
+			</label_fieldtop>
+			<label_fieldtop name="availablelevel3_label">
+				<anchored>
+					<to>availablelevel3</to>
+					<offset>0,-4</offset>
+				</anchored>
+				<static>3</static>
+			</label_fieldtop>
+			<label_fieldtop name="availablelevel4_label">
+				<anchored>
+					<to>availablelevel4</to>
+					<offset>0,-4</offset>
+				</anchored>
+				<static>4</static>
+			</label_fieldtop>
+			<label_fieldtop name="availablelevel5_label">
+				<anchored>
+					<to>availablelevel5</to>
+					<offset>0,-4</offset>
+				</anchored>
+				<static>5</static>
+			</label_fieldtop>
+			<label_fieldtop name="availablelevel6_label">
+				<anchored>
+					<to>availablelevel6</to>
+					<offset>0,-4</offset>
+				</anchored>
+				<static>6</static>
+			</label_fieldtop>
+			<label_fieldtop name="availablelevel7_label">
+				<anchored>
+					<to>availablelevel7</to>
+					<offset>0,-4</offset>
+				</anchored>
+				<static>7</static>
+			</label_fieldtop>
+			<label_fieldtop name="availablelevel8_label">
+				<anchored>
+					<to>availablelevel8</to>
+					<offset>0,-4</offset>
+				</anchored>
+				<static>8</static>
+			</label_fieldtop>
+			<label_fieldtop name="availablelevel9_label">
+				<anchored>
+					<to>availablelevel9</to>
+					<offset>0,-4</offset>
+				</anchored>
+				<static>9</static>
+			</label_fieldtop>
+
+			<genericcontrol name="frame_dc">
+				<anchored>
+					<top>
+						<parent>detailanchor</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+					</top>
+					<left><offset>5</offset></left>
+					<size>
+						<height>50</height>
+						<width>155</width>
+					</size>
+				</anchored>
+				<frame><name>sheetgroup3</name></frame>
+			</genericcontrol>
+			
+			<label_sm name="dc_label">
+				<anchored>
+					<to>frame_dc</to>
+					<position>insidetopleft</position>
+					<offset>15,20</offset>
+				</anchored>
+				<static>Base DC:</static>
+			</label_sm>
+			<number name="dcstatmod" source="dc.abilitymod">
+				<anchored>
+					<to>frame_dc</to>
+					<position>insidetopleft</position>
+					<offset>58,19</offset>
+					<size>
+						<width>25</width>
+						<height>22</height>
+					</size>
+				</anchored>
+				<font>sheetnumbersmall</font>
+				<readonly />
+				<displaysign />
+				<disabled />
+			</number>
+			<label_fieldtop name="dcstatmod_label">
+				<anchored>
+					<to>dcstatmod</to>
+					<offset>0,-4</offset>
+				</anchored>
+				<static>Stat</static>
+			</label_fieldtop>
+			<number_spell name="dcmisc" source="dc.misc">
+				<anchored>
+					<to>dcstatmod</to>
+					<position>righthigh</position>
+					<offset>2,0</offset>
+				</anchored>
+				<tabtarget next="sp" prev="availablelevel9" />
+			</number_spell>
+			<label_fieldtop name="dcmisc_label">
+				<anchored>
+					<to>dcmisc</to>
+					<offset>0,-4</offset>
+				</anchored>
+				<static>Misc</static>
+			</label_fieldtop>
+			<number_spelldc name="dctotal" source="dc.total">
+				<anchored>
+					<to>dcmisc</to>
+					<position>righthigh</position>
+					<offset>5,1</offset>
+				</anchored>
+				<description>
+					<text>Base Spell DC</text>
+				</description>
+			</number_spelldc>
+			<label_fieldtop name="dctotal_label">
+				<anchored>
+					<to>dctotal</to>
+					<offset>0,-3</offset>
+				</anchored>
+				<static>Total</static>
+			</label_fieldtop>
+		
+			<genericcontrol name="frame_stat">
+				<anchored>
+					<top><parent>frame_levels</parent></top>
+					<left><offset>310</offset></left>
+					<size>
+						<height>50</height>
+						<width>140</width>
+					</size>
+				</anchored>
+				<frame><name>sheetgroup3</name></frame>
+			</genericcontrol>
+			
+			<label_sm name="dcstat_label">
+				<anchored>
+					<to>frame_stat</to>
+					<position>insidetopleft</position>
+					<offset>15,20</offset>
+				</anchored>
+				<static>Ability:</static>
+			</label_sm>
+			<cycler_ability name="dcstat">
+				<anchored>
+					<to>frame_stat</to>
+					<position>insidetopleft</position>
+					<offset>65,16</offset>
+					<size>
+						<height>20</height>
+						<width>50</width>
+					</size>
+				</anchored>
+				<font>sheettextsmall</font>
+				<frame>
+					<name>bonus</name>
+					<offset>5,3,5,3</offset>
+				</frame>
+				<stateframe>
+					<hover>
+						<name>sheetfocus</name>
+						<offset>5,3,5,3</offset>
+					</hover>
+				</stateframe>
+				<source>
+					<name>dc.ability</name>
+				</source>
+				<parameters>
+					<defaultlabel>-</defaultlabel>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.onStatUpdate();
+					end
+				</script>
+			</cycler_ability>
+			
+			<genericcontrol name="frame_sp">
+				<anchored>
+					<top><parent>frame_dc</parent></top>
+					<left><offset>160</offset></left>
+					<size>
+						<height>50</height>
+						<width>150</width>
+					</size>
+				</anchored>
+				<frame><name>sheetgroup3</name></frame>
+			</genericcontrol>
+			
+			<label_sm name="spmain_label">
+				<anchored>
+					<to>frame_sp</to>
+					<position>insidetopleft</position>
+					<offset>15,20</offset>
+				</anchored>
+				<static>Spell Penetration:</static>
+			</label_sm>
+			<number_spell name="sp">
+				<anchored>
+					<to>frame_sp</to>
+					<position>insidetopleft</position>
+					<offset>110,19</offset>
+				</anchored>
+				<script>
+					function onValueChanged()
+						window.onStatUpdate();
+					end
+				</script>
+			</number_spell>
+			<label_fieldtop name="sp_label">
+				<anchored>
+					<to>sp</to>
+					<offset>0,-4</offset>
+				</anchored>
+				<static>Mod</static>
+			</label_fieldtop>
+			
+			<genericcontrol name="frame_cc">
+				<anchored>
+					<top><parent>frame_sp</parent></top>
+					<left><offset>310</offset></left>
+					<size>
+						<height>50</height>
+						<width>140</width>
+					</size>
+				</anchored>
+				<frame><name>sheetgroup3</name></frame>
+			</genericcontrol>
+			
+			<label_sm name="label_cc">
+				<anchored>
+					<to>frame_cc</to>
+					<position>insidetopleft</position>
+					<offset>15,20</offset>
+				</anchored>
+				<static>Conc. Check:</static>
+			</label_sm>
+			<number_spell name="ccmisc" source="cc.misc">
+				<anchored>
+					<to>frame_cc</to>
+					<position>insidetopleft</position>
+					<offset>100,19</offset>
+				</anchored>
+			</number_spell>
+			<label_fieldtop name="ccmisc_label">
+				<anchored>
+					<to>ccmisc</to>
+					<offset>0,-4</offset>
+				</anchored>
+				<static>Mod</static>
+			</label_fieldtop>
+			
+			<spacer>
+				<anchor>detailanchor</anchor>
+				<relative />
+				<height>2</height>
+			</spacer>
+			
+			<genericcontrol name="classframe">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>6</offset>
+					</top>
+					<left>
+						<anchor>left</anchor>
+						<offset>6</offset>
+					</left>
+					<right>
+						<anchor>right</anchor>
+						<offset>-6</offset>
+					</right>
+					<bottom>
+						<parent>detailanchor</parent>
+						<relation>relative</relation>
+						<anchor>bottom</anchor>
+						<offset>4</offset>
+					</bottom>
+				</anchored>
+				<frame>
+					<name>sheetgroup2</name>
+					<offset>6,6,6,6</offset>
+				</frame>
+				<disabled />
+			</genericcontrol>
+
+			<list_spelllevel name="levels">
+				<anchored>
+					<left>
+						<anchor>left</anchor>
+					</left>
+					<right>
+						<anchor>right</anchor>
+					</right>
+					<top>
+						<parent>classframe</parent>
+						<anchor>bottom</anchor>
+						<offset>8</offset>
+					</top>
+				</anchored>
+				<class>spell_level</class>
+				<tabtarget prev="sp" />
+			</list_spelllevel>
+			
+			<spacer>
+				<anchor>levels</anchor>
+				<height>2</height>
+			</spacer>
+		</sheetdata>
+	</windowclass>
+</root>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="number_charskilltotal">
+		<number_linked>
+			<frame>
+				<name>modifier</name>
+				<offset>5,5,5,5</offset>
+			</frame>
+			<font>sheetnumber</font>
+			<readonly />
+			<displaysign />
+			<rollable />
+			<hideonvalue>0</hideonvalue>
+			<source>
+				<name>stat</name>
+				<op>+</op>
+			</source>
+			<source>
+				<name>state</name>
+				<op>+</op>
+			</source>
+			<source>
+				<name>...encumbrance.armormaxstatbonusactive</name>
+			</source>
+			<source>
+				<name>...encumbrance.armorcheckpenalty</name>
+				<op>+</op>
+			</source>
+			<source>
+				<name>ranks</name>
+				<op>+</op>
+			</source>
+			<source>
+				<name>misc</name>
+				<op>+</op>
+			</source>
+			<script>
+				function onSourceValue(source, sourcename)
+					if sourcename == "ranks" then
+						return math.floor(source.getValue());
+					elseif sourcename == "...encumbrance.armorcheckpenalty" then
+						local bMaxActive = sources["...encumbrance.armormaxstatbonusactive"].getValue();
+						if bMaxActive &gt; 0 then
+							return math.min(DB.getValue(window.getDatabaseNode(), "armorcheckmultiplier", 0) * source.getValue(), 0);
+						end
+						return 0;
+					elseif sourcename == "state" then
+						if OptionsManager.isOption("SYSTEM", "pf") then
+							local nodeWin = window.getDatabaseNode();
+							if DB.getValue(nodeWin, "state", 0) == 1 then
+								local nRanks = DB.getValue(nodeWin, "ranks", 0);
+								if nRanks > 0 then
+									return 3;
+								end
+							end
+						end
+						return 0;
+					end
+
+					return super.onSourceValue(source, sourcename);
+				end
+
+				function action(draginfo)
+					local nodeWin = window.getDatabaseNode();
+					if nodeWin then
+						local rActor = ActorManager.getActor("pc", nodeWin.getChild("..."));
+						ActionSkill.performPCRoll(draginfo, rActor, nodeWin);
+					end
+	
+					return true;
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+
+				function onDoubleClick(x,y)	
+					return action();
+				end
+			</script>
+		</number_linked>
+	</template>
+	<template name="number_charskilltotal_sm">
+		<number_charskilltotal>
+			<font>sheetnumbersmall</font>
+		</number_charskilltotal>
+	</template>
+	<template name="number_charskillfield">
+		<number>
+			<frame>
+				<name>textline</name>
+				<offset>0,-2,0,0</offset>
+			</frame>
+			<stateframe>
+				<keyedit>
+					<name>rowshade</name>
+					<offset>1,1,1,1</offset>
+				</keyedit>
+				<hover>
+					<name>rowshade</name>
+					<offset>1,1,1,1</offset>
+				</hover>
+				<drophilight>
+					<name>rowshade</name>
+					<offset>1,1,1,1</offset>
+				</drophilight>
+			</stateframe>
+			<droptypes>
+				<type>number</type>
+			</droptypes>
+			<font>sheetnumber</font>
+			<delaykeyupdate />
+			<hideonvalue>0</hideonvalue>
+			<nodrag />
+			<displaysign />
+		</number>
+	</template>
+	<template name="number_charskillfield_static">
+		<number>
+			<font>sheetnumber</font>
+			<hideonvalue>0</hideonvalue>
+			<nodrag />
+			<displaysign />
+			<disabled />
+		</number>
+	</template>
+	<template name="number_charskillranks">
+		<number_charskillfield>
+			<min>0</min>
+			<script file="charsheet/scripts/charsheet_skillranks.lua" />
+		</number_charskillfield>
+	</template>
+	<template name="cycler_charskillability">
+		<button_stringcycler>
+			<font>sheetlabelsmall</font>
+			<stateframe>
+				<hover>
+					<name>sheetfocus</name>
+					<offset>6,5,6,5</offset>
+				</hover>
+			</stateframe>
+			<parameters>
+				<labels>Str|Con|Dex|Int|Wis|Cha</labels>
+				<values>strength|constitution|dexterity|intelligence|wisdom|charisma</values>
+			</parameters>
+		</button_stringcycler>
+	</template>
+</root>

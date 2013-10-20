@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="combattracker_effect_target">
+		<script file="ct/scripts/ct_effect_target.lua" />
+		<sheetdata>
+			<hs name="type" />
+			<hs name="noderef">
+				<script>
+					function onValueChanged()
+						window.onRefChanged();
+					end
+				</script>
+			</hs>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="combattracker_effect">
+		<sizelimits>
+			<minimum>
+				<height>27</height>
+			</minimum>
+		</sizelimits>
+		<script file="ct/scripts/ct_effect.lua" />
+		<sheetdata>
+			<genericcontrol name="base">
+				<bounds>0,0,-1,-1</bounds>
+				<script>
+					function onDragStart(button, x, y, draginfo)
+						return window.onDragStart(button, x, y, draginfo);
+					end
+
+					function onDrop(x, y, draginfo)
+						return window.onDrop(x, y, draginfo);
+					end
+				</script>
+			</genericcontrol>
+			
+			<button_checkbox name="isactive">
+				<bounds>2,7,24,10</bounds>
+				<checked />
+				<parameters>
+					<icons>button_toggle_on</icons>
+					<defaulticon>button_toggle_off</defaulticon>
+					<tooltips>Active</tooltips>
+					<defaulttooltip>Inactive</defaulttooltip>
+				</parameters>
+			</button_checkbox>
+			<button_checkbox name="isgmonly">
+				<bounds>28,1,24,10</bounds>
+				<parameters>
+					<icons>button_toggle_gm</icons>
+					<defaulticon>button_toggle_visible</defaulticon>
+					<tooltips>Visible to GM</tooltips>
+					<defaulttooltip>Visible to All</defaulttooltip>
+				</parameters>
+			</button_checkbox>
+			<button_iconcycler name="apply">
+				<bounds>28,12,24,10</bounds>
+				<parameters>
+					<icons>button_toggle_action|button_toggle_roll|button_toggle_single</icons>
+					<values>action|roll|single</values>
+					<tooltips>One Action|One Roll|Apply Each Once</tooltips>
+					<defaulticon>button_toggle_all</defaulticon>
+					<defaulttooltip>All Rolls</defaulttooltip>
+				</parameters>
+			</button_iconcycler>
+			
+			<string_ct_effectlabel name="label">
+				<anchored>
+					<top><offset>6</offset></top>
+					<left><offset>54</offset></left>
+					<right><offset>-83</offset></right>
+					<size><height>20</height></size>
+				</anchored>
+				<stateframe>
+					<drophilight>
+						<name>sheetfocus</name>
+						<offset>7,6,7,3</offset>
+					</drophilight>
+				</stateframe>
+				<droptypes>
+					<type>combattrackerentry</type>
+				</droptypes>
+				<tabtarget next="duration" />
+				<script>
+					function onDragStart(button, x, y, draginfo)
+						return window.onDragStart(button, x, y, draginfo);
+					end
+
+					function onDrop(x, y, draginfo)
+						return window.onDrop(x, y, draginfo);
+					end
+				</script>
+			</string_ct_effectlabel>
+
+			<basicnumber_sm name="init">
+				<bounds>-50,3,30,20</bounds>
+				<tabtarget prev="duration" />
+				<frame>
+					<name>durationadjustment</name>
+					<offset>3,3,3,3</offset>
+				</frame>
+				<tooltip>
+					<text>Initiative to adjust on</text>
+				</tooltip>
+				<script>
+					function onDragStart(button, x, y, draginfo)
+						return window.onDragStart(button, x, y, draginfo);
+					end
+
+					function onDrop(x, y, draginfo)
+						if draginfo.getType() ~= "number" then
+							return window.onDrop(x, y, draginfo);
+						end
+					end
+				</script>
+			</basicnumber_sm>
+			<basicnumber_sm name="duration">
+				<bounds>-80,3,30,20</bounds>
+				<min>0</min>
+				<tabtarget prev="label" next="init" />
+				<tooltip>
+					<text>Duration</text>
+				</tooltip>
+				<script>
+					function onDragStart(button, x, y, draginfo)
+						return window.onDragStart(button, x, y, draginfo);
+					end
+
+					function onDrop(x, y, draginfo)
+						if draginfo.getType() ~= "number" then
+							return window.onDrop(x, y, draginfo);
+						end
+					end
+				</script>
+			</basicnumber_sm>
+
+			<hs name="source_name">
+				<script>
+					function onInit()
+						onValueChanged();
+					end
+					
+					function onValueChanged()
+						local nodeSource = DB.findNode(getValue());
+						local sSource = DB.getValue(nodeSource, "name", "");
+						
+						if sSource == "" then
+							window.source.setVisible(false);
+						else
+							window.source.setValue("Applied by: " .. sSource);
+							window.source.setVisible(true);
+						end
+					end
+				</script>
+			</hs>
+			<stringcontrol name="source">
+				<anchored>
+					<right>
+						<anchor>right</anchor>
+						<offset>-5</offset>
+					</right>
+					<top>
+						<parent>duration</parent>
+						<anchor>bottom</anchor>
+					</top>
+				</anchored>
+				<center />
+				<static />
+				<font>sheetlabelsmall</font>
+				<color>#7f000000</color>
+				<nodrag />
+				<nodragselect />
+				<invisible />
+				<script>
+					function onClickDown(button, x, y)
+						return true;
+					end
+					
+					function onClickRelease(button, x, y)
+						if isVisible() then
+							setSource("");
+						end
+					end
+					
+					function onDragStart(button, x, y, draginfo)
+						return window.onDragStart(button, x, y, draginfo);
+					end
+
+					function onDrop(x, y, draginfo)
+						return window.onDrop(x, y, draginfo);
+					end
+
+					function setSource(sNode)
+						if not sNode then
+							sNode = "";
+						end
+						
+						window.source_name.setValue(sNode);
+					end
+				</script>
+			</stringcontrol>
+
+			<windowlist name="targets">
+				<bounds>0,0,0,0</bounds>
+				<datasource>.targets</datasource>
+				<class>combattracker_effect_target</class>
+				<invisible />
+				<skipempty />
+			</windowlist>
+			<stringcontrol name="target_name">
+				<anchored>
+					<left>
+						<parent>label</parent>
+						<anchor>left</anchor>
+					</left>
+					<top>
+						<parent>duration</parent>
+						<anchor>bottom</anchor>
+					</top>
+					<right>
+						<parent>duration</parent>
+						<anchor>right</anchor>
+						<offset>-105</offset>
+					</right>
+				</anchored>
+				<static />
+				<font>sheetlabelsmall</font>
+				<color>#7f000000</color>
+				<nodrag />
+				<nodragselect />
+				<multilinespacing>15</multilinespacing>
+				<invisible />
+				<script>
+					function onClickDown(button, x, y)
+						return true;
+					end
+					
+					function onClickRelease(button, x, y)
+						if isVisible() then
+							for keyTarget, winTarget in pairs(window.targets.getWindows()) do
+								local nodeWin = winTarget.getDatabaseNode();
+								if nodeWin then
+									nodeWin.delete();
+								else
+									winTarget.close();
+								end
+							end
+						end
+					end
+
+					function onDragStart(button, x, y, draginfo)
+						return window.onDragStart(button, x, y, draginfo);
+					end
+
+					function onDrop(x, y, draginfo)
+						return window.onDrop(x, y, draginfo);
+					end
+				</script>
+			</stringcontrol>
+			<buttoncontrol name="targeting_add_button">
+				<bounds>-17,6,15,15</bounds>
+				<icon>
+					<normal>button_targeting_small</normal>
+					<pressed>button_targeting_small_down</pressed>
+				</icon>
+				<tooltip>
+					<text>Drag onto new effect target</text>
+				</tooltip>
+				<script>
+					function onInit()
+						registerMenuItem("Targeting", "goto", 4);
+						registerMenuItem("Target all allies", "turn", 4, 3);
+						registerMenuItem("Target all non-allies", "mask", 4, 5);
+					end
+					
+					function onDragStart(button, x, y, draginfo)
+						local nodeWin = window.getDatabaseNode();
+						if not nodeWin then
+							return false;
+						end
+						
+						draginfo.setType("targeting");
+						draginfo.setIcon("drag_targeting");
+						draginfo.setShortcutData(window.getClass(), nodeWin.getNodeName());
+						
+						return true;
+					end
+
+					function onMenuSelection(selection, subselection)
+						if selection == 4 then
+							if subselection == 3 then
+								TargetingManager.clearTargets("host", window.getDatabaseNode());
+								TargetingManager.addFactionTargetsHost(window.getDatabaseNode(), window.windowlist.window.friendfoe.getStringValue());
+							elseif subselection == 5 then
+								TargetingManager.clearTargets("host", window.getDatabaseNode());
+								TargetingManager.addFactionTargetsHost(window.getDatabaseNode(), window.windowlist.window.friendfoe.getStringValue(), true);
+							end
+						end
+					end
+				</script>
+			</buttoncontrol>
+			
+			<spacer name="spacer">
+				<anchor>target_name</anchor>
+				<height>1</height>
+			</spacer>
+		</sheetdata>
+	</windowclass>
+</root>

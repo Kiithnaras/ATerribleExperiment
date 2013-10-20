@@ -1,0 +1,1067 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="ps_mainitem">
+		<frame>modifier</frame>
+		<sizelimits>
+			<minimum>
+				<height>55</height>
+				<width>-1</width>
+			</minimum>
+		</sizelimits>
+		<script file="ps/scripts/ps_mainitem.lua" />
+		<sheetdata>
+			<hlink name="link">
+				<script>
+					function onValueChanged()
+						window.portrait.update();
+					end
+				</script>
+			</hlink>
+			<tokenfield name="token">
+				<bounds>0,0,0,0</bounds>
+				<invisible />
+			</tokenfield>
+			<hnx name="exp">
+				<script>
+					function onValueChanged()
+						window.onXPChanged();
+					end
+				</script>
+			</hnx>
+			<hnx name="expneeded">
+				<script>
+					function onValueChanged()
+						window.onXPChanged();
+					end
+				</script>
+			</hnx>
+			<hnx name="hptotal">
+				<script>
+					function onValueChanged()
+						window.onHPChanged();
+					end
+				</script>
+			</hnx>
+			<hnx name="hptemp">
+				<script>
+					function onValueChanged()
+						window.onHPChanged();
+					end
+				</script>
+			</hnx>
+			<hnx name="wounds">
+				<script>
+					function onValueChanged()
+						window.onHPChanged();
+					end
+				</script>
+			</hnx>
+			<hnx name="nonlethal">
+				<script>
+					function onValueChanged()
+						window.onHPChanged();
+					end
+				</script>
+			</hnx>
+		
+			<!-- Visible fields -->
+			<spacer>
+				<height>60</height>
+			</spacer>
+			<portrait_base>
+				<bounds>10,10,40,40</bounds>
+			</portrait_base>
+			<portrait name="portrait">
+				<bounds>10,10,40,40</bounds>
+			</portrait>
+			
+			<string_psname name="name">
+				<anchored>
+					<top><offset>10</offset></top>
+					<left><offset>55</offset></left>
+					<size>
+						<width>80</width>
+						<height>20</height>
+					</size>
+				</anchored>
+				<empty>&#171; Unnamed &#187;</empty>
+			</string_psname>
+			<string_ps name="race">
+				<anchored>
+					<left><offset>55</offset></left>
+					<top><offset>33</offset></top>
+					<size>
+						<width>80</width>
+						<height>20</height>
+					</size>
+				</anchored>
+				<empty>&#171; No Race &#187;</empty>
+			</string_ps>
+			<string_ps name="class">
+				<anchored>
+					<left>
+						<parent>name</parent>
+						<anchor>right</anchor>
+						<offset>5</offset>
+					</left>
+					<top><offset>33</offset></top>
+					<size>
+						<width>145</width>
+						<height>20</height>
+					</size>
+				</anchored>
+				<empty>&#171; No Class &#187;</empty>
+			</string_ps>
+			<number_ps_linked name="level">
+				<anchored>
+					<top><parent>name</parent></top>
+					<left><offset>255</offset></left>
+					<size>
+						<width>30</width>
+						<height>20</height>
+					</size>
+				</anchored>
+			</number_ps_linked>			
+			<label name="levellabel">
+				<anchored>
+					<top>
+						<parent>name</parent>
+						<offset>2</offset>
+					</top>
+					<right>
+						<parent>level</parent>
+						<anchor>left</anchor>
+						<offset>-5</offset>
+					</right>
+				</anchored>
+				<static>Level</static>
+			</label>	
+			
+			<!-- Status Bars -->
+			<statusbar name="xpbar">
+				<anchored>
+					<top>
+						<parent>portrait</parent>
+						<offset>5</offset>
+					</top>
+					<left>
+						<parent>name</parent>
+						<anchor>right</anchor>
+						<offset>25</offset>
+					</left>
+					<size>
+						<height>10</height>
+						<width>55</width>
+					</size>
+				</anchored>
+				<frame>
+					<name>border</name>
+				</frame>
+				<barback>0F0B0B</barback>
+			</statusbar>
+			<label name="xplabel">
+				<anchored>
+					<top><offset>12</offset></top>
+					<right>
+						<parent>xpbar</parent>
+						<anchor>left</anchor>
+						<offset>-5</offset>
+					</right>
+				</anchored>
+				<static>XP</static>
+			</label>
+			
+			<statusbar name="hpbar">
+				<anchored>
+					<top><parent>portrait</parent></top>
+					<bottom><parent>portrait</parent></bottom>
+					<left>
+						<parent>level</parent>
+						<anchor>right</anchor>
+						<offset>10</offset>
+					</left>
+					<size>
+						<width>10</width>
+					</size>
+				</anchored>
+				<frame>
+					<name>border</name>
+				</frame>
+				<barback>006600</barback>
+			</statusbar>
+			
+			<!-- Abilities -->			
+			<number_ps_ability name="strength">
+				<anchored>
+					<to>hpbar</to>
+					<left>
+						<offset>10</offset>
+					</left>
+				</anchored>
+			</number_ps_ability>			
+			<number_ps_ability name="dexterity">
+				<anchored>
+					<to>strength</to>
+				</anchored>
+			</number_ps_ability>			
+			<number_ps_ability name="constitution">
+				<anchored>
+					<to>dexterity</to>
+				</anchored>
+			</number_ps_ability>			
+			<number_ps_ability name="intelligence">
+				<anchored>
+					<to>constitution</to>
+				</anchored>
+			</number_ps_ability>			
+			<number_ps_ability name="wisdom">
+				<anchored>
+					<to>intelligence</to>
+				</anchored>
+			</number_ps_ability>		
+			<number_ps_ability name="charisma">
+				<anchored>
+					<to>wisdom</to>
+				</anchored>
+			</number_ps_ability>	
+			
+			<number_ps_abilitycheck name="strcheck">
+				<anchored>
+					<to>strength</to>
+				</anchored>
+				<target>strength</target>
+			</number_ps_abilitycheck>
+			<number_ps_abilitycheck name="dexcheck">
+				<anchored>
+					<to>dexterity</to>
+				</anchored>
+				<target>dexterity</target>
+			</number_ps_abilitycheck>
+			<number_ps_abilitycheck name="concheck">
+				<anchored>
+					<to>constitution</to>
+				</anchored>
+				<target>constitution</target>
+			</number_ps_abilitycheck>
+			<number_ps_abilitycheck name="intcheck">
+				<anchored>
+					<to>intelligence</to>
+				</anchored>
+				<target>intelligence</target>
+			</number_ps_abilitycheck>
+			<number_ps_abilitycheck name="wischeck">
+				<anchored>
+					<to>wisdom</to>
+				</anchored>
+				<target>wisdom</target>
+			</number_ps_abilitycheck>
+			<number_ps_abilitycheck name="chacheck">
+				<anchored>
+					<to>charisma</to>
+				</anchored>
+				<target>charisma</target>
+			</number_ps_abilitycheck>			
+			
+			<!-- Defenses -->
+			<number_ps_defense name="ac">
+				<anchored>
+					<to>charisma</to>
+					<left>
+						<offset>10</offset>
+					</left>
+				</anchored>
+			</number_ps_defense>				
+			<number_ps_defense name="flatfootedac">
+				<anchored>
+					<to>ac</to>
+				</anchored>
+			</number_ps_defense>				
+			<number_ps_defense name="touchac">
+				<anchored>
+					<to>flatfootedac</to>
+				</anchored>
+			</number_ps_defense>				
+			<number_ps_defense name="cmd">
+				<anchored>
+					<to>touchac</to>
+				</anchored>
+			</number_ps_defense>				
+
+			<number_ps_save name="fortitude">
+				<anchored>
+					<to>touchac</to>
+					<left>
+						<offset>45</offset>
+					</left>
+				</anchored>
+				<target>fortitude</target>
+			</number_ps_save>			
+			<number_ps_save name="reflex">
+				<anchored>
+					<to>fortitude</to>
+				</anchored>
+				<target>reflex</target>
+			</number_ps_save>			
+			<number_ps_save name="will">
+				<anchored>
+					<to>reflex</to>
+				</anchored>
+				<target>will</target>
+			</number_ps_save>
+
+			<string_ps name="dr">
+				<anchored>
+					<left><parent>ac</parent></left>
+					<bottom>
+						<parent>chacheck</parent>
+						<offset>5</offset>
+					</bottom>
+					<size>
+						<width>210</width>
+						<height>20</height>
+					</size>
+				</anchored>
+			</string_ps>
+			<number_ps_linked name="sr">
+				<anchored>
+					<left>
+						<parent>will</parent>
+					</left>
+					<bottom>
+						<parent>chacheck</parent>
+						<offset>1</offset>
+					</bottom>
+					<size>
+						<width>30</width>
+						<height>20</height>
+					</size>
+				</anchored>
+				<nodrag />
+			</number_ps_linked>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="ps_main">
+		<script file="ps/scripts/ps_main.lua" />
+		<sheetdata>
+			<frame_ps name="sheetframe" />
+			<label_ps_sheet>
+				<static>Party Information</static>
+			</label_ps_sheet>
+			
+			<!-- Column Labels -->
+			<header_ps2 name="portraitlabel">
+				<anchored>
+					<left><offset>20</offset></left>
+					<size>
+						<width>40</width>
+					</size>
+				</anchored>
+				<static>Portrait</static>
+			</header_ps2>
+			<header_ps1 name="namelabel">
+				<anchored>
+					<left><offset>65</offset></left>
+					<size>
+						<width>80</width>
+					</size>
+				</anchored>
+				<static>Name</static>
+			</header_ps1>
+			<header_ps2 name="racelabel">
+				<anchored>
+					<left><offset>65</offset></left>
+					<size>
+						<width>80</width>
+					</size>
+				</anchored>
+				<static>Race</static>
+			</header_ps2>
+			<header_ps1 name="xplabel">
+				<anchored>
+					<left><offset>150</offset></left>
+					<size>
+						<width>80</width>
+					</size>
+				</anchored>
+				<static>XP</static>
+			</header_ps1>
+			<header_ps1 name="levellabel">
+				<anchored>
+					<left><offset>230</offset></left>
+					<size>
+						<width>60</width>
+					</size>
+				</anchored>
+				<static>Level</static>
+			</header_ps1>
+			<header_ps2 name="classlabel">
+				<anchored>
+					<left><offset>150</offset></left>
+					<size>
+						<width>145</width>
+					</size>
+				</anchored>
+				<static>Class</static>
+			</header_ps2>			
+			<header_ps2 name="hplabel">
+				<anchored>
+					<left><offset>295</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>HP</static>
+			</header_ps2>		
+			<header_ps1 name="abilitieslabel">
+				<anchored>
+					<left><offset>325</offset></left>
+					<size>
+						<width>230</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Abilities</static>
+			</header_ps1>
+			<header_ps2 name="strlabel">
+				<anchored>
+					<left><offset>325</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Str</static>
+			</header_ps2>
+			<header_ps2 name="dexlabel">
+				<anchored>
+					<left><offset>360</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Dex</static>
+			</header_ps2>
+			<header_ps2 name="conlabel">
+				<anchored>
+					<left><offset>395</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Con</static>
+			</header_ps2>
+			<header_ps2 name="intlabel">
+				<anchored>
+					<left><offset>430</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Int</static>
+			</header_ps2>
+			<header_ps2 name="wislabel">
+				<anchored>
+					<left><offset>465</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Wis</static>
+			</header_ps2>
+			<header_ps2 name="chalabel">
+				<anchored>
+					<left><offset>500</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Cha</static>
+			</header_ps2>
+			<header_ps1 name="aclabel">
+				<anchored>
+					<left><offset>540</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>AC</static>
+			</header_ps1>
+			<header_ps2 name="drlabel">
+				<anchored>
+					<left><offset>540</offset></left>
+					<size>
+						<width>210</width>
+					</size>
+				</anchored>
+				<center />
+				<static>DR</static>
+			</header_ps2>
+			<header_ps1 name="ffaclabel">
+				<anchored>
+					<left><offset>575</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>FF AC</static>
+			</header_ps1>
+			<header_ps1 name="tchaclabel">
+				<anchored>
+					<left><offset>610</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>T AC</static>
+			</header_ps1>
+			<header_ps1 name="cmdlabel">
+				<anchored>
+					<left><offset>645</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>CMD</static>
+			</header_ps1>
+			<header_ps1 name="fortlabel">
+				<anchored>
+					<left><offset>685</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Fort</static>
+			</header_ps1>
+			<header_ps1 name="reflabel">
+				<anchored>
+					<left><offset>720</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Ref</static>
+			</header_ps1>
+			<header_ps1 name="willlabel">
+				<anchored>
+					<left><offset>755</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Will</static>
+			</header_ps1>
+			<header_ps2 name="srlabel">
+				<anchored>
+					<left><offset>755</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>SR</static>
+			</header_ps2>
+			
+			<!-- Party List -->	
+			<list_ps name="partylist">
+				<anchored>
+					<bottom><offset>-52</offset></bottom>
+				</anchored>
+				<class>ps_mainitem</class>
+				<allowdelete />
+				<empty>
+					<font>reference-i</font>
+					<text>Drop PCs here to add party members.</text>
+				</empty>
+				<script file="ps/scripts/ps_mainlist.lua" />
+			</list_ps>
+			<scrollbar_ps />
+		
+			<!-- Party sheet roll visibility -->
+			<genericcontrol name="showrollframe">
+				<anchored>
+					<to>sheetframe</to>
+					<left><offset>10</offset></left>
+					<bottom><offset>-10</offset></bottom>
+					<size>
+						<height>35</height>
+						<width>40</width>
+					</size>
+				</anchored>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>5,5,5,5</offset>
+				</frame>
+			</genericcontrol>			
+			<button_checkbox name="hiderollresults">
+				<anchored>
+					<to>showrollframe</to>
+					<position>insidetopleft</position>
+					<offset>6,3</offset>
+					<size>
+						<height>30</height>
+						<width>30</width>
+					</size>
+				</anchored>
+				<parameters>
+					<icons>indicator_visibilityoff</icons>
+					<defaulticon>indicator_visibilityon</defaulticon>
+					<tooltips>Hide Roll Results</tooltips>
+					<defaulttooltip>Show Roll Results</defaulttooltip>
+				</parameters>
+			</button_checkbox>
+
+			<!-- Party Ability DC Controls -->	
+			<genericcontrol name="abilitydcframe">
+				<anchored>
+					<to>showrollframe</to>
+					<position>right</position>
+					<offset>10,0</offset>
+					<size>
+						<width>240</width>
+					</size>
+				</anchored>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>5,5,5,5</offset>
+				</frame>
+			</genericcontrol>			
+			<button_ps>
+				<anchored>
+					<to>abilitydcframe</to>
+					<position>insidetopleft</position>
+					<offset>10,6</offset>
+				</anchored>
+				<script file="ps/scripts/ps_roll_ability.lua" />
+			</button_ps>
+			<label name="abilitydclabel">
+				<anchored>
+					<to>abilitydcframe</to>
+					<left><offset>40</offset></left>
+					<top><offset>11</offset></top>
+				</anchored>
+				<static>Ability DC:</static>
+			</label>
+			<string_dropdown name="abilityselected">
+				<anchored>
+					<to>abilitydcframe</to>
+					<position>insidetopleft</position>
+					<offset>105,10</offset>
+					<size>
+						<height>20</height>
+						<width>90</width>
+					</size>
+				</anchored>
+				<default>Strength</default>
+			</string_dropdown>
+			<dropdown name="abilitydropdown">
+				<target>abilityselected</target>
+				<position>0,3</position>
+				<script>
+					function onInit()
+						super.onInit();
+						addItems(DataCommon.psabilitydata);
+					end
+				</script>
+			</dropdown>
+			<basicnumber name="abilitydc">
+				<anchored>
+					<to>abilitydcframe</to>
+					<top><offset>8</offset></top>
+					<right><offset>-10</offset></right>
+					<size>
+						<width>30</width>
+						<height>20</height>
+					</size>
+				</anchored>
+				<font>sheetnumbersmall</font>
+			</basicnumber>			
+			
+			<!-- Party Save DC Controls -->	
+			<genericcontrol name="savedcframe">
+				<anchored>
+					<to>abilitydcframe</to>
+					<position>right</position>
+					<offset>10,0</offset>
+					<size>
+						<width>240</width>
+					</size>
+				</anchored>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>5,5,5,5</offset>
+				</frame>
+			</genericcontrol>			
+			<button_ps>
+				<anchored>
+					<to>savedcframe</to>
+					<position>insidetopleft</position>
+					<offset>10,6</offset>
+				</anchored>
+				<script file="ps/scripts/ps_roll_save.lua" />
+			</button_ps>
+			<label name="savedclabel">
+				<anchored>
+					<to>savedcframe</to>
+					<left><offset>40</offset></left>
+					<top><offset>10</offset></top>
+				</anchored>
+				<static>Save DC:</static>
+			</label>
+			<string_dropdown name="saveselected">
+				<anchored>
+					<to>savedcframe</to>
+					<position>insidetopleft</position>
+					<offset>105,10</offset>
+					<size>
+						<height>20</height>
+						<width>90</width>
+					</size>
+				</anchored>
+				<default>Fortitude</default>
+			</string_dropdown>
+			<dropdown name="savedropdown">
+				<target>saveselected</target>
+				<position>0,3</position>
+				<script>
+					function onInit()
+						super.onInit();
+						addItems(DataCommon.pssavedata);
+					end
+				</script>
+			</dropdown>
+			<basicnumber name="savedc">
+				<anchored>
+					<to>savedcframe</to>
+					<top><offset>8</offset></top>
+					<right><offset>-10</offset></right>
+					<size>
+						<width>30</width>
+						<height>20</height>
+					</size>
+				</anchored>
+				<font>sheetnumbersmall</font>
+			</basicnumber>			
+			
+			<!-- Party Attack Controls -->	
+			<genericcontrol name="partyatkframe">
+				<anchored>
+					<to>savedcframe</to>
+					<top />
+					<left>
+						<anchor>right</anchor>
+						<offset>10</offset>
+					</left>
+					<bottom />
+					<size>
+						<width>155</width>
+					</size>
+				</anchored>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>5,5,5,5</offset>
+				</frame>
+			</genericcontrol>							
+			<button_ps>
+				<anchored>
+					<to>partyatkframe</to>
+					<position>insidetopleft</position>
+					<offset>10,6</offset>
+				</anchored>
+				<script file="ps/scripts/ps_roll_atk.lua" />
+			</button_ps>
+			<label name="partylabel">
+				<anchored>
+					<to>partyatkframe</to>
+					<position>insidetopleft</position>
+					<offset>40,10</offset>
+					<size>
+						<height>20</height>
+					</size>
+				</anchored>
+				<static>Party Attack:</static>
+			</label>
+			<basicnumber name="bonus">
+				<anchored>
+					<to>partyatkframe</to>
+					<left>
+						<parent>partylabel</parent>
+						<anchor>right</anchor>
+						<offset>5</offset>
+					</left>
+					<top><offset>8</offset></top>
+					<size>
+						<width>30</width>
+						<height>20</height>
+					</size>
+				</anchored>
+				<displaysign />
+			</basicnumber>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="psclient_main">
+		<script file="ps/scripts/ps_main.lua" />
+		<sheetdata>
+			<frame_ps name="sheetframe" />
+			<label_ps_sheet>
+				<static>Party Information</static>
+			</label_ps_sheet>
+
+			<!-- column labels -->	
+			<header_ps2 name="portraitlabel">
+				<anchored>
+					<left><offset>20</offset></left>
+					<size>
+						<width>40</width>
+					</size>
+				</anchored>
+				<static>Portrait</static>
+			</header_ps2>
+			<header_ps1 name="namelabel">
+				<anchored>
+					<left><offset>65</offset></left>
+					<size>
+						<width>80</width>
+					</size>
+				</anchored>
+				<static>Name</static>
+			</header_ps1>
+			<header_ps2 name="racelabel">
+				<anchored>
+					<left><offset>65</offset></left>
+					<size>
+						<width>80</width>
+					</size>
+				</anchored>
+				<static>Race</static>
+			</header_ps2>
+			<header_ps1 name="xplabel">
+				<anchored>
+					<left><offset>150</offset></left>
+					<size>
+						<width>80</width>
+					</size>
+				</anchored>
+				<static>XP</static>
+			</header_ps1>
+			<header_ps1 name="levellabel">
+				<anchored>
+					<left><offset>230</offset></left>
+					<size>
+						<width>60</width>
+					</size>
+				</anchored>
+				<static>Level</static>
+			</header_ps1>
+			<header_ps2 name="classlabel">
+				<anchored>
+					<left><offset>150</offset></left>
+					<size>
+						<width>145</width>
+					</size>
+				</anchored>
+				<static>Class</static>
+			</header_ps2>			
+			<header_ps2 name="hplabel">
+				<anchored>
+					<left><offset>295</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>HP</static>
+			</header_ps2>		
+			<header_ps1 name="abilitieslabel">
+				<anchored>
+					<left><offset>325</offset></left>
+					<size>
+						<width>230</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Abilities</static>
+			</header_ps1>
+			<header_ps2 name="strlabel">
+				<anchored>
+					<left><offset>325</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Str</static>
+			</header_ps2>
+			<header_ps2 name="dexlabel">
+				<anchored>
+					<left><offset>360</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Dex</static>
+			</header_ps2>
+			<header_ps2 name="conlabel">
+				<anchored>
+					<left><offset>395</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Con</static>
+			</header_ps2>
+			<header_ps2 name="intlabel">
+				<anchored>
+					<left><offset>430</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Int</static>
+			</header_ps2>
+			<header_ps2 name="wislabel">
+				<anchored>
+					<left><offset>465</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Wis</static>
+			</header_ps2>
+			<header_ps2 name="chalabel">
+				<anchored>
+					<left><offset>500</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Cha</static>
+			</header_ps2>
+			<header_ps1 name="aclabel">
+				<anchored>
+					<left><offset>540</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>AC</static>
+			</header_ps1>
+			<header_ps2 name="drlabel">
+				<anchored>
+					<left><offset>540</offset></left>
+					<size>
+						<width>210</width>
+					</size>
+				</anchored>
+				<center />
+				<static>DR</static>
+			</header_ps2>
+			<header_ps1 name="ffaclabel">
+				<anchored>
+					<left><offset>575</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>FF AC</static>
+			</header_ps1>
+			<header_ps1 name="tchaclabel">
+				<anchored>
+					<left><offset>610</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>T AC</static>
+			</header_ps1>
+			<header_ps1 name="cmdlabel">
+				<anchored>
+					<left><offset>645</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>CMD</static>
+			</header_ps1>
+			<header_ps1 name="fortlabel">
+				<anchored>
+					<left><offset>685</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Fort</static>
+			</header_ps1>
+			<header_ps1 name="reflabel">
+				<anchored>
+					<left><offset>720</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Ref</static>
+			</header_ps1>
+			<header_ps1 name="willlabel">
+				<anchored>
+					<left><offset>755</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Will</static>
+			</header_ps1>
+			<header_ps2 name="srlabel">
+				<anchored>
+					<left><offset>755</offset></left>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<center />
+				<static>SR</static>
+			</header_ps2>
+			
+			<!-- list (party members) -->
+			<list_ps name="partylist">
+				<class>ps_mainitem</class>
+				<script file="ps/scripts/ps_mainlist.lua" />
+			</list_ps>
+			<scrollbar_ps />
+		
+			<!-- ability DC control -->	
+			<hn name="abilitydc" />
+		</sheetdata>
+	</windowclass>	
+</root>

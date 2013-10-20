@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="ps_item">
+		<sizelimits>
+			<minimum>
+				<height>22</height>
+			</minimum>
+		</sizelimits>
+		<sheetdata>
+			<number_ps_invitem name="count">
+				<readonly />
+			</number_ps_invitem>
+			<string_ps_invitem name="name">
+				<readonly />
+			</string_ps_invitem>
+			<string_ps_invitemassign name="carriedby">
+				<readonly />
+			</string_ps_invitemassign>
+			<link_field name="shortcut">
+				<bounds>-25,0,20,20</bounds>
+				<readonly />
+				<gmvisibleonly />
+				<script>
+					function onInit()
+						onValueChanged();
+					end
+					
+					function onValueChanged()
+						if User.isHost() then
+							setVisible(getValue() ~= "");
+						end
+					end
+				</script>
+			</link_field>
+			<spacer>
+				<anchor>name</anchor>
+				<height>2</height>
+			</spacer>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="ps_coin">
+		<sizelimits>
+			<minimum>
+				<height>22</height>
+			</minimum>
+		</sizelimits>
+		<sheetdata>
+			<number_ps_invcoin name="amount">
+				<readonly />
+			</number_ps_invcoin>
+			<string_ps_invcoin name="name">
+				<readonly />
+			</string_ps_invcoin>
+			<string_ps_invcoinassign name="carriedby">
+				<readonly />
+			</string_ps_invcoinassign>
+			<spacer>
+				<anchor>name</anchor>
+				<height>2</height>
+			</spacer>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="ps_parcelitem">
+		<sizelimits>
+			<minimum>
+				<height>22</height>
+			</minimum>
+		</sizelimits>
+		<script>
+			function onInit()
+				if User.isHost() then
+					registerMenuItem("Delete Entries", "delete", 6);
+					registerMenuItem("Delete Entry", "one", 6, 7);
+					registerMenuItem("Delete Entries - All", "all", 6, 5);
+				end
+				
+				onIDChanged();
+			end
+
+			function onMenuSelection(selection, subselection)
+				if User.isHost() then
+					if selection == 6 and subselection == 5 then
+						windowlist.window.clearAllParcelItems();
+					elseif selection == 6 and subselection == 7 then
+						getDatabaseNode().delete();
+					end
+				end
+			end
+			
+			function onIDChanged()
+				local bID = true;
+				if OptionsManager.isOption("MIID", "on") then
+					bID = isidentified.getValue();
+				end
+				description.setVisible(bID ~= 0);
+				nonid_name.setVisible(bID == 0);
+			end
+		</script>
+		<sheetdata>
+			<hn name="isidentified">
+				<script>
+					function onValueChanged()
+						window.onIDChanged();
+					end
+				</script>
+			</hn>
+			
+			<number_ps_invitem name="amount">
+				<gmeditonly />
+			</number_ps_invitem>
+			<string_ps_invitem name="description">
+				<gmeditonly />
+			</string_ps_invitem>
+			<string_ps_invitem name="nonid_name">
+				<readonly />
+				<empty>Unidentified Item</empty>
+				<invisible />
+			</string_ps_invitem>
+			<string_ps_invitemassign name="assign">
+				<gmeditonly />
+				<script file="ps/scripts/ps_carriedby.lua" />
+			</string_ps_invitemassign>
+			<link_field name="shortcut">
+				<bounds>-25,0,20,20</bounds>
+				<gmeditonly />
+				<gmvisibleonly />
+			</link_field>
+			<spacer>
+				<anchor>description</anchor>
+				<height>2</height>
+			</spacer>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="ps_parcelcoin">
+		<sizelimits>
+			<minimum>
+				<height>22</height>
+			</minimum>
+		</sizelimits>
+		<script>
+			function onInit()
+				if User.isHost() then
+					registerMenuItem("Delete Entries", "delete", 6);
+					registerMenuItem("Delete Entry", "delete", 6, 7);
+					registerMenuItem("Clear Entries - All", "all", 6, 5);
+				end
+			end
+
+			function onMenuSelection(selection, subselection)
+				if User.isHost() then
+					if selection == 6 and subselection == 5 then
+						windowlist.window.clearAllParcelCoins();
+					elseif selection == 6 and subselection == 7 then
+						getDatabaseNode().delete();
+					end
+				end
+			end
+		</script>
+		<sheetdata>
+			<number_ps_invcoin name="amount">
+				<gmeditonly />
+			</number_ps_invcoin>
+			<string_ps_invcoin name="description">
+				<gmeditonly />
+			</string_ps_invcoin>
+			<spacer>
+				<anchor>description</anchor>
+				<height>2</height>
+			</spacer>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="ps_inventory">
+		<placement>
+			<size>
+				<width>700</width>
+				<height>360</height>
+			</size>
+		</placement>
+		<script file="ps/scripts/ps_inv.lua" />
+		<sheetdata>
+			<!-- PARCEL ITEMS -->
+			<frame_ps_invpitem name="pitemframe" />
+			<label_ps_sheet>
+				<anchored>
+					<to>pitemframe</to>
+				</anchored>
+				<static>Parcel Items</static>
+			</label_ps_sheet>
+
+			<header_psinv>
+				<anchored>
+					<to>pitemframe</to>
+					<left><offset>25</offset></left>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<center />
+				<static>#</static>
+			</header_psinv>
+			<header_psinv>
+				<anchored>
+					<to>pitemframe</to>
+					<left><offset>60</offset></left>
+					<size>
+						<width>120</width>
+					</size>
+				</anchored>
+				<static>Description</static>
+			</header_psinv>
+			<header_psinv>
+				<anchored>
+					<to>pitemframe</to>
+					<left>
+						<anchor>right</anchor>
+						<offset>-190</offset>
+					</left>
+					<right><offset>-30</offset></right>
+				</anchored>
+				<static>Assignment</static>
+			</header_psinv>
+			
+			<list_ps_inv name="parcelitemlist">
+				<anchored>
+					<to>pitemframe</to>
+				</anchored>
+				<datasource>.treasureparcelitemlist</datasource>
+				<class>ps_parcelitem</class>
+				<sortby><control>description</control></sortby>
+				<allowcreate />
+				<empty>
+					<font>reference-i</font>
+					<gmtext>Drop treasure parcel here to assign treasure to party members.</gmtext>
+					<pctext>Party treasure for distribution listed here.</pctext>
+				</empty>
+				<script>
+					function onDrop(x, y, draginfo)
+						return window.onDrop(x, y, draginfo);
+					end
+				</script>
+			</list_ps_inv>
+			<scrollbar_ps>
+				<anchored>
+					<to>parcelitemlist</to>
+				</anchored>
+				<target>parcelitemlist</target>
+			</scrollbar_ps>
+			
+			<!-- PARCEL COINS -->
+			<frame_ps_invpcoin name="pcoinframe" />
+			<label_ps_sheet>
+				<anchored>
+					<to>pcoinframe</to>
+				</anchored>
+				<static>Parcel Coins</static>
+			</label_ps_sheet>
+
+			<header_psinv>
+				<anchored>
+					<to>pcoinframe</to>
+					<left><offset>25</offset></left>
+					<size>
+						<width>40</width>
+					</size>
+				</anchored>
+				<center />
+				<static>#</static>
+			</header_psinv>
+			<header_psinv>
+				<anchored>
+					<to>pcoinframe</to>
+					<left><offset>70</offset></left>
+					<size>
+						<width>60</width>
+					</size>
+				</anchored>
+				<center />
+				<static>Description</static>
+			</header_psinv>
+			
+			<list_ps_inv name="parcelcoinlist">
+				<anchored>
+					<to>pcoinframe</to>
+				</anchored>
+				<datasource>.treasureparcelcoinlist</datasource>
+				<class>ps_parcelcoin</class>
+				<allowcreate />
+				<allowdelete />
+				<script>
+					function onDrop(x, y, draginfo)
+						return window.onDrop(x, y, draginfo);
+					end
+				</script>
+			</list_ps_inv>
+			<scrollbar_ps>
+				<anchored>
+					<to>parcelcoinlist</to>
+				</anchored>
+				<target>parcelcoinlist</target>
+			</scrollbar_ps>
+
+			<!-- BUTTONS -->
+			<buttoncontrol>
+				<bounds>15,225,33,26</bounds>
+				<icon>
+					<normal>button_ctnextround</normal>
+					<pressed>button_ctnextround_down</pressed>
+				</icon>
+				<tooltip>
+					<text>Rebuild Party Inventory</text>
+				</tooltip>
+				<gmvisibleonly />
+				<script>
+					function onButtonPress()
+						window.rebuild();
+					end
+				</script>
+			</buttoncontrol>
+			<buttoncontrol>
+				<bounds>425,225,33,26</bounds>
+				<icon>
+					<normal>button_ctnextactor</normal>
+					<pressed>button_ctnextactor_down</pressed>
+				</icon>
+				<tooltip>
+					<text>Distribute Assignments and Coins</text>
+				</tooltip>
+				<gmvisibleonly />
+				<script>
+					function onButtonPress()
+						window.distribute();
+					end
+				</script>
+			</buttoncontrol>
+			
+			<!-- PARTY ITEMS -->
+			<frame_ps_invitem name="sheetframe" />
+			<label_ps_sheet name="label_inv_main">
+				<static>Party Inventory</static>
+			</label_ps_sheet>
+
+			<header_psinv name="label_inv_count">
+				<anchored>
+					<left><offset>25</offset></left>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<center />
+				<static>#</static>
+			</header_psinv>
+			<header_psinv name="label_inv_name">
+				<anchored>
+					<left><offset>60</offset></left>
+					<size>
+						<width>120</width>
+					</size>
+				</anchored>
+				<static>Name</static>
+			</header_psinv>
+			<header_psinv name="label_inv_carried">
+				<anchored>
+					<left>
+						<anchor>right</anchor>
+						<offset>-190</offset>
+					</left>
+					<right><offset>-30</offset></right>
+				</anchored>
+				<static>Carried By</static>
+			</header_psinv>
+						
+			<list_ps_inv name="itemlist">
+				<datasource>.inventorylist</datasource>
+				<class>ps_item</class>
+				<sortby><control>name</control></sortby>
+				<empty>
+					<font>reference-i</font>
+					<gmtext>Click rebuild button to refresh party inventory from PCs.</gmtext>
+					<pctext>Ask GM to refresh party inventory.</pctext>
+				</empty>
+			</list_ps_inv>
+			<scrollbar_ps>
+				<anchored>
+					<to>itemlist</to>
+				</anchored>
+				<target>itemlist</target>
+			</scrollbar_ps>
+
+			<!-- PARTY COINS -->
+			<frame_ps_invcoin name="coinframe" />
+			<label_ps_sheet name="label_coin_main">
+				<anchored>
+					<to>coinframe</to>
+				</anchored>
+				<static>Party Coins</static>
+			</label_ps_sheet>
+
+			<header_psinv name="label_coin_count">
+				<anchored>
+					<to>coinframe</to>
+					<left><offset>25</offset></left>
+					<size>
+						<width>40</width>
+					</size>
+				</anchored>
+				<center />
+				<static>#</static>
+			</header_psinv>
+			<header_psinv name="label_coin_name">
+				<anchored>
+					<to>coinframe</to>
+					<left><offset>70</offset></left>
+					<size>
+						<width>60</width>
+					</size>
+				</anchored>
+				<static>Description</static>
+			</header_psinv>
+			<header_psinv name="label_coin_carried">
+				<anchored>
+					<to>coinframe</to>
+					<left><offset>145</offset></left>
+					<right><offset>-10</offset></right>
+				</anchored>
+				<static>Carried By</static>
+			</header_psinv>
+			
+			<list_ps_inv name="coinlist">
+				<anchored>
+					<to>coinframe</to>
+				</anchored>
+				<datasource>.coinlist</datasource>
+				<class>ps_coin</class>
+			</list_ps_inv>
+			<scrollbar_ps>
+				<anchored>
+					<to>coinlist</to>
+				</anchored>
+				<target>coinlist</target>
+			</scrollbar_ps>
+		</sheetdata>
+	</windowclass>
+</root>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<!-- Skills -->
+	<windowclass name="referenceskillcontent">
+		<script>
+			function onInit()
+				local aLabel = {};
+
+				table.insert(aLabel, ability.getValue());
+				if trained.getValue() ~= 0 then
+					table.insert(aLabel, "Trained only");
+				end
+				if armorcheckpenalty.getValue() ~= 0 then
+					table.insert(aLabel, "Armor check penalty");
+				end
+
+				label_type.setValue("[" .. table.concat(aLabel, "; ") .. "]");
+			end
+		</script>
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<hs name="ability" />
+			<hn name="trained" />
+			<hn name="armorcheckpenalty" />
+			<label_reftype name="label_type" />
+
+			<spacer>
+				<anchor>columnanchor</anchor>
+				<height>5</height>
+				<relative />
+			</spacer>
+			
+			<referenceformattedtextfield name="text">
+				<anchored>
+					<top>
+						<parent>columnanchor</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+					</top>
+					<left>
+						<anchor>left</anchor>
+					</left>
+					<right>
+						<anchor>right</anchor>
+					</right>
+				</anchored>
+			</referenceformattedtextfield>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="referenceskill">
+		<frame>whitecontrolarea</frame>
+		<placement>
+			<size>
+				<width>400</width>
+				<height>350</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip>
+			<field>name</field>
+		</tooltip>
+		<sheetdata>
+			<string_name_static name="name" />
+			<link_tl name="open">
+				<class>referenceskill</class>
+			</link_tl>
+
+			<sub_refcontent name="content">
+				<class>referenceskillcontent</class>
+			</sub_refcontent>
+			<scrollbar_refcontent />
+			
+			<resize />
+			<close />
+		</sheetdata>
+	</windowclass>
+</root>

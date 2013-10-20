@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="item_stats">
+		<script file="campaign/scripts/campaign_item_main.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<string_column name="type">
+				<script>
+					function onValueChanged()
+						window.update();
+					end
+				</script>
+				<topfield />
+			</string_column>
+			<label_column name="type_label">
+				<anchor>type</anchor>
+				<static>Type</static>
+			</label_column>
+
+			<string_column name="subtype" />
+			<label_column name="subtype_label">
+				<anchor>subtype</anchor>
+				<static>Subtype</static>
+			</label_column>
+
+			<line_column name="divider" />
+
+			<string_column name="nonid_name" />
+			<label_column name="nonid_name_label">
+				<anchor>nonid_name</anchor>
+				<static>Alt Name</static>
+			</label_column>
+			
+			<string_column name="nonidentified" />
+			<label_column name="nonidentified_label">
+				<anchor>nonidentified</anchor>
+				<static>Notes</static>
+			</label_column>
+
+			<line_column name="divider2" />
+
+			<string_column name="cost" />
+			<label_column name="cost_label">
+				<anchor>cost</anchor>
+				<static>Cost</static>
+			</label_column>
+
+			<number_column name="weight" />
+			<label_column name="weight_label">
+				<anchor>weight</anchor>
+				<static>Weight (lb)</static>
+			</label_column>
+
+			<line_column name="divider3"/>
+			
+			<string_column name="damage" />
+			<label_column name="damage_label">
+				<anchor>damage</anchor>
+				<static>Damage</static>
+			</label_column>
+			
+			<string_column name="damagetype" />
+			<label_column name="damagetype_label">
+				<anchor>damagetype</anchor>
+				<static>Damage Type</static>
+			</label_column>
+			
+			<string_column name="critical" />
+			<label_column name="critical_label">
+				<anchor>critical</anchor>
+				<static>Critical</static>
+			</label_column>
+			
+			<number_column name="range" />
+			<label_column name="range_label">
+				<anchor>range</anchor>
+				<static>Range</static>
+			</label_column>
+			
+			<number_column name="ac">
+				<displaysign />
+			</number_column>
+			<label_column name="ac_label">
+				<anchor>ac</anchor>
+				<static>AC Bonus</static>
+			</label_column>
+			
+			<number_column name="maxstatbonus">
+				<displaysign />
+			</number_column>
+			<label_column name="maxstatbonus_label">
+				<anchor>maxstatbonus</anchor>
+				<static>Max Dex</static>
+			</label_column>
+			
+			<number_column name="checkpenalty">
+				<displaysign />
+			</number_column>
+			<label_column name="checkpenalty_label">
+				<anchor>checkpenalty</anchor>
+				<static>Check Penalty</static>
+			</label_column>
+			
+			<number_column name="spellfailure" />
+			<label_column name="spellfailure_label">
+				<anchor>spellfailure</anchor>
+				<static>Spell Fail (%)</static>
+			</label_column>
+			
+			<number_column name="speed30" />
+			<label_column name="speed30_label">
+				<anchor>speed30</anchor>
+				<static>Speed (30')</static>
+			</label_column>
+			
+			<number_column name="speed20" />
+			<label_column name="speed20_label">
+				<anchor>speed20</anchor>
+				<static>Speed (20')</static>
+			</label_column>
+
+			<string_column name="properties" />
+			<label_column name="properties_label">
+				<anchor>properties</anchor>
+				<static>Properties</static>
+			</label_column>
+			
+			<line_column name="divider4" />
+
+			<number_column name="bonus" />
+			<label_column name="bonus_label">
+				<anchor>bonus</anchor>
+				<static>Bonus</static>
+			</label_column>
+
+			<string_column name="aura" />
+			<label_column name="aura_label">
+				<anchor>aura</anchor>
+				<static>Aura</static>
+			</label_column>
+
+			<number_column name="cl" />
+			<label_column name="cl_label">
+				<anchor>cl</anchor>
+				<static>Caster level</static>
+			</label_column>
+
+			<string_column name="prerequisites" />
+			<label_column name="prerequisites_label">
+				<anchor>prerequisites</anchor>
+				<static>Craft Prereq</static>
+			</label_column>
+			
+			<line_column name="divider5" />
+
+			<ft_campaigndesc name="description">
+				<anchored>
+					<top>
+						<parent>columnanchor</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>7</offset>
+					</top>
+					<left><offset>5</offset></left>
+					<right><offset>-5</offset></right>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>7,7,7,5</offset>
+					<hidereadonly />
+				</frame>
+				<stateframe>
+					<keyedit>
+						<name>sheetfocus</name>
+						<offset>7,7,7,5</offset>
+					</keyedit>
+					<hover>
+						<name>sheetfocus</name>
+						<offset>7,7,7,5</offset>
+						<hidereadonly />
+					</hover>
+				</stateframe>
+			</ft_campaigndesc>
+
+			<spacer>
+				<anchor>prerequisites</anchor>
+				<height>2</height>
+			</spacer>
+		</sheetdata>
+	</windowclass>
+</root>

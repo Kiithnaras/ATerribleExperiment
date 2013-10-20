@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="npcsmall">
+		<sizelimits>
+			<minimum>
+				<height>10</height>
+			</minimum>
+		</sizelimits>
+		<nodelete />
+		<script file="campaign/scripts/campaign_list_record.lua" />
+		<sheetdata>
+			<link_list name="open">
+				<class>npc</class>
+			</link_list>
+
+			<icon_access name="access" />
+			<icon_modified name="modified" />
+			
+			<string_campaignrecordname name="name">
+				<empty>&#171; New Personality &#187;</empty>
+			</string_campaignrecordname>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="battlesmall">
+		<sizelimits>
+			<minimum>
+				<height>10</height>
+			</minimum>
+		</sizelimits>
+		<nodelete />
+		<script file="campaign/scripts/campaign_list_record.lua" />
+		<sheetdata>
+			<link_list name="open">
+				<class>battle</class>
+			</link_list>
+
+			<icon_access name="access" />
+			<icon_modified name="modified" />
+			
+			<string_campaignrecordname name="name">
+				<empty>&#171; New Encounter &#187;</empty>
+			</string_campaignrecordname>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="npclist">
+		<frame>scrollboxfortabs</frame>
+		<placement>
+			<size>
+				<width>350</width>
+				<height>350</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum>
+				<width>350</width>
+				<height>350</height>
+			</minimum>
+		</sizelimits>
+		<softclose />
+		<nodelete />
+		<sheetdata>
+			<banner_campaign name="banner_npc">
+				<icon>title_npcs</icon>
+				<invisible />
+			</banner_campaign>
+			<banner_campaign name="banner_battle">
+				<icon>title_encounters</icon>
+				<invisible />
+			</banner_campaign>
+
+			<list_campaign_tabbed name="list_npcs">
+				<datasource>.</datasource>
+				<class>npcsmall</class>
+				<acceptdrop>
+					<class>npc</class>
+					<field>*</field>
+				</acceptdrop>
+			</list_campaign_tabbed>
+			<scrollbar_campaign_tabbed>
+				<target>list_npcs</target>
+			</scrollbar_campaign_tabbed>
+			<list_campaign_tabbed name="list_battles">
+				<datasource>..battle</datasource>
+				<class>battlesmall</class>
+				<invisible />
+			</list_campaign_tabbed>
+			<scrollbar_campaign_tabbed>
+				<target>list_battles</target>
+			</scrollbar_campaign_tabbed>
+
+			<categories name="category_npc">
+				<targetcontrol>list_npcs</targetcontrol>
+				<invisible />
+			</categories>
+			<categories name="category_battle">
+				<targetcontrol>list_battles</targetcontrol>
+				<invisible />
+			</categories>
+
+			<filter_campaign name="filter" />
+			<filtertrigger_campaign name="filtertrigger" />
+			
+			<button_new name="button_new">
+				<gmvisibleonly />
+				<script>
+					function onButtonPress()
+						if User.isHost() then
+							local nIndex = window.tabs.getIndex();
+
+							local node = window.getDatabaseNode();
+							local sClass = "npc";
+							if nIndex == 2 then
+								node = DB.getRoot().getChild("battle");
+								sClass = "battle";
+							end
+
+							local nodeChild = nil;
+							if node then
+								nodeChild = node.createChild();
+							end
+							if nodeChild then
+								local w = Interface.openWindow(sClass, nodeChild.getNodeName());
+								if w and w.name then
+									w.name.setFocus();
+								end
+							end
+						end
+					end
+				</script>
+			</button_new>
+			
+			<buttongroup_tabs_long name="tabs">
+				<anchored>
+					<right><offset>-11</offset></right>
+				</anchored>
+				<tab>
+					<icon>tab_npcs</icon>
+					<subwindow>banner_npc,list_npcs,category_npc</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_battles</icon>
+					<subwindow>banner_battle,list_battles,category_battle</subwindow>
+				</tab>
+			</buttongroup_tabs_long>
+
+			<resize_scrollboxfortabs />
+			<close_scrollbox />
+		</sheetdata>
+	</windowclass>
+</root>

@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="charsheet_actions_details">
+		<sizelimits>
+			<maximum>
+				<height>100000</height>
+			</maximum>
+		</sizelimits>
+		<nodelete />
+		<script>
+			function onInit()
+				registerMenuItem("Add Weapon", "insert", 3);
+				registerMenuItem("Add Spell Class", "insert", 5);
+				
+				local sNode = getDatabaseNode().getNodeName()
+				DB.addHandler(sNode .. ".abilities", "onChildUpdate", updateAbility);
+				updateAbility();
+			end
+			
+			function onClose()
+				local sNode = getDatabaseNode().getNodeName()
+				DB.removeHandler(sNode .. ".abilities", "onChildUpdate", updateAbility);
+			end
+			
+			function onMenuSelection(selection)
+				if selection == 3 then
+					local win = NodeManager.createWindow(weaponlist);
+					if win then
+						win.name.setFocus();
+					end
+				elseif selection == 5 then
+					local win = NodeManager.createWindow(spellclasslist);
+					if win then
+						win.activatedetail.setValue(true);
+						win.label.setFocus();
+						DB.setValue(getDatabaseNode(), "spellmode", "string", "standard");
+					end
+				end
+			end
+
+			function updateAbility()
+				for _,v in pairs(spellclasslist.getWindows()) do
+					v.onStatUpdate();
+				end
+			end
+		</script>
+		<sheetdata>
+			<genericcontrol name="dropcatcher">
+				<bounds>0,0,-1,-1</bounds>
+				<script>
+					function onDrop(x, y, draginfo)
+						return CharManager.onActionDrop(draginfo, window.getDatabaseNode());
+					end
+				</script>
+			</genericcontrol>
+			
+			<!-- WEAPONS -->
+			<genericcontrol name="icon_weapon">
+				<anchored>
+					<position>insidetopleft</position>
+					<offset>10,14</offset>
+					<size>
+						<width>20</width>
+						<height>20</height>
+					</size>
+				</anchored>
+				<icon>indicator_weapon</icon>
+			</genericcontrol>
+			<label name="label_weapon">
+				<anchored>
+					<top><offset>16</offset></top>
+					<left>
+						<parent>icon_weapon</parent>
+						<anchor>right</anchor>
+						<offset>5</offset>
+					</left>
+					<right><offset>-8</offset></right>
+				</anchored>
+				<static>Weapons</static>
+			</label>
+
+			<genericcontrol>
+				<bounds>6,10,-6,30</bounds>
+				<frame>
+					<name>sheetgroup2</name>
+					<offset>6,6,6,6</offset>
+				</frame>
+				<disabled />
+			</genericcontrol>
+
+			<label_sm>
+				<anchored>
+					<to>label_weapon</to>
+					<position>belowleft</position>
+					<offset>5,17</offset>
+				</anchored>
+				<center />
+				<static>Name</static>
+			</label_sm>
+			<label_sm>
+				<anchored>
+					<to>label_weapon</to>
+					<position>belowright</position>
+					<offset>320,17</offset>
+				</anchored>
+				<static>M/R</static>
+			</label_sm>
+			<label_sm>
+				<anchored>
+					<to>label_weapon</to>
+					<position>belowright</position>
+					<offset>290,17</offset>
+				</anchored>
+				<static>#atk</static>
+			</label_sm>
+			<label_sm>
+				<anchored>
+					<to>label_weapon</to>
+					<position>belowright</position>
+					<offset>195,17</offset>
+				</anchored>
+				<static>Attacks</static>
+			</label_sm>
+			<label_sm>
+				<anchored>
+					<to>label_weapon</to>
+					<position>belowright</position>
+					<offset>70,17</offset>
+				</anchored>
+				<static>Damage</static>
+			</label_sm>
+			
+			<list_charweapon name="weaponlist">
+				<anchored>
+					<top><offset>60</offset></top>
+					<left />
+					<right />
+				</anchored>
+				<class>charsheet_weaponlistitem</class>
+				<noscroll />
+			</list_charweapon>
+
+			<list_spellclass name="spellclasslist">
+				<anchored>
+					<top>
+						<parent>weaponlist</parent>
+						<anchor>bottom</anchor>
+					</top>
+					<left />
+					<right />
+				</anchored>
+				<class>spell_class</class>
+				<noscroll />
+			</list_spellclass>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="charsheet_actions">
+		<placement>
+			<size>
+				<width>252</width>
+				<height>611</height>
+			</size>
+		</placement>
+		<nodelete />
+		<script file="charsheet/scripts/charsheet_tabaction.lua" />
+		<sheetdata>
+			<frame_char name="actionframe">
+				<bounds>15,0,480,480</bounds>
+			</frame_char>
+			
+			<subwindow name="actions">
+				<anchored>
+					<to>actionframe</to>
+					<position>over</position>
+					<offset>-8,-10</offset>
+					<bottom>
+						<offset>-30</offset>
+					</bottom>
+				</anchored>
+				<activate />
+				<class>charsheet_actions_details</class>
+			</subwindow>
+			<scrollbar>
+				<anchored>
+					<to>actions</to>
+					<position>right</position>
+					<offset>-2,-4</offset>
+					<bottom><offset>20</offset></bottom>
+					<size>
+						<width>20</width>
+					</size>
+				</anchored>
+				<target>actions</target>
+			</scrollbar>
+
+			<!-- MODES -->
+			<button_expand name="expand">
+				<anchored>
+					<to>actionframe</to>
+					<position>insidebottomleft</position>
+					<offset>15,10</offset>
+					<size>
+						<width>12</width>
+						<height>12</height>
+					</size>
+				</anchored>
+				<script>
+					function onButtonPress()
+						for kClass, vClass in pairs(window.actions.subwindow.spellclasslist.getWindows()) do
+							for kLevel, vLevel in pairs(vClass.levels.getWindows()) do
+								vLevel.spells.setVisible(true);
+							end
+						end
+					end
+				</script>
+			</button_expand>
+			<button_collapse name="collapse">
+				<anchored>
+					<to>expand</to>
+					<position>righthigh</position>
+					<offset>3,0</offset>
+					<size>
+						<width>12</width>
+						<height>12</height>
+					</size>
+				</anchored>
+				<script>
+					function onButtonPress()
+						for kClass, vClass in pairs(window.actions.subwindow.spellclasslist.getWindows()) do
+							for kLevel, vLevel in pairs(vClass.levels.getWindows()) do
+								vLevel.spells.setVisible(false);
+							end
+						end
+					end
+				</script>
+			</button_collapse>
+
+			<label name="mode_label">
+				<anchored>
+					<to>collapse</to>
+					<position>righthigh</position>
+					<offset>20,0</offset>
+				</anchored>
+				<static>Mode:</static>
+			</label>
+			<buttongroup_radio name="spellmode">
+				<anchored>
+					<to>mode_label</to>
+					<position>right</position>
+					<offset>2</offset>
+				</anchored>
+				<parameters>
+					<optionwidth>100</optionwidth>
+					<labels>Standard|Preparation|Combat</labels>
+					<values>standard|preparation|combat</values>
+					<defaultindex>1</defaultindex>
+				</parameters>
+				<script>
+					function onValueChanged()
+						for kClass, vClass in pairs(window.actions.subwindow.spellclasslist.getWindows()) do
+							vClass.onSpellCounterUpdate();
+						end
+					end
+				</script>
+			</buttongroup_radio>
+		</sheetdata>
+	</windowclass>
+</root>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<includefile source="charsheet/template_charsheet_general.xml" />
+
+	<includefile source="charsheet/template_charsheet_main.xml" />
+	<includefile source="charsheet/template_charsheet_combat.xml" />
+	<includefile source="charsheet/template_charsheet_skills.xml" />
+	<includefile source="charsheet/template_charsheet_abilities.xml" />
+	<includefile source="charsheet/template_charsheet_inventory.xml" />
+	<includefile source="charsheet/template_charsheet_actions.xml" />
+</root>

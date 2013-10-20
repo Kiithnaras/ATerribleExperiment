@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="list_charinv">
+		<windowlist>
+			<datasource>.inventorylist</datasource>
+			<class>charsheet_inventoryitem</class>
+			<allowcreate />
+			<allowdelete />
+			<script file="charsheet/scripts/charsheet_invlist.lua" />
+		</windowlist>
+	</template>
+	<template name="list_charminiinv">
+		<windowlist>
+			<sortby><control>name</control></sortby>
+			<script file="charsheet/scripts/charsheetmini_invlist.lua" />
+		</windowlist>
+	</template>
+	<template name="string_charinvname">
+		<string_textlistitem>
+			<script file="charsheet/scripts/charsheet_invname.lua" />
+		</string_textlistitem>
+	</template>
+	<template name="string_charinvloc">
+		<string_textlistitem>
+			<nodelete />
+			<script file="charsheet/scripts/charsheet_invloc.lua" />
+		</string_textlistitem>
+	</template>
+	<template name="number_charinv">
+		<basicnumber>
+			<font>sheetnumbersmall</font>
+			<nodrag />
+			<delaykeyupdate />
+			<hideonvalue>0</hideonvalue>
+			<min>0</min>
+			<script>
+				function onValueChanged()
+					CharManager.updateEncumbrance(getDatabaseNode().getChild("...."));
+				end
+			</script>
+		</basicnumber>
+	</template>
+</root>

@@ -1,0 +1,768 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="reference_spellitem">
+		<sizelimits>
+			<minimum>
+				<height>15</height>
+			</minimum>
+		</sizelimits>
+		<script>
+			function onInit()
+				spellnode = link.getTargetDatabaseNode();
+
+				if spellnode then
+					name.setValue(DB.getValue(spellnode, "name", ""));
+					shortdescription.setValue(DB.getValue(spellnode, "shortdescription", ""));
+				end
+			end
+		</script>
+		<sheetdata>
+			<link_field name="link">
+				<bounds>5,0,20,20</bounds>
+				<script>
+					function onDragStart(button, x, y, draginfo)
+						draginfo.setType("spelldescwithlevel");
+						draginfo.setIcon(icon[1].normal[1]);
+						draginfo.setNumberData(DB.getValue(window.getDatabaseNode(), "level", 0));
+						draginfo.setShortcutData(getValue());
+						draginfo.setDescription(DB.getValue(getTargetDatabaseNode(), "name", ""));
+						
+						local base = draginfo.createBaseData("shortcut");
+						base.setShortcutData(getValue());
+						
+						return true;
+					end
+				</script>
+			</link_field>
+
+			<stringcontrol_linked_static name="name">
+				<bounds>30,2,140,15</bounds>
+				<font>reference-r</font>
+				<underlineoffset>0</underlineoffset>
+				<linktarget>link</linktarget>
+			</stringcontrol_linked_static>
+
+			<stringcontrol name="shortdescription">
+				<bounds>235,2,-1,15</bounds>
+				<font>reference-r</font>
+				<static />
+			</stringcontrol>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="reference_spellgroup">
+		<sizelimits>
+			<minimum>
+				<height>0</height>
+			</minimum>
+			<maximum>
+				<height>100000</height>
+			</maximum>
+		</sizelimits>
+		<script file="ref/scripts/ref_listgroup.lua" />
+		<sheetdata>
+			<anchor_column name="topanchor" />
+			
+			<string_groupdesc name="description">
+				<targets>spelllist</targets>
+			</string_groupdesc>
+
+			<list_reftablegroupitems name="spelllist">
+				<datasource>.spells</datasource>
+				<class>reference_spellitem</class>
+			</list_reftablegroupitems>
+		</sheetdata>
+	</windowclass>
+
+	<!-- Class spell lists -->
+	<windowclass name="reference_classspelllist">
+		<frame>referencepage</frame>
+		<placement>
+			<size>
+				<width>700</width>
+				<height>450</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic>
+				<resize>vertical</resize>
+			</dynamic>
+			<maximum>
+				<height>100000</height>
+			</maximum>
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip>
+			<field>description</field>
+		</tooltip>
+		<sheetdata>
+			<!-- TITLE -->
+			<windowtitlebar>
+				<title>
+					<field>description</field>
+				</title>
+			</windowtitlebar>
+
+			<!-- LIST -->
+			<windowlist name="grouplist">
+				<bounds>25,50,-25,-70</bounds>
+				<datasource>.groups</datasource>
+				<class>reference_spellgroup</class>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>15,15,15,15</offset>
+				</frame>
+			</windowlist>
+			<scrollbar>
+				<bounds>-35,60,20,-80</bounds>
+				<target>grouplist</target>
+			</scrollbar>
+			
+			<!-- LIST CONTROLS -->
+			<filter2 name="filter">
+				<bounds>105,-45,-90,20</bounds>
+				<target>grouplist,spelllist</target>
+			</filter2>
+			<button_filter name="filtertrigger">
+				<bounds>70,-55,21,41</bounds>
+			</button_filter>			
+			<button_expand>
+				<bounds>15,-45,20,20</bounds>
+				<targets>grouplist,spelllist</targets>
+			</button_expand>
+			<button_collapse>
+				<bounds>40,-45,20,20</bounds>
+				<targets>grouplist,spelllist</targets>
+			</button_collapse>
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+
+	<!-- Spells by school -->
+	<windowclass name="reference_spellschoolitem">
+		<sizelimits>
+			<minimum>
+				<height>0</height>
+			</minimum>
+			<maximum>
+				<height>100000</height>
+			</maximum>
+		</sizelimits>
+		<sheetdata>
+			<anchor_column name="topanchor" />
+			
+			<string_groupdesc name="description">
+			</string_groupdesc>
+
+			<windowlist name="list">
+				<anchored>
+					<top>
+						<parent>topanchor</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+					</top>
+					<left>
+						<anchor>left</anchor>
+					</left>
+					<right>
+						<anchor>right</anchor>
+					</right>
+				</anchored>
+				<noscroll />
+				<datasource>.groups</datasource>
+				<class>reference_spellgroup</class>
+			</windowlist>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="reference_schoolspelllist">
+		<frame>referencepage</frame>
+		<placement>
+			<size>
+				<width>700</width>
+				<height>450</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic>
+				<resize>vertical</resize>
+			</dynamic>
+			<maximum>
+				<height>100000</height>
+			</maximum>
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip>
+			<field>description</field>
+		</tooltip>
+		<sheetdata>
+			<!-- TITLE -->
+			<windowtitlebar>
+				<title>
+					<field>description</field>
+				</title>
+			</windowtitlebar>
+
+			<!-- LIST -->
+			<windowlist name="grouplist">
+				<bounds>25,50,-25,-70</bounds>
+				<datasource>.schools</datasource>
+				<class>reference_spellschoolitem</class>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>15,15,15,15</offset>
+				</frame>
+			</windowlist>
+			<scrollbar>
+				<bounds>-35,60,20,-80</bounds>
+				<target>grouplist</target>
+			</scrollbar>
+			
+			<!-- LIST CONTROLS -->
+			<filter2 name="filter">
+				<bounds>105,-45,-90,20</bounds>
+				<target>grouplist,list,spelllist</target>
+			</filter2>
+			<button_filter name="filtertrigger">
+				<bounds>70,-55,21,41</bounds>
+			</button_filter>			
+			<button_expand>
+				<bounds>15,-45,20,20</bounds>
+				<targets>grouplist,list,spelllist</targets>
+			</button_expand>
+			<button_collapse>
+				<bounds>40,-45,20,20</bounds>
+				<targets>grouplist,list,spelllist</targets>
+			</button_collapse>
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+
+	<!-- Domain spells -->
+	<windowclass name="reference_spelldomainitem">
+		<sizelimits>
+			<minimum>
+				<height>0</height>
+			</minimum>
+			<maximum>
+				<height>100000</height>
+			</maximum>
+		</sizelimits>
+		<script>
+			function onInit()
+				spellnode = link.getTargetDatabaseNode();
+
+				if spellnode then
+					name.setValue(DB.getValue(spellnode, "name", ""));
+					shortdescription.setValue(DB.getValue(spellnode, "shortdescription", ""));
+				end
+			end
+		</script>
+		<sheetdata>
+			<link_field name="link">
+				<bounds>5,0,20,20</bounds>
+			</link_field>
+
+			<stringcontrol_linked_static name="name">
+				<bounds>30,2,200,15</bounds>
+				<font>reference-r</font>
+				<underlineoffset>0</underlineoffset>
+				<linktarget>link</linktarget>
+			</stringcontrol_linked_static>
+
+			<number name="level">
+				<bounds>235,3,20,11</bounds>
+				<font>reference-r</font>
+				<readonly />
+			</number>
+			<stringcontrol name="shortdescription">
+				<bounds>265,2,-1,15</bounds>
+				<font>reference-r</font>
+				<static />
+			</stringcontrol>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="reference_domain">
+		<sizelimits>
+			<minimum>
+				<height>0</height>
+			</minimum>
+			<maximum>
+				<height>100000</height>
+			</maximum>
+		</sizelimits>
+		<sheetdata>
+			<anchor_column name="topanchor" />
+			
+			<string_groupdesc name="description">
+				<targets>domainspells</targets>
+			</string_groupdesc>
+
+			<string_groupdetail name="grantedpower" />
+			
+			<spacer name="spacer">
+				<anchor>topanchor</anchor>
+				<relative />
+				<height>10</height>
+			</spacer>
+			
+			<list_reftablegroupitems name="domainspells">
+				<datasource>.spells</datasource>
+				<class>reference_spelldomainitem</class>
+				<sortby>
+					<control>level</control>
+					<control>name</control>
+				</sortby>
+				<script file="ref/scripts/library_list_spell.lua" />
+			</list_reftablegroupitems>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="reference_domainlist">
+		<frame>referencepage</frame>
+		<placement>
+			<size>
+				<width>700</width>
+				<height>450</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic>
+				<resize>vertical</resize>
+			</dynamic>
+			<maximum>
+				<height>100000</height>
+			</maximum>
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip>
+			<field>description</field>
+		</tooltip>
+		<sheetdata>
+			<!-- TITLE -->
+			<windowtitlebar>
+				<title>
+					<field>description</field>
+				</title>
+			</windowtitlebar>
+
+			<!-- LIST -->
+			<windowlist name="grouplist">
+				<bounds>25,50,-25,-70</bounds>
+				<datasource>.domains</datasource>
+				<class>reference_domain</class>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>15,15,15,15</offset>
+				</frame>
+			</windowlist>
+			<scrollbar>
+				<bounds>-35,60,20,-80</bounds>
+				<target>grouplist</target>
+			</scrollbar>
+			
+			<!-- LIST CONTROLS -->
+			<filter2 name="filter">
+				<bounds>105,-45,-90,20</bounds>
+				<target>grouplist,domainspells</target>
+			</filter2>
+			<button_filter name="filtertrigger">
+				<bounds>70,-55,21,41</bounds>
+			</button_filter>			
+			<button_expand>
+				<bounds>15,-55,20,20</bounds>
+				<targets>grouplist,domainspells</targets>
+			</button_expand>
+			<button_collapse>
+				<bounds>40,-55,20,20</bounds>
+				<targets>grouplist,domainspells</targets>
+			</button_collapse>
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+	
+	<!-- Spell description sheet -->
+	<windowclass name="spelldesc_stats">
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<!-- Fields -->
+			<stringfield name="school">
+				<anchored>
+					<top>
+						<parent>columnanchor</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>3</offset>
+					</top>
+					<left><offset>5</offset></left>
+					<right><offset>-7</offset></right>
+				</anchored>
+				<font>reference-b-large</font>
+				<multilinespacing>18</multilinespacing>
+				<nodrag />
+				<nodragselect />
+			</stringfield>
+			
+			<spacer>
+				<anchor>columnanchor</anchor>
+				<relative />
+				<height>7</height>
+			</spacer>
+			
+			<string_column name="level">
+				<nodrag />
+				<nodragselect />
+			</string_column>
+			<label_column>
+				<anchor>level</anchor>
+				<static>Level</static>
+			</label_column>
+			
+			<string_column name="components">
+				<nodrag />
+				<nodragselect />
+			</string_column>
+			<label_column>
+				<anchor>components</anchor>
+				<static>Components</static>
+			</label_column>
+
+			<string_column name="castingtime">
+				<nodrag />
+				<nodragselect />
+			</string_column>
+			<label_column>
+				<anchor>castingtime</anchor>
+				<static>Casting time</static>
+			</label_column>
+
+			<string_column name="range">
+				<nodrag />
+				<nodragselect />
+			</string_column>
+			<label_column>
+				<anchor>range</anchor>
+				<static>Range</static>
+			</label_column>
+
+			<string_column name="effect">
+				<nodrag />
+				<nodragselect />
+			</string_column>
+			<label_column>
+				<anchor>effect</anchor>
+				<static>Effect/target</static>
+			</label_column>
+
+			<string_column name="duration">
+				<nodrag />
+				<nodragselect />
+			</string_column>
+			<label_column>
+				<anchor>duration</anchor>
+				<static>Duration</static>
+			</label_column>
+
+			<string_column name="save">
+				<nodrag />
+				<nodragselect />
+			</string_column>
+			<label_column>
+				<anchor>save</anchor>
+				<static>Saving throw</static>
+			</label_column>
+
+			<string_column name="sr">
+				<nodrag />
+				<nodragselect />
+			</string_column>
+			<label_column>
+				<anchor>sr</anchor>
+				<static>Spell resist.</static>
+			</label_column>
+
+			<referenceformattedtextfield name="description">
+				<anchored>
+					<top>
+						<parent>columnanchor</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>8</offset>
+					</top>
+					<left><offset>5</offset></left>
+					<right><offset>-7</offset></right>
+				</anchored>
+				<footer>footer_wide</footer>
+			</referenceformattedtextfield>
+			
+			<spacer name="spacer">
+				<anchor>description</anchor>
+				<height>15</height>
+			</spacer>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="spelldesc">
+		<frame>whitecontrolarea</frame>
+		<placement>
+			<size>
+				<width>300</width>
+				<height>370</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip>
+			<field>name</field>
+		</tooltip>
+		<sheetdata>
+			<string_name_static name="name" />
+			<link_tl>
+				<class>spelldesc</class>
+			</link_tl>
+
+			<subwindow name="stats">
+				<anchored>
+					<top>
+						<parent>name</parent>
+						<anchor>bottom</anchor>
+						<offset>15</offset>
+					</top>
+					<left><offset>15</offset></left>
+					<right><offset>-20</offset></right>
+					<bottom><offset>-10</offset></bottom>
+				</anchored>
+				<class>spelldesc_stats</class>
+				<activate />
+			</subwindow>
+			<scrollbar>
+				<anchored>
+					<to>stats</to>
+					<position>right</position>
+					<offset>-5,-5</offset>
+					<size>
+						<width>20</width>
+					</size>
+				</anchored>
+				<target>stats</target>
+			</scrollbar>
+			
+			<resize />
+			<close />
+		</sheetdata>
+	</windowclass>
+
+	<!-- Spell description sheet (editable) -->
+	<windowclass name="linkedspell">
+		<sizelimits>
+			<minimum>
+				<height>0</height>
+			</minimum>
+			<maximum>
+				<height>35</height>
+			</maximum>
+		</sizelimits>
+		<sheetdata>
+			<link_field name="link">
+				<bounds>0,0,20,20</bounds>
+			</link_field>
+
+			<string_linked_static name="linkedname">
+				<anchored>
+					<top>
+						<parent>link</parent>
+						<anchor>top</anchor>
+					</top>
+					<left>
+						<parent>link</parent>
+						<anchor>right</anchor>
+						<offset>8</offset>
+					</left>
+					<right>
+						<anchor>right</anchor>
+						<offset>-7</offset>
+					</right>
+				</anchored>
+				<font>reference-b</font>
+				<linktarget>link</linktarget>
+			</string_linked_static>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="spelldesc2_stats">
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<string_columnt name="school" />
+			<label_column>
+				<anchor>school</anchor>
+				<static>School</static>
+			</label_column>
+
+			<string_columnt name="level" />
+			<label_column>
+				<anchor>level</anchor>
+				<static>Level</static>
+			</label_column>
+			
+			<string_columnt name="components" />
+			<label_column>
+				<anchor>components</anchor>
+				<static>Components</static>
+			</label_column>
+
+			<string_columnt name="castingtime" />
+			<label_column>
+				<anchor>castingtime</anchor>
+				<static>Casting time</static>
+			</label_column>
+
+			<string_columnt name="range" />
+			<label_column>
+				<anchor>range</anchor>
+				<static>Range</static>
+			</label_column>
+
+			<string_columnt name="effect" />
+			<label_column>
+				<anchor>effect</anchor>
+				<static>Effect/target</static>
+			</label_column>
+
+			<string_columnt name="duration" />
+			<label_column>
+				<anchor>duration</anchor>
+				<static>Duration</static>
+			</label_column>
+
+			<string_columnt name="save" />
+			<label_column>
+				<anchor>save</anchor>
+				<static>Saving throw</static>
+			</label_column>
+
+			<string_columnt name="sr" />
+			<label_column>
+				<anchor>sr</anchor>
+				<static>Spell resist.</static>
+			</label_column>
+
+			<string_columnbottom name="description">
+				<anchored>
+					<top>
+						<parent>columnanchor</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>8</offset>
+					</top>
+					<left><offset>5</offset></left>
+					<right><offset>-7</offset></right>
+				</anchored>
+				<frame />
+			</string_columnbottom>
+			
+			<windowlist name="linkedspells">
+				<anchored>
+					<top>
+						<parent>columnanchor</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>15</offset>
+					</top>
+					<left><offset>5</offset></left>
+					<right />
+				</anchored>
+				<datasource>.linkedspells</datasource>
+				<class>linkedspell</class>
+				<noscroll />
+			</windowlist>
+
+			<spacer name="spacer">
+				<anchor>linkedspells</anchor>
+				<height>15</height>
+			</spacer>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="spelldesc2">
+		<frame>whitecontrolarea</frame>
+		<placement>
+			<size>
+				<width>300</width>
+				<height>370</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip>
+			<field>name</field>
+		</tooltip>
+		<sheetdata>
+			<basicstring name="name">
+				<anchored>
+					<position>insidetopleft</position>
+					<offset>40,10</offset>
+					<right>
+						<offset>-30</offset>
+					</right>
+				</anchored>
+				<frame>
+					<name>headergray</name>
+					<offset>40,10,30,10</offset>
+				</frame>
+				<font>reference-b-large</font>
+				<multilinespacing>18</multilinespacing>
+			</basicstring>
+			<link_tl>
+				<class>spelldesc2</class>
+			</link_tl>
+
+			<subwindow name="stats">
+				<anchored>
+					<top>
+						<parent>name</parent>
+						<anchor>bottom</anchor>
+						<offset>15</offset>
+					</top>
+					<left><offset>15</offset></left>
+					<right><offset>-20</offset></right>
+					<bottom><offset>-10</offset></bottom>
+				</anchored>
+				<class>spelldesc2_stats</class>
+				<activate />
+			</subwindow>
+			<scrollbar>
+				<anchored>
+					<to>stats</to>
+					<position>right</position>
+					<offset>-5,-5</offset>
+					<size>
+						<width>20</width>
+					</size>
+				</anchored>
+				<target>stats</target>
+			</scrollbar>
+			
+			<resize />
+			<close />
+		</sheetdata>
+	</windowclass>
+</root>

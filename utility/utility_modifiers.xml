@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="modifiersmall">
+		<playercontrol />
+		<sizelimits>
+			<minimum>
+				<height>26</height>
+			</minimum>
+		</sizelimits>
+		<script>
+			function onInit()
+				if not User.isHost() then
+					isgmonly.setVisible(false);
+					label.setAnchor("left", "", "left", "absolute", 2);
+				end
+			end
+
+			function onDragStart(button, x, y, draginfo)
+				if label.getValue() ~= "" then
+					draginfo.setType("number");
+					draginfo.setDescription(label.getValue());
+					draginfo.setStringData(label.getValue());
+					draginfo.setNumberData(bonus.getValue());
+				end
+				return true;
+			end
+			
+			function onDoubleClick(x, y)
+				ModifierStack.addSlot(label.getValue(), bonus.getValue());
+				return true;
+			end
+
+			function onDrop(x, y, draginfo)
+				return windowlist.onDrop(x, y, draginfo);
+			end
+
+			function onGainFocus()
+				window.setFrame("rowshade");
+			end
+
+			function onLoseFocus()
+				window.setFrame(nil);
+			end
+		</script>
+		<sheetdata>
+			<button_checkbox name="isgmonly">
+				<bounds>2,7,24,10</bounds>
+				<gmeditonly />
+				<parameters>
+					<icons>button_toggle_gm</icons>
+					<defaulticon>button_toggle_visible</defaulticon>
+					<tooltips>Visible to GM</tooltips>
+					<defaulttooltip>Visible to All</defaulttooltip>
+				</parameters>
+			</button_checkbox>
+
+			<string_textlistitem name="label">
+				<anchored>
+					<position>insidetopleft</position>
+					<offset>28,3</offset>
+					<right>
+						<offset>-32</offset>
+					</right>
+					<size>
+						<height>20</height>
+					</size>
+				</anchored>
+				<gmeditonly />
+				<script>
+					function onDragStart(button, x, y, draginfo)
+						return window.onDragStart(button, x, y, draginfo);
+					end
+
+					function onDoubleClick(x, y)
+						return window.onDoubleClick(x, y);
+					end
+				</script>
+			</string_textlistitem>
+
+			<basicnumber_sm name="bonus">
+				<bounds>-31,0,30,22</bounds>
+				<gmeditonly />
+				<script>
+					function onDragStart(button, x, y, draginfo)
+						return window.onDragStart(button, x, y, draginfo);
+					end
+
+					function onDoubleClick(x, y)
+						return window.onDoubleClick(x, y);
+					end
+				</script>
+			</basicnumber_sm>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="modifiers">
+		<frame>utilitybox</frame>
+		<playercontrol />
+		<nodelete />
+		<tooltip>
+			<text>Modifiers</text>
+		</tooltip>
+		<placement>
+			<size>
+				<width>400</width>
+				<height>320</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum>
+				<width>400</width>
+				<height>320</height>
+			</minimum>
+		</sizelimits>
+		<sheetdata>
+			<!-- TITLE -->
+			<windowtitlebar>
+				<title>
+					<text>Modifiers</text>
+				</title>
+			</windowtitlebar>
+			
+			<!-- MODIFIER KEYS - ATTACKER -->
+			<label>
+				<bounds>20,45,135,15</bounds>
+				<static>Attack</static>
+				<center />
+			</label>
+			<button_modifierkey name="ATT_TCH">
+				<bounds>20,60,75,30</bounds>
+				<text>Touch</text>
+			</button_modifierkey>
+			<button_modifierkey name="ATT_FF">
+				<bounds>20,95,75,30</bounds>
+				<text>Flat-Footed</text>
+			</button_modifierkey>
+			<button_modifierkey name="ATT_OPP">
+				<bounds>20,130,75,30</bounds>
+				<text>Opportunity</text>
+			</button_modifierkey>
+
+			<!-- MODIFIER KEYS - DEFENDER -->
+			<button_modifierkey name="DEF_PCOVER">
+				<bounds>100,60,75,30</bounds>
+				<text>Part. Cover</text>
+				<script>
+					function onValueChanged()
+						super.onValueChanged();
+						
+						if getState() then
+							window["DEF_COVER"].deactivate();
+							window["DEF_SCOVER"].deactivate();
+						end
+					end
+				</script>
+			</button_modifierkey>
+			<button_modifierkey name="DEF_COVER">
+				<bounds>100,95,75,30</bounds>
+				<text>Cover</text>
+				<script>
+					function onValueChanged()
+						super.onValueChanged();
+						
+						if getState() then
+							window["DEF_PCOVER"].deactivate();
+							window["DEF_SCOVER"].deactivate();
+						end
+					end
+				</script>
+			</button_modifierkey>
+			<button_modifierkey name="DEF_SCOVER">
+				<bounds>100,130,75,30</bounds>
+				<text>Sup. Cover</text>
+				<script>
+					function onValueChanged()
+						super.onValueChanged();
+						
+						if getState() then
+							window["DEF_PCOVER"].deactivate();
+							window["DEF_COVER"].deactivate();
+						end
+					end
+				</script>
+			</button_modifierkey>
+			<button_modifierkey name="DEF_CONC">
+				<bounds>100,165,75,30</bounds>
+				<text>Concealment</text>
+				<script>
+					function onValueChanged()
+						super.onValueChanged();
+						
+						if getState() then
+							window["DEF_TCONC"].deactivate();
+						end
+					end
+				</script>
+			</button_modifierkey>
+			<button_modifierkey name="DEF_TCONC">
+				<bounds>100,200,75,30</bounds>
+				<text>Total Conc.</text>
+				<script>
+					function onValueChanged()
+						super.onValueChanged();
+						
+						if getState() then
+							window["DEF_CONC"].deactivate();
+						end
+					end
+				</script>
+			</button_modifierkey>
+
+			<!-- MODIFIER KEYS - OTHER -->
+			<label>
+				<bounds>20,240,155,15</bounds>
+				<static>Damage</static>
+				<center />
+			</label>
+			<button_modifierkey name="DMG_CRIT">
+				<bounds>20,255,75,30</bounds>
+				<text>Critical</text>
+			</button_modifierkey>
+			<button_modifierkey name="DMG_HALF">
+				<bounds>100,255,75,30</bounds>
+				<text>Half</text>
+			</button_modifierkey>
+			
+			<!-- MODIFIER LIST -->
+			<list_utility name="list">
+				<bounds>192,55,-30,-70</bounds>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>15,15,20,15</offset>
+				</frame>
+				<datasource>.</datasource>
+				<class>modifiersmall</class>
+				<script>
+					function onDrop(x, y, draginfo)
+						if User.isHost() then
+							if draginfo.getType() == "number" then
+								local win = addEntry(true);
+								if win then
+									win.label.setValue(draginfo.getDescription());
+									win.bonus.setValue(draginfo.getNumberData());
+								end
+								return true;
+							end
+						end
+					end
+				</script>
+			</list_utility>
+			<scrollbar>
+				<bounds>-35,65,20,-80</bounds>
+				<target>list</target>
+			</scrollbar>
+			
+			<!-- LIST CONTROLS -->
+			<filter name="filter">
+				<bounds>217,-45,-25,20</bounds>
+			</filter>
+			<button_filter name="filtertrigger">
+				<bounds>182,-55,21,41</bounds>
+			</button_filter>			
+			
+			<resize_utilitybox />
+			<close_utility />
+		</sheetdata>
+	</windowclass>
+</root>

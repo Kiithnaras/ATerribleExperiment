@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="ref_ability">
+		<frame>referencepage</frame>
+		<placement>
+			<size>
+				<width>400</width>
+				<height>370</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<minimum>
+				<width>200</width>
+				<height>200</height>
+			</minimum>
+			<dynamic />
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip>
+			<field>value</field>
+		</tooltip>
+		<sheetdata>
+			<frame_campaign>
+				<bounds>35,20,-11,35</bounds>
+			</frame_campaign>
+			<link_control>
+				<bounds>18,28,20,20</bounds>
+				<class>ref_ability</class>
+				<description>
+					<field>value</field>
+				</description>
+			</link_control>
+			<stringfield name="value">
+				<bounds>50,30,-30,20</bounds>
+				<font>sheettext</font>
+				<selectioncolor>#FFD296</selectioncolor>
+				<nodrag />
+			</stringfield>
+
+			<stringfield name="description">
+				<bounds>25,70,-35,-25</bounds>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>15,15,20,15</offset>
+				</frame>
+				<font>reference-r</font>
+				<selectioncolor>#FFD296</selectioncolor>
+				<multilinespacing>15</multilinespacing>
+			</stringfield>
+			<scrollbar>
+				<bounds>-40,70,20,-25</bounds>
+				<target>description</target>
+			</scrollbar>
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+</root>

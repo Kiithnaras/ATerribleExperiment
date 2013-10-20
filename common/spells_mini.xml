@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="spell_action_mini">
+		<sizelimits>
+			<minimum>
+				<height>0</height>
+				<width>0</width>
+			</minimum>
+			<maximum>
+				<width>24</width>
+			</maximum>
+		</sizelimits>
+		<minisheet />
+		<script file="common/scripts/spell_action_mini.lua" />
+		<sheetdata>
+			<hn name="order" />
+			<hs name="type" />
+			
+			<button_spellaction_mini name="button">
+				<script>
+					function onHover(bOver)
+						window.onHover(bOver);
+					end
+				</script>
+			</button_spellaction_mini>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="spell_item_mini">
+		<sizelimits>
+			<minimum>
+				<height>12</height>
+				<width>0</width>
+			</minimum>
+		</sizelimits>
+		<minisheet />
+		<script file="common/scripts/spell.lua" />
+		<sheetdata>
+			<anchor_column name="hanchor" />
+			
+			<genericcontrol name="usespacer">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>6</offset>
+					</top>
+					<left>
+						<parent>hanchor</parent>
+						<anchor>right</anchor>
+						<relation>relative</relation>
+						<offset>5</offset>
+					</left>
+					<size>
+						<height>10</height>
+						<width>10</width>
+					</size>
+				</anchored>
+			</genericcontrol>
+			<icon_usepower name="usepower">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>4</offset>
+					</top>
+					<left>
+						<parent>hanchor</parent>
+						<anchor>right</anchor>
+						<relation>relative</relation>
+						<offset>6</offset>
+					</left>
+				</anchored>
+				<script>
+					function onHover(bOver)
+						window.onHover(bOver);
+					end
+				</script>
+			</icon_usepower>
+			<basicnumber_sm name="cost">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>1</offset>
+					</top>
+					<left>
+						<parent>hanchor</parent>
+						<anchor>right</anchor>
+						<relation>relative</relation>
+						<offset>3</offset>
+					</left>
+					<size>
+						<width>32</width>
+						<height>16</height>
+					</size>
+				</anchored>
+				<min>0</min>
+				<script>
+					function onHover(bOver)
+						window.onHover(bOver);
+					end
+				</script>
+			</basicnumber_sm>
+			<state_spellcounter name="counter">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>5</offset>
+					</top>
+					<left>
+						<parent>hanchor</parent>
+						<anchor>right</anchor>
+						<relation>relative</relation>
+						<offset>5</offset>
+					</left>
+					<size>
+						<width>20</width>
+						<height>10</height>
+					</size>
+				</anchored>
+				<script>
+					function onHover(bOver)
+						window.onHover(bOver);
+					end
+				</script>
+			</state_spellcounter>
+
+			<link_spell name="shortcut">
+				<bounds>-18,2,16,16</bounds>
+				<script>
+					function onHover(bOver)
+						window.onHover(bOver);
+					end
+				</script>
+			</link_spell>
+			
+			<windowlist name="actions">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+					</top>
+					<right>
+						<parent>shortcut</parent>
+						<anchor>left</anchor>
+						<offset>-5</offset>
+					</right>
+					<size>
+						<width>100</width>
+					</size>
+				</anchored>
+				<datasource>.actions</datasource>
+				<class>spell_action_mini</class>
+				<noscroll />
+				<readonly />
+				<columns>
+					<width>25</width>
+					<fillwidth />
+				</columns>
+				<script>
+					function onHover(bOver)
+						window.onHover(bOver);
+					end
+				</script>
+			</windowlist>
+
+			<stringfield name="name">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>3</offset>
+					</top>
+					<left>
+						<parent>hanchor</parent>
+						<anchor>right</anchor>
+						<relation>relative</relation>
+						<offset>6</offset>
+					</left>
+					<right>
+						<parent>actions</parent>
+						<anchor>left</anchor>
+						<offset>-5</offset>
+					</right>
+				</anchored>
+				<readonly />
+				<script>
+					function onHover(bOver)
+						window.onHover(bOver);
+					end
+				</script>
+			</stringfield>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="spell_level_mini">
+		<sizelimits>
+			<minimum>
+				<height>0</height>
+				<width>0</width>
+			</minimum>
+			<maximum>
+				<height>100000</height>
+			</maximum>
+		</sizelimits>
+		<minisheet />
+		<script file="common/scripts/spell_level.lua" />
+		<sheetdata>
+			<string_spelllevellabel_mini name="label">
+				<anchored>
+					<position>insidetop</position>
+					<offset>0,2</offset>
+				</anchored>
+			</string_spelllevellabel_mini>
+
+			<list_spellitem name="spells">
+				<anchored>
+					<position>insidetop</position>
+					<offset>0,16</offset>
+				</anchored>
+				<class>spell_item_mini</class>
+				<readonly />
+			</list_spellitem>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="spell_class_mini">
+		<sizelimits>
+			<minimum>
+				<height>0</height>
+				<width>0</width>
+			</minimum>
+			<maximum>
+				<height>100000</height>
+			</maximum>
+		</sizelimits>
+		<minisheet />
+		<script file="common/scripts/spell_class.lua" />
+		<sheetdata>
+			<hs name="castertype">
+				<script>
+					function onValueChanged()
+						window.onCasterTypeChanged();
+					end
+				</script>
+			</hs>
+			<hn name="cl">
+				<script>
+					function onValueChanged()
+						window.onStatUpdate();
+					end
+				</script>
+			</hn>
+			<number_spellsavailable_mini name="availablelevel0" />
+			<number_spellsavailable_mini name="availablelevel1" />
+			<number_spellsavailable_mini name="availablelevel2" />
+			<number_spellsavailable_mini name="availablelevel3" />
+			<number_spellsavailable_mini name="availablelevel4" />
+			<number_spellsavailable_mini name="availablelevel5" />
+			<number_spellsavailable_mini name="availablelevel6" />
+			<number_spellsavailable_mini name="availablelevel7" />
+			<number_spellsavailable_mini name="availablelevel8" />
+			<number_spellsavailable_mini name="availablelevel9" />
+
+			<genericcontrol name="classframe">
+				<bounds>6,6,-6,26</bounds>
+				<frame>
+					<name>sheetgroup2</name>
+					<offset>6,6,6,6</offset>
+				</frame>
+			</genericcontrol>
+			<genericcontrol name="hanchor">
+				<bounds>-6,0,0,0</bounds>
+				<invisible />
+			</genericcontrol>
+			<basicnumber_sm name="pointsused">
+				<anchored>
+					<top><offset>9</offset></top>
+					<right>
+						<parent>hanchor</parent>
+						<anchor>left</anchor>
+						<relation>relative</relation>
+						<offset>-5</offset>
+					</right>
+					<size>
+						<width>24</width>
+						<height>16</height>
+					</size>
+				</anchored>
+				<min>0</min>
+				<tooltip>
+					<text>PP Used</text>
+				</tooltip>
+				<script>
+					function onValueChanged()
+						window.onSpellCounterUpdate();
+					end
+				</script>
+			</basicnumber_sm>
+			<label_sm name="label_pointsused">
+				<anchored>
+					<top><offset>10</offset></top>
+					<right>
+						<parent>hanchor</parent>
+						<anchor>left</anchor>
+						<relation>relative</relation>
+						<offset>-5</offset>
+					</right>
+				</anchored>
+				<static>/</static>
+			</label_sm>
+			<basicnumber_sm name="points">
+				<anchored>
+					<top><offset>9</offset></top>
+					<right>
+						<parent>hanchor</parent>
+						<anchor>left</anchor>
+						<relation>relative</relation>
+						<offset>-5</offset>
+					</right>
+					<size>
+						<width>24</width>
+						<height>16</height>
+					</size>
+				</anchored>
+				<min>0</min>
+				<tooltip>
+					<text>PP Max</text>
+				</tooltip>
+				<script>
+					function onValueChanged()
+						window.onSpellCounterUpdate();
+					end
+				</script>
+			</basicnumber_sm>
+			<label_sm name="label_points">
+				<anchored>
+					<top><offset>10</offset></top>
+					<right>
+						<parent>hanchor</parent>
+						<anchor>left</anchor>
+						<relation>relative</relation>
+						<offset>-5</offset>
+					</right>
+				</anchored>
+				<static>PP:</static>
+			</label_sm>
+			<button_cc name="button_cc">
+				<anchored>
+					<top><offset>9</offset></top>
+					<right>
+						<parent>hanchor</parent>
+						<anchor>left</anchor>
+						<relation>relative</relation>
+						<offset>-6</offset>
+					</right>
+					<size>
+						<width>16</width>
+						<height>16</height>
+					</size>
+				</anchored>
+			</button_cc>
+			<label_sm name="label_cc">
+				<anchored>
+					<top><offset>10</offset></top>
+					<right>
+						<parent>hanchor</parent>
+						<anchor>left</anchor>
+						<relation>relative</relation>
+						<offset>-5</offset>
+					</right>
+				</anchored>
+				<static>CC:</static>
+			</label_sm>
+			<basicnumber_sm name="cl">
+				<anchored>
+					<top><offset>9</offset></top>
+					<right>
+						<parent>hanchor</parent>
+						<anchor>left</anchor>
+						<relation>relative</relation>
+						<offset>-8</offset>
+					</right>
+					<size>
+						<width>24</width>
+						<height>16</height>
+					</size>
+				</anchored>
+				<min>0</min>
+				<tooltip>
+					<text>Caster level</text>
+				</tooltip>
+				<script>
+					function onValueChanged()
+						window.onStatUpdate();
+					end
+				</script>
+			</basicnumber_sm>
+			<label_sm name="label_cl">
+				<anchored>
+					<top><offset>10</offset></top>
+					<right>
+						<parent>hanchor</parent>
+						<anchor>left</anchor>
+						<relation>relative</relation>
+						<offset>-5</offset>
+					</right>
+				</anchored>
+				<static>CL:</static>
+			</label_sm>
+			<stringfield name="label">
+				<anchored>
+					<top><offset>12</offset></top>
+					<left>
+						<parent>classframe</parent>
+						<offset>10</offset>
+					</left>
+					<right>
+						<parent>hanchor</parent>
+						<anchor>left</anchor>
+						<relation>relative</relation>
+						<offset>-5</offset>
+					</right>
+				</anchored>
+				<font>sheetlabelsmallbold</font>
+				<readonly />
+				<empty>&#171; Class &#187;</empty>
+			</stringfield>
+			
+			<list_spelllevel name="levels">
+				<anchored>
+					<top>
+						<parent>classframe</parent>
+						<anchor>bottom</anchor>
+						<offset>6</offset>
+					</top>
+					<left />
+					<right />
+				</anchored>
+				<class>spell_level_mini</class>
+				<minisheet />
+				<readonly />
+			</list_spelllevel>
+		</sheetdata>
+	</windowclass>
+</root>

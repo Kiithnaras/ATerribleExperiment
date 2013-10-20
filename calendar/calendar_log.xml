@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="ft_log">
+		<formattedtextfield>
+			<frame>
+				<name>bonus</name>
+				<offset>10,10,10,10</offset>
+			</frame>
+			<stateframe>
+				<keyedit>
+					<name>sheetfocus</name>
+					<offset>10,10,10,10</offset>
+				</keyedit>
+				<hover>
+					<name>sheetfocus</name>
+					<offset>10,10,10,10</offset>
+					<hidereadonly />
+				</hover>
+				<drophilight>
+					<name>sheetfocus</name>
+					<offset>10,10,10,10</offset>
+					<hidereadonly />
+				</drophilight>
+			</stateframe>
+			<font>
+				<normal>story-r</normal>
+				<bold>story-b</bold>
+				<italic>story-i</italic>
+				<bolditalic>story-bi</bolditalic>
+				<title>story-h</title>
+			</font>
+			<linkicon>
+				<link>button_openwindow</link>
+				<emptylink>button_emptytarget</emptylink>
+			</linkicon>
+			<footer>footer_wide</footer>
+			<selectioncolor>#FFD296</selectioncolor>
+			<empty>Click to enter text</empty>
+		</formattedtextfield>
+	</template>
+
+	<windowclass name="advlogentry">
+		<placement>
+			<size>
+				<width>400</width>
+				<height>300</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum>
+				<width>400</width>
+				<height>300</height>
+			</minimum>
+		</sizelimits>
+		<frame>referencepage</frame>
+		<minimize>minimized_reference</minimize>
+		<tooltip>
+			<field>name</field>
+		</tooltip>
+		<script file="calendar/scripts/calendar_log_entry.lua" />
+		<sheetdata>
+			<hn name="day">
+				<script>
+					function onValueChanged()
+						window.onDateChanged();
+					end
+				</script>
+			</hn>
+			<hn name="month">
+				<script>
+					function onValueChanged()
+						window.onDateChanged();
+					end
+				</script>
+			</hn>
+			<hn name="year">
+				<script>
+					function onValueChanged()
+						window.onDateChanged();
+					end
+				</script>
+			</hn>
+			<hs name="epoch">
+				<script>
+					function onValueChanged()
+						window.onDateChanged();
+					end
+				</script>
+			</hs>
+			
+			<link_control name="open">
+				<bounds>20,20,20,20</bounds>
+				<class>advlogentry</class>
+			</link_control>
+			<stringfield name="name">
+				<anchored>
+					<top><offset>23</offset></top>
+					<left><offset>45</offset></left>
+					<right><offset>-15</offset></right>
+					<size><height>15</height></size>
+				</anchored>
+				<font>story-h</font>
+				<static />
+			</stringfield>
+			<stringcontrol name="holiday">
+				<anchored>
+					<to>name</to>
+					<top>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>5</offset>
+					</top>
+					<left />
+					<right />
+					<size><height>15</height></size>
+				</anchored>
+				<font>adventurelog-subtitle</font>
+				<static />
+				<invisible />
+				<script>
+					function onInit()
+						onValueChanged();
+					end
+					
+					function onValueChanged()
+						setVisible(getValue() ~= "");
+					end
+				</script>
+			</stringcontrol>
+
+			<ft_log name="logentry">
+				<anchored>
+					<top>
+						<parent>name</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>10</offset>
+					</top>
+					<left><offset>25</offset></left>
+					<right><offset>-25</offset></right>
+					<bottom><offset>-25</offset></bottom>
+				</anchored>
+				<gmeditonly />
+			</ft_log>
+			<scrollbar>
+				<anchored>
+					<to>logentry</to>
+					<position>right</position>
+					<offset>-5,-5</offset>
+				</anchored>
+				<target>logentry</target>
+			</scrollbar>
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="logsmall">
+		<sizelimits>
+			<minimum>
+				<height>10</height>
+			</minimum>
+		</sizelimits>
+		<nodelete />
+		<script file="calendar/scripts/calendar_log_entry.lua" />
+		<sheetdata>
+			<link_list name="open">
+				<class>advlogentry</class>
+			</link_list>
+			
+			<hn name="day">
+				<script>
+					function onValueChanged()
+						window.onDateChanged();
+					end
+				</script>
+			</hn>
+			<hn name="month">
+				<script>
+					function onValueChanged()
+						window.onDateChanged();
+					end
+				</script>
+			</hn>
+			<hn name="year">
+				<script>
+					function onValueChanged()
+						window.onDateChanged();
+					end
+				</script>
+			</hn>
+			<hs name="epoch">
+				<script>
+					function onValueChanged()
+						window.onDateChanged();
+					end
+				</script>
+			</hs>
+
+			<string_linked_static name="name">
+				<anchored>
+					<top><offset>1</offset></top>
+					<left>
+						<parent>open</parent>
+						<anchor>right</anchor>
+						<offset>5</offset>
+					</left>
+					<right><offset>-5</offset></right>
+					<size>
+						<height>20</height>
+					</size>
+				</anchored>
+				<linktarget>open</linktarget>
+				<empty>&#171; New Log &#187;</empty>
+			</string_linked_static>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="loglist">
+		<frame>scrollboxfortabs</frame>
+		<placement>
+			<size>
+				<width>275</width>
+				<height>350</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum>
+				<width>200</width>
+				<height>300</height>
+			</minimum>
+		</sizelimits>
+		<softclose />
+		<nodelete />
+		<sheetdata>
+			<windowtitlebar name="titlebar">
+				<title>
+					<text>Logs</text>
+				</title>
+			</windowtitlebar>
+			
+			<windowlist name="list">
+				<bounds>50,45,-30,-34</bounds>
+				<footer>footer_narrow</footer>
+				<class>logsmall</class>
+				<datasource>.</datasource>
+				<allowdelete />
+				<sortby>
+					<control>year</control>
+					<control>month</control>
+					<control>day</control>
+				</sortby>
+			</windowlist>
+			<scrollbar>
+				<anchored>
+					<to>list</to>
+					<position>right</position>
+					<offset>-5,-5</offset>
+				</anchored>
+				<target>list</target>
+			</scrollbar>
+
+			<resize_scrollboxfortabs />
+			<close_scrollbox />
+		</sheetdata>
+	</windowclass>
+</root>

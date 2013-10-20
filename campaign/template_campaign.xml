@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="banner_campaign">
+		<genericcontrol>
+			<bounds>16,21,30,177</bounds>
+		</genericcontrol>
+	</template>
+
+	<template name="list_campaign">
+		<windowlist>
+			<bounds>50,25,-30,-34</bounds>
+			<footer>footer_narrow</footer>
+			<allowcreate />
+			<allowdelete />
+			<useallmodules />
+			<sortby><control>name</control></sortby>
+			<filter><control>filter</control></filter>
+			<filteron><control>name</control></filteron>
+		</windowlist>
+	</template>
+	<template name="list_campaign_tabbed">
+		<windowlist>
+			<bounds>50,25,-45,-34</bounds>
+			<footer>footer_narrow</footer>
+			<allowcreate />
+			<allowdelete />
+			<useallmodules />
+			<sortby><control>name</control></sortby>
+			<filter><control>filter</control></filter>
+			<filteron><control>name</control></filteron>
+		</windowlist>
+	</template>
+	<template name="list_campaign_notes">
+		<windowlist>
+			<bounds>50,25,-30,-34</bounds>
+			<footer>footer_narrow</footer>
+			<allowcreate />
+			<allowdelete />
+			<sortby><control>name</control></sortby>
+		</windowlist>
+	</template>
+	
+	<template name="scrollbar_campaign">
+		<scrollbar>
+			<bounds>-35,40,20,-70</bounds>
+		</scrollbar>
+	</template>
+	<template name="scrollbar_campaign_tabbed">
+		<scrollbar>
+			<bounds>-50,40,20,-70</bounds>
+		</scrollbar>
+	</template>
+
+	<template name="button_new">
+		<buttoncontrol>
+			<bounds mergerule="replace">-55,-57,34,25</bounds>
+			<icon>
+				<normal>button_newwindow</normal>
+				<pressed>button_newwindowdown</pressed>
+			</icon>
+			<script file="campaign/scripts/campaign_button_new.lua" />
+		</buttoncontrol>
+	</template>
+
+	<template name="categories">
+		<categoryselectioncontrol>
+			<anchored>
+				<top>
+					<anchor>bottom</anchor>
+					<offset>-39</offset>
+				</top>
+				<left>
+					<offset>24</offset>
+				</left>
+				<bottom>
+					<offset>-1</offset>
+				</bottom>
+			</anchored>
+			<gmvisibleonly />
+		</categoryselectioncontrol>
+	</template>
+
+	<template name="filter_campaign">
+		<filter>
+			<bounds>70,-70,-60,20</bounds>
+		</filter>
+	</template>
+	<template name="filtertrigger_campaign">
+		<button_filter>
+			<bounds>35,-85,21,41</bounds>
+		</button_filter>
+	</template>
+
+	<template name="icon_access">
+		<genericcontrol>
+			<bounds>-16,3,14,14</bounds>
+			<invisible />
+			<script>
+				function onClickDown(button, x, y)
+					return true;
+				end
+				
+				function onClickRelease(button, x, y)
+					window.unshare();
+				end
+			</script>
+		</genericcontrol>
+	</template>
+	<template name="icon_modified">
+		<genericcontrol>
+			<anchored>
+				<to>access</to>
+				<position>left</position>
+				<offset>2,2</offset>
+				<size>
+					<width>12</width>
+				</size>
+			</anchored>
+			<invisible />
+		</genericcontrol>
+	</template>
+
+	<template name="string_campaignrecordname">
+		<string_linked>
+			<anchored>
+				<top><offset>1</offset></top>
+				<left mergerule="replace">
+					<parent>open</parent>
+					<anchor>right</anchor>
+					<offset>5</offset>
+				</left>
+				<right mergerule="replace">
+					<parent>modified</parent>
+					<anchor>left</anchor>
+					<offset>-5</offset>
+				</right>
+				<size>
+					<height>20</height>
+				</size>
+			</anchored>
+			<selectioncolor>#90ffffff</selectioncolor>
+			<font>sheettext</font>
+			<linktarget>open</linktarget>
+		</string_linked>
+	</template>
+
+	<template name="link_campaign">
+		<link_control>
+			<bounds>13,8,20,20</bounds>
+		</link_control>
+	</template>
+	<template name="link_campaign2">
+		<link_control>
+			<bounds>18,28,20,20</bounds>
+		</link_control>
+	</template>
+	<template name="link_campaign3">
+		<link_control>
+			<bounds>43,8,20,20</bounds>
+		</link_control>
+	</template>
+
+	<template name="string_campaign_details_name">
+		<stringfield>
+			<bounds>45,10,-20,20</bounds>
+			<nodrag />
+		</stringfield>
+	</template>
+	<template name="string_campaign_encounter_name">
+		<stringfield>
+			<bounds>50,30,-30,20</bounds>
+			<font>sheettext</font>
+			<nodrag />
+		</stringfield>
+	</template>
+	<template name="string_campaign_item_name">
+		<stringfield>
+			<bounds>50,30,-30,20</bounds>
+			<font>sheettext</font>
+			<nodrag />
+		</stringfield>
+	</template>
+	<template name="string_campaign_parcel_name">
+		<stringfield>
+			<bounds>50,30,-30,20</bounds>
+			<font>sheettext</font>
+			<nodrag />
+		</stringfield>
+	</template>
+	<template name="string_campaign_table_name">
+		<stringfield>
+			<bounds>50,30,-30,20</bounds>
+			<font>sheettext</font>
+			<nodrag />
+		</stringfield>
+	</template>
+
+	<template name="scrollbar_details">
+		<scrollbar>
+			<anchored>
+				<to>contentframe</to>
+				<top><offset>5</offset></top>
+				<bottom><offset>-5</offset></bottom>
+				<left>
+					<anchor>right</anchor>
+					<offset>-5</offset>
+				</left>
+				<size>
+					<width>20</width>
+				</size>
+			</anchored>
+		</scrollbar>
+	</template>
+	<template name="subwindow_details">
+		<subwindow>
+			<anchored>
+				<to>contentframe</to>
+				<top />
+				<left />
+				<right />
+				<bottom />
+			</anchored>
+		</subwindow>
+	</template>
+	<template name="ft_campaigndesc">
+		<formattedtextfield>
+			<font>
+				<normal>reference-r</normal>
+				<bold>reference-b</bold>
+				<italic>reference-i</italic>
+				<bolditalic>reference-bi</bolditalic>
+				<title>reference-b-large</title>
+			</font>
+			<linkicon>
+				<link>button_openwindow</link>
+				<emptylink>button_emptytarget</emptylink>
+			</linkicon>
+			<selectioncolor>#FFD296</selectioncolor>
+			<footer>footer_narrow</footer>
+			<empty>Click to enter description</empty>
+		</formattedtextfield>
+	</template>
+
+	<template name="list_viewers">
+		<genericcontrol>
+			<anchored>
+				<left>
+					<anchor>left</anchor>
+					<offset>21</offset>
+				</left>
+				<bottom>
+					<anchor>bottom</anchor>
+					<offset>-27</offset>
+				</bottom>
+			</anchored>
+			<invalididentityicon>miniportrait_base</invalididentityicon>
+			<portraitset>miniportrait</portraitset>
+			<portraitspacing>21</portraitspacing>
+			<script file="common/scripts/list_viewers.lua" />
+		</genericcontrol>
+	</template>
+</root>

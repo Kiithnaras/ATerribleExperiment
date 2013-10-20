@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="referencetext">
+		<frame>referencepage</frame>
+		<placement>
+			<size>
+				<width>400</width>
+				<height>650</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip>
+			<field>name</field>
+		</tooltip>
+		<sheetdata>
+			<genericcontrol name="nameframe">
+				<bounds>10,20,-15,40</bounds>
+				<frame>
+					<name>sheetgroup</name>
+				</frame>
+			</genericcontrol>
+			<link_control name="open">
+				<bounds>30,30,20,20</bounds>
+				<class>referencetext</class>
+			</link_control>
+			<stringfield name="name">
+				<bounds>55,34,-35,20</bounds>
+				<font>reference-h</font>
+				<nodrag />
+				<nodragselect />
+				<static />
+			</stringfield>
+			<referenceformattedtextfield name="text">
+				<bounds>30,74,-35,-25</bounds>
+				<footer>footer_wide</footer>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>20,20,20,16</offset>
+				</frame>
+			</referenceformattedtextfield>
+			<scrollbar>
+				<bounds>-40,77,20,-32</bounds>
+				<target>text</target>
+			</scrollbar>
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="referencetextwide">
+		<frame>referencepage</frame>
+		<placement>
+			<size>
+				<width>650</width>
+				<height>650</height>
+			</size>
+		</placement>
+		<sharable />
+		<sizelimits>
+			<dynamic>
+				<resize>vertical</resize>
+			</dynamic>
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip>
+			<field>name</field>
+		</tooltip>
+		<sheetdata>
+			<genericcontrol name="nameframe">
+				<bounds>10,20,-15,40</bounds>
+				<frame>
+					<name>sheetgroup</name>
+				</frame>
+			</genericcontrol>
+			<link_control name="open">
+				<bounds>30,30,20,20</bounds>
+				<class>referencetext</class>
+			</link_control>
+			<stringfield name="name">
+				<bounds>55,34,-35,20</bounds>
+				<font>reference-h</font>
+				<nodrag />
+				<nodragselect />
+				<static />
+			</stringfield>
+			<referenceformattedtextfield name="text">
+				<bounds>30,74,-35,-25</bounds>
+				<footer>footer_wide</footer>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>20,20,20,16</offset>
+				</frame>
+			</referenceformattedtextfield>
+			<scrollbar>
+				<bounds>-40,77,20,-32</bounds>
+				<target>text</target>
+			</scrollbar>
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+
+	<!-- Generic lists -->
+	<windowclass name="referenceindexitem">
+		<sizelimits>
+			<minimum>
+				<height>20</height>
+			</minimum>
+		</sizelimits>
+		<sheetdata>
+			<link_field name="listlink">
+				<bounds>0,0,20,20</bounds>
+			</link_field>
+			<string_linked_static name="name">
+				<bounds>25,4,-1,15</bounds>
+				<font>list-subtitle</font>
+				<underlineoffset>-3</underlineoffset>
+				<linktarget>listlink</linktarget>
+			</string_linked_static>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="referenceindex">
+		<frame>referencepage</frame>
+		<placement>
+			<size>
+				<width>350</width>
+				<height>450</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip>
+			<field>name</field>
+		</tooltip>
+		<sheetdata>
+			<windowtitlebar>
+				<title>
+					<field>name</field>
+				</title>
+			</windowtitlebar>
+
+			<windowlist name="index">
+				<bounds>25,55,-25,-70</bounds>
+				<datasource>.index</datasource>
+				<class>referenceindexitem</class>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>15,15,15,15</offset>
+				</frame>
+				<child><backcolor>1A40301E</backcolor></child>
+				<child></child>
+				<filter><control>filter</control></filter>
+				<filteron><control>name</control></filteron>
+			</windowlist>
+			<scrollbar>
+				<bounds>-35,65,20,-80</bounds>
+				<target>index</target>
+			</scrollbar>
+			
+			<filter name="filter">
+				<bounds>55,-45,-90,20</bounds>
+			</filter>
+			<button_filter name="filtertrigger">
+				<bounds>20,-55,21,41</bounds>
+			</button_filter>			
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+
+	<!-- Inline text list -->
+	<windowclass name="referenceinlineindexitem">
+		<sizelimits>
+			<minimum>
+				<height>20</height>
+			</minimum>
+			<maximum>
+				<height>10000</height>
+			</maximum>
+		</sizelimits>
+		<sheetdata>
+			<stringfield name="name">
+				<bounds>0,4,-1,15</bounds>
+				<font>list-subtitle</font>
+				<static />
+				<script>
+					function onClickDown(button, x, y)
+						return true;
+					end
+
+					function onClickRelease(button, x, y)
+						window.text.setVisible(not window.text.isVisible());
+						return true;
+					end
+				</script>
+			</stringfield>
+			<referenceformattedtextfield name="text">
+				<anchored>
+					<top>
+						<parent>name</parent>
+						<anchor>bottom</anchor>
+						<offset>3</offset>
+					</top>
+					<left />
+					<right />
+				</anchored>
+				<invisible />
+			</referenceformattedtextfield>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="referenceinlineindex">
+		<frame>referencepage</frame>
+		<placement>
+			<size>
+				<width>300</width>
+				<height>450</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip>
+			<field>description</field>
+		</tooltip>
+		<sheetdata>
+			<windowtitlebar>
+				<title>
+					<field>name</field>
+				</title>
+			</windowtitlebar>
+
+			<windowlist name="index">
+				<bounds>25,55,-25,-70</bounds>
+				<datasource>.index</datasource>
+				<class>referenceinlineindexitem</class>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>15,15,15,15</offset>
+				</frame>
+			</windowlist>
+			<scrollbar>
+				<bounds>-35,65,20,-80</bounds>
+				<target>index</target>
+			</scrollbar>
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+</root>

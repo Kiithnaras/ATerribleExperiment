@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the readme.txt file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="label_tablecolumn">
+		<stringfield>
+			<anchored>
+				<bottom>
+					<parent>header_die</parent>
+				</bottom>
+				<left><offset>50</offset></left>
+				<size><width>100</width></size>
+			</anchored>
+			<stateframe>
+				<keyedit>
+					<name>sheetfocus</name>
+					<offset>7,7,7,5</offset>
+				</keyedit>
+			</stateframe>
+			<font>reference-b-small</font>
+			<empty>&#171; Label &#187;</empty>
+			<multilinespacing>15</multilinespacing>
+			<nodrag />
+			<nodragselect />
+			<center />
+			<script>
+				function onInit()
+					registerMenuItem("Delete Column", "delete", 4);
+				end
+				
+				function onMenuSelection(selection)
+					if selection == 4 then
+						window.setColumns(window.getColumns() - 1);
+					end
+				end
+				
+				function onValueChanged()
+					window.updateColumns();
+				end
+			</script>
+		</stringfield>
+	</template>
+
+	<windowclass name="table_result">
+		<sizelimits>
+			<minimum>
+				<height>20</height>
+				<width>20</width>
+			</minimum>
+			<maximum>
+				<height>1200</height>
+				<width>1200</width>
+			</maximum>
+		</sizelimits>
+		<sheetdata>
+			<stringfield name="result">
+				<anchored>
+					<top><offset>3</offset></top>
+					<left><offset>5</offset></left>
+					<right><offset>-10</offset></right>
+				</anchored>
+				<stateframe>
+					<keyedit>
+						<name>sheetfocus</name>
+						<offset>7,7,7,5</offset>
+					</keyedit>
+				</stateframe>
+				<font>reference-r-small</font>
+				<multilinespacing>15</multilinespacing>
+				<empty> -- </empty>
+				<script file="common/scripts/list_textitem.lua" />
+				<nodrag />
+				<nodragselect />
+				<nohighlight />
+			</stringfield>
+			
+			<genericcontrol>
+				<anchored>
+					<top>
+						<parent>result</parent>
+						<anchor>bottom</anchor>
+					</top>
+					<left />
+					<right />
+					<size><height>2</height></size>
+				</anchored>
+				<disabled />
+			</genericcontrol>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="table_row">
+		<sizelimits>
+			<minimum>
+				<height>20</height>
+			</minimum>
+			<maximum>
+				<width>1200</width>
+				<height>1200</height>
+			</maximum>
+		</sizelimits>
+		<script>
+			function onInit()
+				if User.isHost() then
+					registerMenuItem("Delete Row", "delete", 6);
+				end
+			end
+
+			function onMenuSelection(selection)
+				if selection == 6 then
+					getDatabaseNode().delete();
+				end
+			end
+		</script>
+		<sheetdata>
+			<basicnumber name="fromrange">
+				<bounds>2,3,20,15</bounds>
+				<frame />
+				<font>reference-r</font>
+				<hideonvalue>0</hideonvalue>
+				<delaykeyupdate />
+				<nodrag />
+				<script>
+					function onValueChanged()
+						window.windowlist.onRangeChanged();
+					end
+				</script>
+			</basicnumber>
+			<stringcontrol name="dash">
+				<bounds>23,3,5,15</bounds>
+				<static>-</static>
+				<nodrag />
+			</stringcontrol>
+			<basicnumber name="torange">
+				<bounds>29,3,20,15</bounds>
+				<frame />
+				<font>reference-r</font>
+				<hideonvalue>0</hideonvalue>
+				<delaykeyupdate />
+				<nodrag />
+				<script>
+					function onValueChanged()
+						window.windowlist.onRangeChanged();
+					end
+				</script>
+			</basicnumber>
+			
+			<windowlist name="results">
+				<anchored>
+					<top />
+					<left><offset>55</offset></left>
+					<right />
+				</anchored>
+				<class>table_result</class>
+				<datasource>.results</datasource>
+				<createonempty />
+				<noscroll />
+				<columns>
+					<width>140</width>
+					<fillwidth />
+				</columns>
+			</windowlist> 
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="table_main">
+		<script file="utility/scripts/table_main.lua" />
+		<sheetdata>
+			<hn name="table_positionoffset" />
+			<hn name="resultscols">
+				<default>1</default>
+				<min>1</min>
+				<max>20</max>
+				<script>
+					function onValueChanged()
+						window.onColumnsChanged();
+					end
+				</script>
+			</hn>
+			
+			<anchor_column name="columnanchor" />
+			
+			<basicstring name="description">>
+				<anchored>
+					<top>
+						<parent>columnanchor</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>5</offset>
+					</top>
+					<left><offset>90</offset></left>
+					<right><offset>-10</offset></right>
+					<sizelimits>
+						<minimum>
+							<height>25</height>
+						</minimum>
+					</sizelimits>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>7,7,7,5</offset>
+				</frame>
+				<multilinespacing>15</multilinespacing>
+				<empty>&#171; Description &#187;</empty>
+			</basicstring>
+
+			<!-- Roll visibility -->
+			<buttoncontrol name="button_roll">
+				<anchored>
+					<top>
+						<parent>description</parent>
+						<anchor>top</anchor>
+						<offset>-3</offset>
+					</top>
+					<left><offset>10</offset></left>
+					<size>
+						<width>30</width>
+						<height>30</height>
+					</size>
+				</anchored>
+				<icon>
+					<normal>button_roll</normal>
+					<pressed>button_roll_down</pressed>
+				</icon>
+				<script>
+					function action(draginfo)
+						TableManager.performRoll(draginfo, nil, window.getDatabaseNode(), 0, true);
+						return true;
+					end
+					
+					function onDragStart(button, x, y, draginfo)
+						return action(draginfo);
+					end
+					
+					function onButtonPress()
+						return action();
+					end
+				</script>
+			</buttoncontrol>
+			<genericcontrol name="showrollframe">
+				<anchored>
+					<to>description</to>
+					<top />
+					<right><anchor>left</anchor><offset>-15</offset></right>
+					<size>
+						<height>25</height>
+						<width>25</width>
+					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>7,7,7,5</offset>
+				</frame>
+			</genericcontrol>			
+			<button_checkbox name="hiderollresults">
+				<anchored>
+					<to>showrollframe</to>
+					<position>insidetopleft</position>
+					<offset>4,4</offset>
+					<size>
+						<height>20</height>
+						<width>20</width>
+					</size>
+				</anchored>
+				<parameters>
+					<icons>indicator_visibilityoff</icons>
+					<defaulticon>indicator_visibilityon</defaulticon>
+					<tooltips>Hide Roll Results</tooltips>
+					<defaulttooltip>Show Roll Results</defaulttooltip>
+				</parameters>
+			</button_checkbox>
+
+			<genericcontrol name="frame_header">
+				<anchored>
+					<top>
+						<parent>columnanchor</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>7</offset>
+					</top>
+					<left />
+					<right />
+					<size><height>15</height></size>
+				</anchored>
+				<disabled />
+			</genericcontrol>
+			
+			<stringcontrol name="header_die">
+				<anchored>
+					<bottom>
+						<parent>frame_header</parent>
+					</bottom>
+					<left><offset>10</offset></left>
+					<size>
+						<width>50</width>
+						<height>15</height>
+					</size>
+				</anchored>
+				<font>reference-b</font>
+				<center />
+				<static />
+			</stringcontrol>
+			
+			<windowlist name="tablerows">
+				<anchored>
+					<top>
+						<parent>columnanchor</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>2</offset>
+					</top>
+					<left><offset>10</offset></left>
+					<right><offset>-10</offset></right>
+				</anchored>
+				<datasource>.tablerows</datasource>
+				<class>table_row</class>
+				<noscroll />
+				<sortby><control>fromrange</control></sortby>
+				<child><backcolor>1A40301E</backcolor></child>
+				<child></child>
+				<script>
+					function onRangeChanged()
+						window.updateDieHeader();
+					end
+				</script>
+
+			</windowlist>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="table">
+		<frame>charsheet</frame>
+		<placement>
+			<size>
+				<width>400</width>
+				<height>400</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum>
+				<width>400</width>
+				<height>400</height>
+			</minimum>
+			<maximum>
+				<width>1200</width>
+				<height>1200</height>
+			</maximum>
+		</sizelimits>
+		<minimize>minimized_utility</minimize>
+		<nodelete />
+		<playercontrol />
+		<sharable />
+		<tooltip>
+			<field>name</field>
+		</tooltip>
+		<sheetdata>
+			<frame_campaign name="nameframe">
+				<bounds>35,20,-11,35</bounds>
+			</frame_campaign>
+			<link_campaign2>
+				<class>table</class>
+			</link_campaign2>
+			<string_campaign_table_name name="name">
+				<empty>&#171; New Table &#187;</empty>
+			</string_campaign_table_name>
+
+			<frame_campaign>
+				<bounds>10,53,-21,-50</bounds>
+			</frame_campaign>
+			<genericcontrol name="contentframe">
+				<bounds>22,65,-41,-62</bounds>
+			</genericcontrol>
+
+			<subwindow_details name="main">
+				<class>table_main</class>
+				<script>
+					function onDrop(x, y, draginfo)
+						return subwindow.onDrop(x, y, draginfo);
+					end
+				</script>
+			</subwindow_details>
+			<ft_campaigndesc name="notes">
+				<anchored>
+					<to>contentframe</to>
+					<top />
+					<left><offset>10</offset></left>
+					<right />
+					<bottom />
+				</anchored>
+				<invisible />
+			</ft_campaigndesc>
+
+			<scrollbar_details>
+				<target>main</target>
+			</scrollbar_details>
+			<scrollbar_details>
+				<target>notes</target>
+			</scrollbar_details>
+
+			<buttongroup_tabs name="tabs">
+				<anchored>
+					<right><offset>1</offset></right>
+				</anchored>
+				<tab>
+					<icon>tab_main</icon>
+					<subwindow>main</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_notes</icon>
+					<subwindow>notes</subwindow>
+				</tab>
+			</buttongroup_tabs>
+			
+			<resize_charsheet />
+			<close_charsheetmini />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="tablesmall">
+		<sizelimits>
+			<minimum>
+				<height>10</height>
+			</minimum>
+		</sizelimits>
+		<nodelete />
+		<script file="campaign/scripts/campaign_list_record.lua" />
+		<sheetdata>
+			<link_list name="open">
+				<class>table</class>
+			</link_list>
+
+			<icon_access name="access" />
+			<icon_modified name="modified" />
+
+			<string_campaignrecordname name="name">
+				<empty>&#171; New Table &#187;</empty>
+			</string_campaignrecordname>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="tablelist">
+		<frame>utilityboxfortabs</frame>
+		<placement>
+			<size>
+				<width>350</width>
+				<height>450</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum>
+				<width>200</width>
+				<height>300</height>
+			</minimum>
+		</sizelimits>
+		<nodelete />
+		<softclose />
+		<sheetdata>
+			<windowtitlebar name="titlebar">
+				<title>
+					<text>Tables</text>
+				</title>
+			</windowtitlebar>
+			
+			<windowlist name="list">
+				<bounds>35,55,-35,-90</bounds>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>15,15,20,15</offset>
+				</frame>
+				<datasource>.</datasource>
+				<class>tablesmall</class>
+				<useallmodules />
+				<allowcreate />
+				<allowdelete />
+				<gmeditonly />
+				<sortby><control>name</control></sortby>
+				<filter><control>filter</control></filter>
+				<filteron><control>name</control></filteron>
+				<acceptdrop>
+					<class>table</class>
+					<field>*</field>
+				</acceptdrop>
+			</windowlist>
+			<scrollbar>
+				<bounds>-40,65,20,-100</bounds>
+				<target>list</target>
+			</scrollbar>
+			
+			<button_add>
+				<bounds>-52,-70,30,30</bounds>
+				<gmvisibleonly />
+				<script file="utility/scripts/table_add.lua" />
+			</button_add>
+			<categories>
+				<targetcontrol>list</targetcontrol>
+			</categories>
+			
+			<filter name="filter">
+				<bounds>55,-65,-57,20</bounds>
+			</filter>
+			<button_filter name="filtertrigger">
+				<bounds>20,-75,21,41</bounds>
+			</button_filter>			
+
+			<resize_utilityboxfortabs />
+			<close_utility />
+		</sheetdata>
+	</windowclass>
+</root>

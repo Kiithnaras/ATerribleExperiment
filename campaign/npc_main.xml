@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="npc_combat_creature">
+		<script file="campaign/scripts/campaign_npc_main.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<string_column name="type" />
+			<label_column name="type_label">
+				<anchor>type</anchor>
+				<static>Type</static>
+			</label_column>
+			
+			<string_column name="alignment" />
+			<label_column name="alignment_label">
+				<anchor>alignment</anchor>
+				<static>Alignment</static>
+			</label_column>
+
+			<number_npc_init name="init" />
+			<label_column name="init_label">
+				<anchor>init</anchor>
+				<static>Initiative</static>
+			</label_column>
+	
+			<number_column name="cr">
+				<right />
+				<anchor>init</anchor>
+			</number_column>
+			<label_column name="cr_label">
+				<right />
+				<anchor>cr</anchor>
+				<static>CR</static>
+			</label_column>
+
+			<string_column name="senses">
+				<senses_only />
+				<script file="campaign/scripts/campaign_npc_skill.lua" />
+			</string_column>
+			<label_column name="senses_label">
+				<anchor>senses</anchor>
+				<static>Senses</static>
+			</label_column>
+
+			<string_column name="aura" />
+			<label_column name="aura_label">
+				<anchor>aura</anchor>
+				<static>Aura</static>
+			</label_column>
+
+			<line_column />
+			<header_npc_text name="defense_label">
+				<static>DEFENSE</static>
+			</header_npc_text>
+			<header_line_bottom />
+			
+			<string_column name="ac" />
+			<label_column name="ac_label">
+				<anchor>ac</anchor>
+				<static>AC</static>
+			</label_column>
+
+			<string_column name="hd" />
+			<label_column name="hd_label">
+				<anchor>hd</anchor>
+				<static>HD</static>
+			</label_column>
+
+			<number_column name="hp" />
+			<label_column name="hp_label">
+				<anchor>hp</anchor>
+				<static>HP</static>
+			</label_column>
+
+			<number_npc_save name="fortitudesave">
+				<baseanchor>columnanchor</baseanchor>
+				<description>
+					<text>Fortitude save</text>
+				</description>
+				<target>fortitude</target>
+			</number_npc_save>
+			<label_fieldtop name="fortitudesave_label">
+				<anchored>
+					<to>fortitudesave</to>
+				</anchored>
+				<static>Fortitude</static>
+			</label_fieldtop>
+			<number_npc_save name="reflexsave">
+				<anchor>fortitudesave</anchor>
+				<description>
+					<text>Reflex save</text>
+				</description>
+				<target>reflex</target>
+			</number_npc_save>
+			<label_fieldtop name="reflexsave_label">
+				<anchored>
+					<to>reflexsave</to>
+				</anchored>
+				<static>Reflex</static>
+			</label_fieldtop>
+			<number_npc_save name="willsave">
+				<anchor>fortitudesave</anchor>
+				<description>
+					<text>Will save</text>
+				</description>
+				<target>will</target>
+			</number_npc_save>
+			<label_fieldtop name="willsave_label">
+				<anchored>
+					<to>willsave</to>
+				</anchored>
+				<static>Will</static>
+			</label_fieldtop>
+			<label_column>
+				<anchor>fortitudesave</anchor>
+				<static>Saves</static>
+			</label_column>
+
+			<string_column name="specialqualities" />
+			<label_column name="specialqualities_label">
+				<anchor>specialqualities</anchor>
+				<static>SQ</static>
+			</label_column>
+
+			<line_column />
+			<header_npc_text name="offense_label">
+				<static>OFFENSE</static>
+			</header_npc_text>
+			<header_line_bottom />
+			
+			<string_column name="speed" />
+			<label_column name="speed_label">
+				<anchor>speed</anchor>
+				<static>Speed</static>
+			</label_column>
+
+			<string_column name="atk">
+				<actortype>npc</actortype>
+				<actorpath>..</actorpath>
+				<script file="ct/scripts/ct_attack.lua" />
+			</string_column>
+			<label_column name="atk_label">
+				<anchor>atk</anchor>
+				<static>Attack</static>
+			</label_column>
+
+			<string_column name="fullatk">
+				<actortype>npc</actortype>
+				<actorpath>..</actorpath>
+				<script file="ct/scripts/ct_attack.lua" />
+			</string_column>
+			<label_column name="fullatk_label">
+				<anchor>fullatk</anchor>
+				<static>Full attack</static>
+			</label_column>
+	
+			<string_column name="spacereach" />
+			<label_column name="spacereach_label">
+				<anchor>spacereach</anchor>
+				<static>Space/Reach</static>
+			</label_column>
+
+			<string_column name="specialattacks" />
+			<label_column name="specialattacks_label">
+				<anchor>specialattacks</anchor>
+				<static>SA</static>
+			</label_column>
+
+			<line_column />
+			<header_npc_text name="statistics_label">
+				<static>STATISTICS</static>
+			</header_npc_text>
+			<header_line_bottom />
+			
+			<number_npc_ability name="strength">
+				<baseanchor>columnanchor</baseanchor>
+				<description>
+					<text>Strength check</text>
+				</description>
+				<target>strength</target>
+			</number_npc_ability>
+			<label_fieldtop name="strength_label">
+				<anchored>
+					<to>strength</to>
+				</anchored>
+				<static>Str</static>
+			</label_fieldtop>
+			<number_npc_ability name="dexterity">
+				<anchor>strength</anchor>
+				<description>
+					<text>Dexterity check</text>
+				</description>
+				<target>dexterity</target>
+			</number_npc_ability>
+			<label_fieldtop name="dexterity_label">
+				<anchored>
+					<to>dexterity</to>
+				</anchored>
+				<static>Dex</static>
+			</label_fieldtop>
+			<number_npc_ability name="constitution">
+				<anchor>strength</anchor>
+				<description>
+					<text>Constitution check</text>
+				</description>
+				<target>constitution</target>
+			</number_npc_ability>
+			<label_fieldtop name="constitution_label">
+				<anchored>
+					<to>constitution</to>
+				</anchored>
+				<static>Con</static>
+			</label_fieldtop>
+			<number_npc_ability name="intelligence">
+				<anchor>strength</anchor>
+				<description>
+					<text>Intelligence check</text>
+				</description>
+				<target>intelligence</target>
+			</number_npc_ability>
+			<label_fieldtop name="intelligence_label">
+				<anchored>
+					<to>intelligence</to>
+				</anchored>
+				<static>Int</static>
+			</label_fieldtop>
+			<number_npc_ability name="wisdom">
+				<anchor>strength</anchor>
+				<description>
+					<text>Wisdom check</text>
+				</description>
+				<target>wisdom</target>
+			</number_npc_ability>
+			<label_fieldtop name="wisdom_label">
+				<anchored>
+					<to>wisdom</to>
+				</anchored>
+				<static>Wis</static>
+			</label_fieldtop>
+			<number_npc_ability name="charisma">
+				<anchor>strength</anchor>
+				<description>
+					<text>Charisma check</text>
+				</description>
+				<target>charisma</target>
+			</number_npc_ability>
+			<label_fieldtop name="charisma_label">
+				<anchored>
+					<to>charisma</to>
+				</anchored>
+				<static>Cha</static>
+			</label_fieldtop>
+			<label_column name="abilities_label">
+				<anchor>strength</anchor>
+				<static>Abilities</static>
+			</label_column>
+			
+			<string_column name="babgrp">
+				<script file="campaign/scripts/campaign_npc_babgrp.lua" />
+			</string_column>
+			<label_column name="babgrp_label">
+				<anchor>babgrp</anchor>
+				<static>BAB / Grp</static>
+			</label_column>
+			
+			<string_column name="feats" />
+			<label_column name="feats_label">
+				<anchor>feats</anchor>
+				<static>Feats</static>
+			</label_column>
+
+			<string_column name="skills">
+				<script file="campaign/scripts/campaign_npc_skill.lua" />
+			</string_column>
+			<label_column name="skills_label">
+				<anchor>skills</anchor>
+				<static>Skills</static>
+			</label_column>
+
+			<string_column name="languages" />
+			<label_column name="languages_label">
+				<anchor>languages</anchor>
+				<static>Languages</static>
+			</label_column>
+
+			<string_column name="advancement" />
+			<label_column name="advancement_label">
+				<anchor>advancement</anchor>
+				<static>Adv.</static>
+			</label_column>
+
+			<string_column name="leveladjustment" />
+			<label_column name="leveladjustment_label">
+				<anchor>leveladjustment</anchor>
+				<static>Level Adj.</static>
+			</label_column>
+
+			<line_column />
+			<header_npc_text name="ecology_label">
+				<static>ECOLOGY</static>
+			</header_npc_text>
+			<header_line_bottom />
+			
+			<string_column name="environment" />
+			<label_column name="environment_label">
+				<anchor>environment</anchor>
+				<static>Environment</static>
+			</label_column>
+
+			<string_column name="organization" />
+			<label_column name="organization_label">
+				<anchor>organization</anchor>
+				<static>Organization</static>
+			</label_column>
+
+			<string_column name="treasure" />
+			<label_column name="treasure_label">
+				<anchor>treasure</anchor>
+				<static>Treasure</static>
+			</label_column>
+
+			<spacer>
+				<anchor>columnanchor</anchor>
+				<relative />
+				<height>25</height>
+			</spacer>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="npc_combat_trap">
+		<script file="campaign/scripts/campaign_npc_main.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<string_column name="type" />
+			<label_column name="type_label">
+				<anchor>type</anchor>
+				<static>Type</static>
+			</label_column>
+			
+			<number_column name="hp" />
+			<label_column name="hp_label">
+				<anchor>hp</anchor>
+				<static>HP</static>
+			</label_column>
+
+			<number_column name="cr">
+				<right />
+				<anchor>hp</anchor>
+			</number_column>
+			<label_column name="cr_label">
+				<right />
+				<anchor>cr</anchor>
+				<static>CR</static>
+			</label_column>
+
+			<string_columnfull name="senses" />
+
+			<line_column />
+			<header_npc_text name="effects_label">
+				<static>EFFECTS</static>
+			</header_npc_text>
+			<header_line_bottom />
+			
+			<string_column name="trigger" />
+			<label_column name="trigger_label">
+				<anchor>trigger</anchor>
+				<static>Trigger</static>
+			</label_column>
+			
+			<string_column name="reset" />
+			<label_column name="reset_label">
+				<anchor>reset</anchor>
+				<static>Reset</static>
+			</label_column>
+			
+			<string_column name="atk">
+				<actortype>npc</actortype>
+				<actorpath>..</actorpath>
+				<script file="ct/scripts/ct_attack.lua" />
+			</string_column>
+			<label_column name="atk_label">
+				<anchor>atk</anchor>
+				<static>Effect</static>
+			</label_column>
+			
+			<string_column name="fullatk">
+				<actortype>npc</actortype>
+				<actorpath>..</actorpath>
+				<script file="ct/scripts/ct_attack.lua" />
+			</string_column>
+			<label_column name="fullatk_label">
+				<anchor>fullatk</anchor>
+				<static>Effect 2</static>
+			</label_column>
+
+			<string_column name="specialqualities" />
+			<label_column name="specialqualities_label">
+				<anchor>specialqualities</anchor>
+				<static>Destruction</static>
+			</label_column>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="npc_combat_vehicle">
+		<script file="campaign/scripts/campaign_npc_main.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<string_column name="type" />
+			<label_column name="type_label">
+				<anchor>type</anchor>
+				<static>Type</static>
+			</label_column>
+			
+			<string_column name="squares" />
+			<label_column name="squares_label">
+				<anchor>squares</anchor>
+				<static>Squares</static>
+			</label_column>
+
+			<line_column />
+			<header_npc_text name="defense_label">
+				<static>DEFENSE</static>
+			</header_npc_text>
+			<header_line_bottom />
+			
+			<string_column name="ac" />
+			<label_column name="ac_label">
+				<anchor>ac</anchor>
+				<static>AC</static>
+			</label_column>
+
+			<number_column name="hp" />
+			<label_column name="hp_label">
+				<anchor>hp</anchor>
+				<static>HP</static>
+			</label_column>
+
+			<number_column name="basesave" />
+			<label_column name="basesave_label">
+				<anchor>basesave</anchor>
+				<static>Base Save</static>
+			</label_column>
+
+			<line_column />
+			<header_npc_text name="offense_label">
+				<static>OFFENSE</static>
+			</header_npc_text>
+			<header_line_bottom />
+			
+			<string_column name="speed" />
+			<label_column name="speed_label">
+				<anchor>speed</anchor>
+				<static>Speed</static>
+			</label_column>
+
+			<string_column name="babgrp">
+				<script file="campaign/scripts/campaign_npc_babgrp.lua" />
+			</string_column>
+			<label_column name="babgrp_label">
+				<anchor>babgrp</anchor>
+				<static>CM</static>
+			</label_column>
+			
+			<string_column name="atk">
+				<actortype>npc</actortype>
+				<actorpath>..</actorpath>
+				<script file="ct/scripts/ct_attack.lua" />
+			</string_column>
+			<label_column name="atk_label">
+				<anchor>atk</anchor>
+				<static>Attacks</static>
+			</label_column>
+
+			<line_column />
+			<header_npc_text name="description_label">
+				<static>DESCRIPTION</static>
+			</header_npc_text>
+			<header_line_bottom />
+			
+			<string_column name="prop" />
+			<label_column name="prop_label">
+				<anchor>prop</anchor>
+				<static>Propulsion</static>
+			</label_column>
+
+			<string_column name="drive" />
+			<label_column name="drive_label">
+				<anchor>drive</anchor>
+				<static>Driving Check</static>
+			</label_column>
+
+			<string_column name="ff" />
+			<label_column name="ff_label">
+				<anchor>ff</anchor>
+				<static>Forward Facing</static>
+			</label_column>
+			
+			<string_column name="drived" />
+			<label_column name="drived_label">
+				<anchor>drived</anchor>
+				<static>Driving Device</static>
+			</label_column>
+			
+			<string_column name="drives" />
+			<label_column name="drives_label">
+				<anchor>drives</anchor>
+				<static>Driving Space</static>
+			</label_column>
+			
+			<number_column name="crew" />
+			<label_column name="crew_label">
+				<anchor>crew</anchor>
+				<static>Crew</static>
+			</label_column>
+			
+			<string_column name="decks" />
+			<label_column name="decks_label">
+				<anchor>decks</anchor>
+				<static>Decks</static>
+			</label_column>
+			
+			<string_column name="weapons" />
+			<label_column name="weapons_label">
+				<anchor>weapons</anchor>
+				<static>Weapons</static>
+			</label_column>
+			
+		</sheetdata>
+	</windowclass>
+</root>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="partysheet">
+		<frame>partysheet</frame>
+		<placement>
+			<size>
+				<width>845</width>
+				<height>611</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum>
+				<width>845</width>
+				<height>611</height>
+			</minimum>
+		</sizelimits>
+		<softclose />
+		<nodelete />
+		<minimize>minimized_utility</minimize>
+		<tooltip>
+			<text>Party Sheet</text>
+		</tooltip>
+		<sheetdata>
+			<windowtitlebar name="titlebar">
+				<title>
+					<text>Party Sheet</text>
+				</title>
+			</windowtitlebar>
+			
+			<subwindow name="main">
+				<bounds>0,0,-1,-1</bounds>
+				<class>ps_main</class>
+				<script>
+					function onDrop(x, y, draginfo)
+						if subwindow and User.isHost() then
+							local rEffect = ActionEffect.decodeEffectFromDrag(draginfo);
+							if rEffect then
+								subwindow.effectlabel.setValue(rEffect.sName);
+								subwindow.effectexpiration.setStringValue(rEffect.sExpire);
+								subwindow.effectsavemod.setValue(rEffect.nSaveMod);
+								subwindow.effectisgmonly.setState(rEffect.nGMOnly);
+								subwindow.effectapply.setStringValue(rEffect.sApply);
+								return true;
+							end
+						end
+					end
+				</script>
+			</subwindow>
+			<subwindow name="skills">
+				<bounds>0,0,-1,-1</bounds>
+				<class>ps_skills</class>
+			</subwindow>
+			<subwindow name="inventory">
+				<bounds>0,0,-1,-1</bounds>
+				<class>ps_inventory</class>
+			</subwindow>
+			<subwindow name="order">
+				<bounds>0,0,-1,-1</bounds>
+				<class>ps_order</class>
+			</subwindow>
+			<subwindow name="xp">
+				<bounds>0,0,-1,-1</bounds>
+				<class>ps_xp</class>
+			</subwindow>
+			
+			<buttongroup_tabs name="tabs">
+				<tab>
+					<icon>tab_main</icon>
+					<subwindow>main</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_skills</icon>
+					<subwindow>skills</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_inventory</icon>
+					<subwindow>inventory</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_order</icon>
+					<subwindow>order</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_xp</icon>
+					<subwindow>xp</subwindow>
+				</tab>
+			</buttongroup_tabs>
+			
+			<resize_ps />
+			<close_ps />
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="clientpartysheet">
+		<frame>partysheet</frame>
+		<placement>
+			<size>
+				<width>845</width>
+				<height>611</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum>
+				<width>845</width>
+				<height>611</height>
+			</minimum>
+		</sizelimits>
+		<nodelete />
+		<minimize>minimized_utility</minimize>
+		<tooltip>
+			<text>Party Sheet</text>
+		</tooltip>
+		<script file="ps/scripts/psclient.lua" />
+		<sheetdata>
+			<windowtitlebar name="titlebar">
+				<title>
+					<text>Party Sheet</text>
+				</title>
+			</windowtitlebar>
+					
+			<subwindow name="main">
+				<bounds>0,0,-1,-1</bounds>
+				<class>psclient_main</class>
+			</subwindow>
+			<subwindow name="skills">
+				<bounds>0,0,-1,-1</bounds>
+				<class>psclient_skills</class>
+			</subwindow>		
+			<subwindow name="inventory">
+				<bounds>0,0,-1,-1</bounds>
+				<class>ps_inventory</class>
+			</subwindow>
+			<subwindow name="order">
+				<bounds>0,0,-1,-1</bounds>
+				<class>ps_order</class>
+			</subwindow>
+			
+			<buttongroup_tabs name="tabs" />
+			
+			<resize_ps />
+			<close_ps />
+		</sheetdata>
+	</windowclass>
+</root>

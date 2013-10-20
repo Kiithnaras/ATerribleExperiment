@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="charsheetmini_weaponitem">
+		<sizelimits>
+			<minimum>
+				<height>10</height>
+			</minimum>
+		</sizelimits>
+		<script>
+			function onInit()
+				onViewDataChanged();
+				onTypeChanged();
+				onAmmoChanged();
+			end
+			
+			function onViewDataChanged()
+				local bRanged = (type.getIndex() == 1);
+				local nAmmo = maxammo.getValue();
+
+				rangeincrement.setVisible(bRanged);
+				range_label.setVisible(bRanged);
+				maxammo.setVisible(bRanged and (nAmmo &gt; 0));
+				ammo_label.setVisible(bRanged and (nAmmo &gt; 0));
+			end
+			
+			function onTypeChanged()
+				onViewDataChanged();
+			end
+			
+			function onAmmoChanged()
+				onViewDataChanged();
+			end
+		</script>
+		<sheetdata>
+			<hn name="critatkrange" />
+			<hn name="critdmgmult" />
+
+			<state_charweapontype name="type">
+				<anchored>
+					<position>insidetopright</position>
+					<offset>182,3</offset>
+				</anchored>
+				<readonly />
+				<script>
+					function onValueChanged()
+						window.onTypeChanged();
+					end
+				</script>
+			</state_charweapontype>
+
+			<genericcontrol name="attackicons">
+				<anchored>
+					<position>insidetopright</position>
+					<offset>142,0</offset>
+					<size>
+						<width>40</width>
+						<height>30</height>
+					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+				</frame>
+			</genericcontrol>
+			<number_charweaponfullattack name="attacks">
+				<anchored>
+					<to>attackicons</to>
+					<position>over</position>
+				</anchored>
+				<readonly />
+			</number_charweaponfullattack>
+
+			<number_charweaponattacktotal name="attack1">
+				<anchored>
+					<position>insidetopright</position>
+					<offset>102,0</offset>
+					<size>
+						<width>40</width>
+						<height>30</height>
+					</size>
+				</anchored>
+				<frame>
+					<name>modifier</name>
+				</frame>
+				<modifier>0</modifier>
+				<name>Attack 1</name>
+				<source>
+					<name>attack1modifier</name>
+					<op>+</op>
+				</source>
+			</number_charweaponattacktotal>
+			
+			<genericcontrol name="damageframe">
+				<anchored>
+					<to>attack1</to>
+					<position>righthigh</position>
+					<size>
+						<width>105</width>
+						<height>30</height>
+					</size>
+				</anchored>
+				<frame>
+					<name>slottedbonus</name>
+				</frame>
+			</genericcontrol>
+			<dice_charweapondamage name="damagedice">
+				<anchored>
+					<to>damageframe</to>
+					<position>insideleft</position>
+					<size>
+						<width>70</width>
+					</size>
+				</anchored>
+			</dice_charweapondamage>
+			<number_charweapondamagetotal name="damagetotalbonus">
+				<anchored>
+					<to>damageframe</to>
+					<position>insideright</position>
+					<offset>3,0</offset>
+					<size>
+						<width>35</width>
+					</size>
+				</anchored>
+			</number_charweapondamagetotal>
+
+			<stringu name="name">
+				<anchored>
+					<position>insidetopleft</position>
+					<offset>0,8</offset>
+					<right>
+						<parent>type</parent>
+						<anchor>left</anchor>
+					</right>
+				</anchored>
+				<readonly />
+			</stringu>
+			
+			<number_charweapon_sm_static name="rangeincrement">
+				<anchored>
+					<to>name</to>
+					<position>belowleft</position>
+					<offset>85,3</offset>
+					<size>
+						<width>35</width>
+						<height>22</height>
+					</size>
+				</anchored>
+			</number_charweapon_sm_static>
+			<label_sm name="range_label">
+				<anchored>
+					<to>rangeincrement</to>
+					<position>lefthigh</position>
+					<offset>0,5</offset>
+				</anchored>
+				<static>Rng</static>
+			</label_sm>
+			
+			<number_charweapon_sm_static name="maxammo">
+				<anchored>
+					<to>name</to>
+					<position>belowleft</position>
+					<offset>30,3</offset>
+					<size>
+						<width>35</width>
+						<height>22</height>
+					</size>
+				</anchored>
+				<script>
+					function onValueChanged()
+						window.onAmmoChanged();
+					end
+				</script>
+			</number_charweapon_sm_static>
+			<label_sm name="ammo_label">
+				<anchored>
+					<to>maxammo</to>
+					<position>lefthigh</position>
+					<offset>0,5</offset>
+				</anchored>
+				<static>Ammo</static>
+			</label_sm>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheetmini_actions">
+		<placement>
+			<size>
+				<width>220</width>
+				<height>200</height>
+			</size>
+		</placement>
+		<nodelete />
+		<minisheet />
+		<script file="charsheet/scripts/charsheet_tabaction.lua" />
+		<sheetdata>
+			<!-- WEAPONS -->
+			<genericcontrol>
+				<bounds>18,10,-18,24</bounds>
+				<frame>
+					<name>sheetgroup2</name>
+					<offset>6,6,6,6</offset>
+				</frame>
+				<disabled />
+			</genericcontrol>
+			<label name="label_weapon">
+				<anchored>
+					<top><offset>13</offset></top>
+					<left><offset>26</offset></left>
+					<right><offset>-26</offset></right>
+				</anchored>
+				<static>Weapons</static>
+			</label>
+			<list_charweapon name="weaponlist">
+				<anchored>
+					<position>insidetopleft</position>
+					<offset>12,40</offset>
+					<right>
+						<anchor>right</anchor>
+						<offset>-13</offset>
+					</right>
+				</anchored>
+				<class>charsheetmini_weaponitem</class>
+				<noscroll />
+			</list_charweapon>
+			
+			<genericcontrol>
+				<anchored>
+					<to>weaponlist</to>
+					<position>below</position>
+					<offset>0,4</offset>
+					<size>
+						<height>4</height>
+					</size>
+				</anchored>
+				<frame>
+					<name>separatorline</name>
+				</frame>
+				<disabled />
+			</genericcontrol>
+
+			<!-- SPELLS -->
+			<list_spellclass name="spellclasslist">
+				<anchored>
+					<to>weaponlist</to>
+					<position>below</position>
+					<offset>0,28</offset>
+				</anchored>
+				<class>spell_class_mini</class>
+				<noscroll />
+				<readonly />
+			</list_spellclass>
+			<label>
+				<anchored>
+					<to>spellclasslist</to>
+					<position>above</position>
+					<offset>0,3</offset>
+				</anchored>
+				<center />
+				<static>Spells</static>
+			</label>
+			<button_expand name="expand">
+				<anchored>
+					<to>spellclasslist</to>
+					<position>aboveleft</position>
+					<offset>0,7</offset>
+					<size>
+						<width>12</width>
+						<height>12</height>
+					</size>
+				</anchored>
+				<script>
+					function onButtonPress()
+						for kClass, vClass in pairs(window.spellclasslist.getWindows()) do
+							for kLevel, vLevel in pairs(vClass.levels.getWindows()) do
+								vLevel.spells.setVisible(true);
+							end
+						end
+					end
+				</script>
+			</button_expand>
+			<button_collapse name="collapse">
+				<anchored>
+					<to>expand</to>
+					<position>righthigh</position>
+					<offset>3,0</offset>
+					<size>
+						<width>12</width>
+						<height>12</height>
+					</size>
+				</anchored>
+				<script>
+					function onButtonPress()
+						for kClass, vClass in pairs(window.spellclasslist.getWindows()) do
+							for kLevel, vLevel in pairs(vClass.levels.getWindows()) do
+								vLevel.spells.setVisible(false);
+							end
+						end
+					end
+				</script>
+			</button_collapse>
+		</sheetdata>
+	</windowclass>
+</root>

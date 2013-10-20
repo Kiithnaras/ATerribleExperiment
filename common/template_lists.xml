@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="string_textlistitem">
+		<stringu>
+			<script file="common/scripts/list_textitem.lua" />
+		</stringu>
+	</template>
+	<template name="link_list">
+		<windowreferencecontrol>
+			<bounds>0,0,20,20</bounds>
+			<icon>
+				<normal>button_openwindow</normal>
+				<pressed>button_emptytarget</pressed>
+				<empty>button_emptytarget</empty>
+			</icon>
+			<description>
+				<field>name</field>
+			</description>
+		</windowreferencecontrol>
+	</template>
+	
+	<template name="list_text">
+		<windowlist>
+			<allowcreate />
+			<allowdelete />
+			<sortby mergerule="replace"><control>value</control></sortby>
+			<script file="common/scripts/list_text.lua" />
+		</windowlist>
+	</template>
+	<template name="list_text_static">
+		<windowlist>
+			<readonly />
+			<sortby mergerule="replace"><control>value</control></sortby>
+			<script file="common/scripts/list_text.lua" />
+		</windowlist>
+	</template>
+	<template name="list_nonempty">
+		<windowlist>
+			<createonempty />
+			<noscroll />
+			<script file="common/scripts/list_nonempty.lua" />
+		</windowlist>
+	</template>
+
+	<template name="button_filter">
+		<genericcontrol>
+			<icon>search_icon</icon>
+			<widgetposition>
+				<anchor>bottomleft</anchor>
+				<offsetx>5</offsetx>
+				<offsety>-5</offsety>
+			</widgetposition>
+			<target mergerule="replace">filter</target>
+			<script file="common/scripts/list_filtertrigger.lua" />
+		</genericcontrol>
+	</template>
+	
+	<template name="filter2">
+		<stringcontrol>
+			<frame>
+				<name>searchframe</name>
+				<offset>37,45,3,12</offset>
+			</frame>
+			<font>sheettext</font>
+			<selectioncolor>#FFD296</selectioncolor>
+			<trigger mergerule="replace">filtertrigger</trigger>
+			<target mergerule="replace">list</target>
+			<script file="common/scripts/list_filter2.lua" />
+		</stringcontrol>
+	</template>
+	<template name="filter">
+		<stringcontrol>
+			<frame>
+				<name>searchframe</name>
+				<offset>37,45,3,12</offset>
+			</frame>
+			<font>sheettext</font>
+			<selectioncolor>#FFD296</selectioncolor>
+			<trigger mergerule="replace">filtertrigger</trigger>
+			<target mergerule="replace">list</target>
+			<script file="common/scripts/list_filter.lua" />
+		</stringcontrol>
+	</template>
+</root>

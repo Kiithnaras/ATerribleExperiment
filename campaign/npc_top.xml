@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="npc">
+		<frame>charsheet</frame>
+		<placement>
+			<size>
+				<width>400</width>
+				<height>500</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum>
+				<width>400</width>
+				<height>400</height>
+			</minimum>
+			<maximum>
+				<width>1024</width>
+				<height>1024</height>
+			</maximum>
+		</sizelimits>
+		<minimize>minimized_npc</minimize>
+		<nodelete />
+		<tooltip>
+			<field>name</field>
+		</tooltip>
+		<script file="campaign/scripts/campaign_npc_top.lua" />
+		<sheetdata>
+			<frame_campaign name="controlframe">
+				<bounds>9,-50,-11,-15</bounds>
+			</frame_campaign>
+			<button_checkbox name="locked">
+				<bounds>20,-43,20,20</bounds>
+				<parameters>
+					<icons>indicator_padlock_closed</icons>
+					<tooltips>Fields locked</tooltips>
+					<defaulticon>indicator_padlock_open</defaulticon>
+					<defaulttooltip>Fields unlocked</defaulttooltip>
+				</parameters>
+				<sourceless />
+				<script>
+					function onValueChanged()
+						window.StateChanged();
+					end
+				</script>
+			</button_checkbox>
+			<genericcontrol name="hardlocked">
+				<bounds>20,-43,20,20</bounds>
+				<icon>indicator_padlock_closed_red</icon>
+			</genericcontrol>
+			<radio_campaign_npctype name="npctype">
+				<anchored>
+					<top>
+						<parent>controlframe</parent>
+						<offset>10</offset>
+					</top>
+					<left>
+						<parent>controlframe</parent>
+						<anchor>center</anchor>
+						<offset>-125</offset>
+					</left>
+					<size><height>15</height></size>
+				</anchored>
+				<script>
+					function onValueChanged()
+						window.TypeChanged();
+					end
+				</script>
+			</radio_campaign_npctype>
+
+			<frame_campaign name="nameframe">
+				<bounds>58,20,-35,35</bounds>
+			</frame_campaign>
+			<link_npc>
+				<class>npc</class>
+			</link_npc>
+			<stringfield name="name">
+				<anchored>
+					<to>nameframe</to>
+					<top><offset>10</offset></top>
+					<left><offset>15</offset></left>
+					<right><offset>-15</offset></right>
+				</anchored>
+				<empty>&#171; New Personality &#187;</empty>
+				<font>sheettext</font>
+			</stringfield>
+			<tokenfield name="token">
+				<bounds>13,25,25,25</bounds>
+				<empty>indicator_emptytoken</empty>
+			</tokenfield>
+			<button_activateid>
+				<bounds>-36,27,23,22</bounds>
+			</button_activateid>
+
+			<frame_campaign>
+				<bounds>10,53,-21,-50</bounds>
+			</frame_campaign>
+			<genericcontrol name="contentframe">
+				<bounds>22,65,-41,-62</bounds>
+			</genericcontrol>
+
+			<!-- SUBWINDOWS -->
+			<subwindow_details name="main_creature">
+				<class>npc_combat_creature</class>
+			</subwindow_details>
+			<subwindow_details name="main_trap">
+				<class>npc_combat_trap</class>
+			</subwindow_details>
+			<subwindow_details name="main_vehicle">
+				<class>npc_combat_vehicle</class>
+			</subwindow_details>
+
+			<subwindow_details name="spells">
+				<class>npc_spells</class>
+				<script>
+					function update()
+						resetMenuItems();
+						local bLock = window.getAccessState();
+						if not bLock then
+							registerMenuItem("Add Spell Class", "insert", 5);
+						end
+						
+						if subwindow then
+							subwindow.update();
+						end
+					end
+					
+					function onMenuSelection(selection)
+						if selection == 5 then
+							if subwindow then
+								local w = subwindow.spellclasslist.createWindow();
+								if w then
+									w.activatedetail.setValue(true);
+									w.label.setFocus();
+									DB.setValue(window.getDatabaseNode(), "spellmode", "string", "standard");
+								end
+							end
+						end
+					end
+				</script>
+			</subwindow_details>
+
+			<ft_campaigndesc name="text">
+				<anchored>
+					<to>contentframe</to>
+					<left><offset>5</offset></left>
+					<right><offset>0</offset></right>
+					<top><offset>7</offset></top>
+					<bottom><offset>-12</offset></bottom>
+				</anchored>
+				<invisible />
+			</ft_campaigndesc>
+
+			<scrollbar_details>
+				<target>main_creature</target>
+			</scrollbar_details>
+			<scrollbar_details>
+				<target>main_trap</target>
+			</scrollbar_details>
+			<scrollbar_details>
+				<target>main_vehicle</target>
+			</scrollbar_details>
+			<scrollbar_details>
+				<target>spells</target>
+			</scrollbar_details>
+			<scrollbar_details>
+				<target>text</target>
+			</scrollbar_details>
+
+			<buttongroup_tabs name="tabs">
+				<tab>
+					<icon>tab_main</icon>
+					<subwindow>main_creature</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_spells</icon>
+					<subwindow>spells</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_other</icon>
+					<subwindow>text</subwindow>
+				</tab>
+			</buttongroup_tabs>
+			
+			<resize_charsheet />
+			<close_charsheetmini />
+		</sheetdata>
+	</windowclass>
+</root>

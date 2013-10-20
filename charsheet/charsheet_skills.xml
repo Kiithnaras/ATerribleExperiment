@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="charsheet_skilllistitem">
+		<sizelimits>
+			<minimum>
+				<height>18</height>
+			</minimum>
+		</sizelimits>
+		<script file="charsheet/scripts/charsheet_skilllistitem.lua" />
+		<sheetdata>
+			<!-- Hidden values -->
+			<hn name="armorcheckmultiplier">
+				<script>
+					function onValueChanged()
+						window.onCheckPenaltyChange();
+					end
+				</script>
+			</hn>
+
+			<button_checkbox name="showonminisheet">
+				<bounds>6,8,12,12</bounds>
+				<checked />
+			</button_checkbox>
+			<button_checkbox name="state">
+				<bounds>22,8,12,12</bounds>
+				<script>
+					function onValueChanged()
+						local nodeWin = window.getDatabaseNode();
+						if nodeWin then
+							CharManager.updateSkillPoints(nodeWin.getChild("..."));
+						end
+					end
+				</script>
+			</button_checkbox>
+			
+			<number_charskillranks name="ranks">
+				<bounds>-242,3,32,16</bounds>
+				<tabtarget next="misc" prev="sublabel" />
+			</number_charskillranks>
+			<cycler_charskillability name="statname">
+				<bounds>-208,3,40,16</bounds>
+				<script>
+					function onValueChanged()
+						window.onStatUpdate();
+					end
+				</script>
+			</cycler_charskillability>
+			<number_charskillfield_static name="stat">
+				<bounds>-166,2,32,16</bounds>
+				<script>
+					function update(statname)
+						setValue(DB.getValue(window.getDatabaseNode(), "...abilities." .. statname .. ".bonus", 0));
+					end
+				</script>
+			</number_charskillfield_static>
+			<number_charskillfield name="misc">
+				<bounds>-132,2,32,16</bounds>
+				<tabtarget prev="ranks" />
+			</number_charskillfield>
+			<genericcontrol name="armorwidget">
+				<bounds>-94,7,8,9</bounds>
+			</genericcontrol>
+			<number_charskilltotal name="total">
+				<bounds>-74,2,44,16</bounds>
+			</number_charskilltotal>
+			<link_field name="shortcut">
+				<bounds>-22,2,20,20</bounds>
+			</link_field>
+
+			<stringu name="label">
+				<anchored>
+					<top><offset>5</offset></top>
+					<left><offset>40</offset></left>
+					<right>
+						<parent>ranks</parent>
+						<anchor>left</anchor>
+						<offset>-10</offset>
+					</right>
+					<size>
+						<height>16</height>
+					</size>
+				</anchored>
+				<tabtarget next="sublabel" />
+				<script>
+					function onEnter()
+						window.windowlist.addEntry(true);
+						return true;
+					end
+				</script>
+			</stringu>
+			<stringu name="sublabel">
+				<invisible />
+				<anchored>
+					<to>label</to>
+					<top />
+					<left>
+						<anchor>right</anchor>
+						<offset>5</offset>
+					</left>
+					<right>
+						<parent>ranks</parent>
+						<anchor>left</anchor>
+						<offset>-10</offset>
+					</right>
+					<size>
+						<height>16</height>
+					</size>
+				</anchored>
+				<tabtarget next="ranks" prev="label" />
+				<script>
+					function onEnter()
+						window.windowlist.addNewInstance(window.label.getValue());
+						return true;
+					end
+				</script>
+			</stringu>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_skills">
+		<placement>
+			<size>
+				<width>252</width>
+				<height>611</height>
+			</size>
+		</placement>
+		<nodelete />
+		<sheetdata>
+			<frame_char name="skillframe">
+				<bounds>15,0,480,430</bounds>
+			</frame_char>
+
+			<genericcontrol>
+				<bounds>32,9,10,10</bounds>
+				<icon>indicator_quicklist</icon>
+				<tooltip>
+					<text>Show on Mini</text>
+				</tooltip>
+			</genericcontrol>
+			<genericcontrol>
+				<bounds>49,9,10,10</bounds>
+				<icon>indicator_encumbrance</icon>
+				<tooltip>
+					<text>Class skill</text>
+				</tooltip>
+			</genericcontrol>
+			<label_sm>
+				<bounds>92,9,30,10</bounds>
+				<static>Name</static>
+			</label_sm>
+			<label_sm>
+				<bounds>246,9,30,10</bounds>
+				<static>Ranks</static>
+			</label_sm>
+			<label_sm>
+				<bounds>310,9,30,10</bounds>
+				<static>Stat</static>
+			</label_sm>
+			<label_sm>
+				<bounds>359,9,30,10</bounds>
+				<static>Misc</static>
+			</label_sm>
+			<label_sm>
+				<bounds>423,9,30,10</bounds>
+				<static>Total</static>
+			</label_sm>
+
+			<windowlist name="skilllist">
+				<anchored>
+					<to>skillframe</to>
+					<position>over</position>
+					<offset>-10,-12</offset>
+					<top>
+						<offset>26</offset>
+					</top>
+				</anchored>
+				<datasource>.skilllist</datasource>
+				<class>charsheet_skilllistitem</class>
+				<sortby>
+					<control>label</control>
+					<control>sublabel</control>
+				</sortby>
+				<script file="charsheet/scripts/charsheet_skilllist.lua" />
+			</windowlist>
+			<scrollbar_charlist>
+				<anchored>
+					<to>skilllist</to>
+				</anchored>
+				<target>skilllist</target>
+			</scrollbar_charlist>
+
+			<frame_char name="skillpointframe">
+				<bounds>15,430,480,50</bounds>
+			</frame_char>
+			<basicnumber_sm name="unspentskillpoints" source="skillpoints.unspent">
+				<anchored>
+					<to>skillpointframe</to>
+					<position>insidetopleft</position>
+					<offset>60,15</offset>
+					<size>
+						<height>20</height>
+						<width>35</width>
+					</size>
+				</anchored>
+				<nodrag />
+				<min>0</min>
+			</basicnumber_sm>
+			<label_sm>
+				<anchored>
+					<to>skillpointframe</to>
+					<position>insidetopleft</position>
+					<offset>13,15</offset>
+					<size>
+						<height>21</height>
+						<width>45</width>
+					</size>
+				</anchored>
+				<static>Available points</static>
+				<multilinespacing>10</multilinespacing>
+			</label_sm>
+			<number name="spentskillpoints" source="skillpoints.spent">
+				<anchored>
+					<to>skillpointframe</to>
+					<position>insidetopright</position>
+					<offset>10,15</offset>
+					<size>
+						<height>20</height>
+						<width>35</width>
+					</size>
+				</anchored>
+				<frame>
+					<name>modifier</name>
+					<offset>3,3,3,3</offset>
+				</frame>
+				<font>sheetnumbersmall</font>
+				<readonly />
+				<nodrag />
+			</number>
+			<label_sm>
+				<anchored>
+					<to>skillpointframe</to>
+					<position>insidetopright</position>
+					<offset>50,15</offset>
+					<size>
+						<height>21</height>
+						<width>45</width>
+					</size>
+				</anchored>
+				<static>Points Spent</static>
+				<multilinespacing>10</multilinespacing>
+			</label_sm>
+		</sheetdata>
+	</windowclass>
+</root>

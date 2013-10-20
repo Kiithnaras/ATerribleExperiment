@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="radio_campaign_npctype">
+		<buttongroup_radio>
+			<parameters>
+				<optionwidth>90</optionwidth>
+				<labels>Creature|Trap/Haunt|Vehicle</labels>
+				<values>Creature|Trap|Vehicle</values>
+			</parameters>
+			<gmeditonly />
+		</buttongroup_radio>
+	</template>
+
+	<template name="list_campaignencounternpc">
+		<windowlist>
+			<allowdelete />
+			<sortby><field>name</field></sortby>
+			<child><backcolor>1A40301E</backcolor></child>
+			<child></child>
+			<script file="campaign/scripts/campaign_list_encounternpc.lua" />
+		</windowlist>
+	</template>
+
+	<template name="link_npc">
+		<link_control>
+			<bounds>41,28,20,20</bounds>
+		</link_control>
+	</template>
+
+	<template name="label_npc">
+		<stringcontrol>
+			<font>reference-b</font>
+			<multilinespacing>15</multilinespacing>
+			<selectioncolor>90FFFFFF</selectioncolor>
+			<nodrag />
+			<readonly />
+		</stringcontrol>
+	</template>
+
+	<template name="number_npc_init">
+		<number_column>
+			<displaysign />
+			<script>
+				function action(draginfo)
+					local rActor = ActorManager.getActor("npc", window.getDatabaseNode());
+					ActionInit.performRoll(draginfo, rActor);
+
+					return true;
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+
+				function onDoubleClick(x,y)
+					return action();
+				end
+			</script>
+		</number_column>
+	</template>
+	
+	<template name="number_npc_cmb">
+		<number_column>
+			<displaysign />
+			<script>
+				function action(draginfo)
+					local rActor = ActorManager.getActor("npc", window.getDatabaseNode());
+
+					local rAttack = {};
+					rAttack.label = "";
+					rAttack.modifier = getValue();
+					rAttack.stat = "strength";
+					
+					ActionAttack.performGrappleRoll(draginfo, rActor, rAttack);
+									
+					return true;
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+
+				function onDoubleClick(x,y)
+					return action();
+				end
+			</script>
+		</number_column>
+	</template>
+	
+	<template name="number_npc_ability">
+		<basicnumber>
+			<font>sheetnumbersmall</font>
+			<default>10</default>
+			<hideonvalue>0</hideonvalue>
+			<nodrop />
+			<script>
+				function onInit()
+					if super.onInit then
+						super.onInit();
+					end
+					
+					if anchor then
+						setAnchor("left", anchor[1], "right", "relative", 5);
+						setAnchor("top", anchor[1], "top", "absolute", 0);
+					else
+						setAnchor("left", "", "left", "absolute", 85);
+						setAnchor("top", baseanchor[1], "bottom", "relative", 17);
+					end
+					
+					setAnchoredWidth(20);
+					setAnchoredHeight(15);
+				end
+
+				function action(draginfo)
+					local rActor = ActorManager.getActor("npc", window.getDatabaseNode());
+					ActionAbility.performRoll(draginfo, rActor, self.target[1]);
+					
+					return true;
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+					
+				function onDoubleClick(x, y)
+					return action();
+				end
+			</script>
+		</basicnumber>
+	</template>
+
+	<template name="number_npc_save">
+		<basicnumber>
+			<font>sheetnumbersmall</font>
+			<displaysign />
+			<nodrop />
+			<script>
+				function onInit()
+					if super.onInit then
+						super.onInit();
+					end
+					
+					if anchor then
+						setAnchor("left", anchor[1], "right", "relative", 5);
+						setAnchor("top", anchor[1], "top", "absolute", 0);
+					else
+						setAnchor("left", "", "left", "absolute", 85);
+						setAnchor("top", baseanchor[1], "bottom", "relative", 17);
+					end
+					
+					setAnchoredWidth(47);
+					setAnchoredHeight(15);
+				end
+
+				function action(draginfo)
+					local rActor = ActorManager.getActor("npc", window.getDatabaseNode());
+					ActionSpell.performSaveRoll(draginfo, rActor, self.target[1]);
+					
+					return true;
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+					
+				function onDoubleClick(x, y)
+					return action();
+				end
+			</script>
+		</basicnumber>
+	</template>
+
+	<template name="header_npc_text">
+		<label_npc>
+			<anchored>
+				<top>
+					<parent>columnanchor</parent>
+					<relation>relative</relation>
+					<anchor>bottom</anchor>
+					<offset>2</offset>
+				</top>
+				<left><offset>10</offset></left>
+				<right><offset>-20</offset></right>
+				<size>
+					<height>15</height>
+				</size>
+			</anchored>
+		</label_npc>
+	</template>
+	<template name="header_line_bottom">
+		<line_column>
+			<anchored>
+				<top>
+					<offset>0</offset>
+				</top>
+			</anchored>
+		</line_column>
+	</template>
+</root>

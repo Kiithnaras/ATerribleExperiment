@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="charlist_host_entry">
+		<sizelimits>
+			<minimum>
+				<height>92</height>
+			</minimum>
+			<maximum>
+				<width>265</width>
+			</maximum>
+		</sizelimits>
+		<frame>modifier</frame>
+		<script>
+			function onInit()
+				if User.isHost() then
+					registerMenuItem("Clear owner", "erase", 4);
+				end
+			end
+			
+			function onMenuSelection(selection)
+				if User.isHost() and selection == 4 then
+					local node = getDatabaseNode();
+					if node then
+						local owner = node.getOwner();
+						if owner then
+							node.removeHolder(owner);
+						end
+					end
+				end
+			end
+		</script>
+		<sheetdata>
+			<genericcontrol name="base">
+				<bounds>0,0,-1,-1</bounds>
+				<script>
+					function onClickDown(button, x, y)
+						return true;
+					end
+
+					function onClickRelease(button, x, y)
+						local nodeWin = window.getDatabaseNode();
+						if nodeWin then
+							Interface.openWindow("charsheet", nodeWin.getNodeName());
+						end
+						return true;
+					end
+
+					function onDragStart(button, x, y, draginfo)
+						if User.isHost() then
+							local nodeWin = window.getDatabaseNode();
+							if not nodeWin then
+								return;
+							end
+							
+							local identityname = nodeWin.getName();
+
+							draginfo.setType("playercharacter");
+							draginfo.setTokenData("portrait_" .. identityname .. "_token");
+							draginfo.setShortcutData("charsheet", "charsheet." .. identityname);
+							draginfo.setStringData(window.name.getValue());
+
+							local base = draginfo.createBaseData();
+							base.setType("token");
+							base.setTokenData("portrait_" .. identityname .. "_token");
+
+							return true;
+						end
+					end
+				</script>
+			</genericcontrol>
+
+			<genericcontrol name="portraitbase">
+				<bounds>10,10,72,72</bounds>
+				<disabled />
+				<icon>charlist_base</icon>
+			</genericcontrol>
+			<genericcontrol name="portrait">
+				<bounds>10,10,72,72</bounds>
+				<disabled />
+				<script>
+					function onInit()
+						local nodeWin = window.getDatabaseNode();
+						if nodeWin then
+							setIcon("portrait_" .. nodeWin.getName() .. "_charlist", true);
+						end
+					end
+				</script>
+			</genericcontrol>
+
+			<stringfield name="name">
+				<bounds>90,20,-40,20</bounds>
+				<font>sheettext</font>
+				<empty>&#171; Unnamed &#187;</empty>
+				<disabled />
+			</stringfield>
+			<stringcontrol name="classlevel">
+				<bounds>90,40,-40,20</bounds>
+				<font>chatfont</font>
+				<disabled />
+				<script>
+					function onInit()
+						local nLevel = DB.getValue(window.getDatabaseNode(), "level", 0);
+						if nLevel &gt; 0 then
+							setValue("Level " .. nLevel);
+						end
+					end
+				</script>
+			</stringcontrol>
+			<stringcontrol name="owner">
+				<bounds>90,60,-40,20</bounds>
+				<font>chatfont</font>
+				<disabled />
+				<script>
+					function update()
+						local ownername = nil;
+						local nodeWin = window.getDatabaseNode();
+						if nodeWin then
+							ownername = nodeWin.getOwner();
+						end
+						if not ownername then
+							ownername = "None";
+						end
+						
+						setValue("Owned by: " .. ownername);
+					end
+					
+					function onInit()
+						local nodeWin = window.getDatabaseNode();
+						if nodeWin then
+							nodeWin.onObserverUpdate = update;
+						end
+						update();
+					end
+				</script>
+			</stringcontrol>
+
+			<button_icon>
+				<bounds>-35,-35,18,18</bounds>
+				<icon>
+					<normal>icon_export</normal>
+					<pressed>icon_export</pressed>
+				</icon>
+				<tooltip>
+					<text>Export Character</text>
+				</tooltip>
+				<script>
+					function onButtonPress()
+						CharManager.export(window.getDatabaseNode());
+					end
+				</script>
+			</button_icon>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charlist_host">
+		<frame>indexbox</frame>
+		<placement>
+			<size>
+				<width>590</width>
+				<height>372</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<minimum>
+				<width>590</width>
+				<height>372</height>
+			</minimum>
+			<dynamic />
+		</sizelimits>
+		<nodelete />
+		<sheetdata>
+			<!-- TITLE -->
+			<windowtitlebar>
+				<title>
+					<text>Character Selection</text>
+				</title>
+			</windowtitlebar>
+
+			<!-- LIST -->
+			<windowlist name="list">
+				<bounds>30,43,-30,-55</bounds>
+				<datasource>.</datasource>
+				<class>charlist_host_entry</class>
+				<allowcreate />
+				<allowdelete />
+				<columns>
+					<width>265</width>
+					<fillwidth />
+				</columns>
+			</windowlist>
+			<scrollbar>
+				<bounds>-35,48,20,-60</bounds>
+				<target>list</target>
+			</scrollbar>
+			
+			<button_import />
+
+			<resize_library />
+			<close_library />
+		</sheetdata>
+	</windowclass>
+</root>

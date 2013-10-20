@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="charsheetmini_inventoryitem">
+		<sizelimits>
+			<minimum>
+				<height>22</height>
+			</minimum>
+		</sizelimits>
+		<script>
+			function onInit()
+				onIDChanged();
+			end
+			
+			function updateStatus()
+				windowlist.applyFilter();
+			end
+			
+			function onIDChanged()
+				local bID = true;
+				if OptionsManager.isOption("MIID", "on") then
+					bID = isidentified.getValue();
+				end
+				name.setVisible(bID ~= 0);
+				nonid_name.setVisible(bID == 0);
+			end
+		</script>
+		<sheetdata>
+			<!-- Hidden fields -->
+			<hn name="isidentified">
+				<default>1</default>
+				<script>
+					function onValueChanged()
+						window.onIDChanged();
+					end
+				</script>
+			</hn>
+			<hn name="showonminisheet">
+				<script>
+					function onValueChanged()
+						window.updateStatus();
+					end
+				</script>
+			</hn>
+
+			<number_charinv name="count">
+				<bounds>2,4,20,15</bounds>
+			</number_charinv>
+			<string_charinvname name="name">
+				<anchored>
+					<top><offset>3</offset></top>
+					<left><offset>28</offset></left>
+					<right><offset>-25</offset></right>
+					<size><height>16</height></size>
+				</anchored>
+				<readonly />
+			</string_charinvname>
+			<string_charinvname name="nonid_name">
+				<anchored>
+					<top><offset>3</offset></top>
+					<left><offset>28</offset></left>
+					<right><offset>-25</offset></right>
+					<size><height>16</height></size>
+				</anchored>
+				<empty>Unidentified Item</empty>
+				<readonly />
+				<invisible />
+			</string_charinvname>
+			<link_control name="shortcut">
+				<bounds>-22,0,20,20</bounds>
+				<class>item</class>
+			</link_control>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheetmini_inventory">
+		<placement>
+			<size>
+				<width>360</width>
+				<height>220</height>
+			</size>
+		</placement>
+		<nodelete />
+		<sheetdata>
+			<!-- COINS -->
+			<frame_char name="mini_coinframe">
+				<bounds>0,10,-10,65</bounds>
+			</frame_char>
+
+			<number_charadd_sm name="coinamount1" source="coins.slot1.amount">
+				<anchored>
+					<to>mini_coinframe</to>
+					<position>insidetopleft</position>
+					<offset>45,30</offset>
+					<size>
+						<width>75</width>
+						<height>25</height>
+					</size>
+				</anchored>
+			</number_charadd_sm>
+			<genericcontrol>
+				<anchored>
+					<to>coinamount1</to>
+					<position>above</position>
+					<offset>0,-16</offset>
+				</anchored>
+				<icon>indicator_coin</icon>
+				<iconcolor>#FFFFFFFF</iconcolor>
+			</genericcontrol>
+
+			<number_charadd_sm name="coinamount2" source="coins.slot2.amount">
+				<anchored>
+					<to>coinamount1</to>
+					<position>right</position>
+					<offset>6,0</offset>
+					<size>
+						<width>75</width>
+					</size>
+				</anchored>
+			</number_charadd_sm>
+			<genericcontrol>
+				<anchored>
+					<to>coinamount2</to>
+					<position>above</position>
+					<offset>0,-16</offset>
+				</anchored>
+				<icon>indicator_coin</icon>
+				<iconcolor>#FFFFDF4B</iconcolor>
+			</genericcontrol>
+
+			<number_charadd_sm name="coinamount3" source="coins.slot3.amount">
+				<anchored>
+					<to>coinamount2</to>
+					<position>right</position>
+					<offset>6,0</offset>
+					<size>
+						<width>75</width>
+					</size>
+				</anchored>
+			</number_charadd_sm>
+			<genericcontrol>
+				<anchored>
+					<to>coinamount3</to>
+					<position>above</position>
+					<offset>0,-16</offset>
+				</anchored>
+				<icon>indicator_coin</icon>
+				<iconcolor>#FFE3E3E3</iconcolor>
+			</genericcontrol>
+
+			<number_charadd_sm name="coinamount4" source="coins.slot4.amount">
+				<anchored>
+					<to>coinamount3</to>
+					<position>right</position>
+					<offset>6,0</offset>
+					<size>
+						<width>75</width>
+					</size>
+				</anchored>
+			</number_charadd_sm>
+			<genericcontrol>
+				<anchored>
+					<to>coinamount4</to>
+					<position>above</position>
+					<offset>0,-16</offset>
+				</anchored>
+				<icon>indicator_coin</icon>
+				<iconcolor>#FFDDA15B</iconcolor>
+			</genericcontrol>
+
+			<!-- ITEMS -->
+			<frame_char name="mini_inventoryframe">
+				<bounds>0,75,-10,-15</bounds>
+			</frame_char>
+			<list_charminiinv name="inventorylist">
+				<anchored>
+					<to>mini_inventoryframe</to>
+					<position>over</position>
+					<offset>-12,-10</offset>
+				</anchored>
+				<datasource>.inventorylist</datasource>
+				<class>charsheetmini_inventoryitem</class>
+			</list_charminiinv>
+			<scrollbar_charminilist>
+				<anchored>
+					<to>inventorylist</to>
+				</anchored>
+				<target>inventorylist</target>
+			</scrollbar_charminilist>
+		</sheetdata>
+	</windowclass>
+</root>

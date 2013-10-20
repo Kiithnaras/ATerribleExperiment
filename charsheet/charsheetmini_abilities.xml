@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="charsheetmini_skillitem">
+		<sizelimits>
+			<minimum>
+				<height>22</height>
+			</minimum>
+		</sizelimits>
+		<script file="charsheet/scripts/charsheetmini_skilllistitem.lua" />
+		<sheetdata>
+			<!-- Hidden fields -->
+			<hn name="showonminisheet">
+				<default>1</default>
+				<script>
+					function onValueChanged()
+						window.updateStatus();
+					end
+				</script>
+			</hn>
+			<hs name="label">
+				<script>
+					function onValueChanged()
+						window.updateName();
+					end
+				</script>
+			</hs>
+			<hs name="sublabel">
+				<script>
+					function onValueChanged()
+						window.updateName();
+					end
+				</script>
+			</hs>
+			
+			<number_charskilltotal_sm name="total">
+				<bounds>-32,4,27,14</bounds>
+				<font>sheetnumbersmall</font>
+			</number_charskilltotal_sm>
+			<string_textlistitem name="name">
+				<anchored>
+					<top><offset>3</offset></top>
+					<left><offset>5</offset></left>
+					<right><offset>-36</offset></right>
+					<size>
+						<height>16</height>
+					</size>
+				</anchored>
+				<readonly />
+			</string_textlistitem>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheetmini_abilityitem">
+		<sizelimits>
+			<minimum>
+				<height>22</height>
+			</minimum>
+		</sizelimits>
+		<sheetdata>
+			<link_smart name="shortcut">
+				<bounds>-22,1,20,20</bounds>
+				<defaultclass>ref_ability</defaultclass>
+				<toggle />
+			</link_smart>
+			<string_textlistitem name="value">
+				<anchored>
+					<top><offset>3</offset></top>
+					<left><offset>5</offset></left>
+					<right><offset>-25</offset></right>
+					<size><height>16</height></size>
+				</anchored>
+				<readonly />
+			</string_textlistitem>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheetmini_abilities">
+		<placement>
+			<size>
+				<width>360</width>
+				<height>220</height>
+			</size>
+		</placement>
+		<nodelete />
+		<sheetdata>
+			<!-- SKILLS -->
+			<frame_char name="mini_skillframe">
+				<bounds>0,10,210,-15</bounds>
+			</frame_char>
+			<windowlist name="skill_list">
+				<anchored>
+					<to>mini_skillframe</to>
+					<position>over</position>
+					<offset>-10,-10</offset>
+				</anchored>
+				<datasource>.skilllist</datasource>
+				<class>charsheetmini_skillitem</class>
+				<sortby><control>name</control></sortby>
+				<script file="charsheet/scripts/charsheetmini_skilllist.lua" />
+			</windowlist>
+			<scrollbar_charminilist>
+				<anchored>
+					<to>skill_list</to>
+				</anchored>
+				<target>skill_list</target>
+			</scrollbar_charminilist>
+
+			<!-- FEATS -->
+			<frame_char name="mini_featframe">
+				<bounds>215,10,-10,175</bounds>
+			</frame_char>
+			<list_text_static name="feat_list">
+				<anchored>
+					<to>mini_featframe</to>
+					<position>over</position>
+					<offset>-10,-10</offset>
+				</anchored>
+				<datasource>.featlist</datasource>
+				<class>charsheetmini_abilityitem</class>
+			</list_text_static>
+			<scrollbar_charminilist>
+				<anchored>
+					<to>feat_list</to>
+				</anchored>
+				<target>feat_list</target>
+			</scrollbar_charminilist>
+
+			<!-- SPECIAL ABILITIES -->
+			<frame_char name="mini_saframe">
+				<bounds>215,185,-10,-15</bounds>
+			</frame_char>
+			<list_text_static name="specialabilitylist">
+				<anchored>
+					<to>mini_saframe</to>
+					<position>over</position>
+					<offset>-10,-10</offset>
+				</anchored>
+				<datasource>.specialabilitylist</datasource>
+				<class>charsheetmini_abilityitem</class>
+			</list_text_static>
+			<scrollbar_charminilist>
+				<anchored>
+					<to>specialabilitylist</to>
+				</anchored>
+				<target>specialabilitylist</target>
+			</scrollbar_charminilist>
+		</sheetdata>
+	</windowclass>
+</root>

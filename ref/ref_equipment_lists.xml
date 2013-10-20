@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<!-- WEAPON LINKS -->
+	<windowclass name="reference_weapontablelistitem">
+		<sizelimits>
+			<minimum>
+				<height>20</height>
+				<width>750</width>
+			</minimum>
+		</sizelimits>
+		<sheetdata>
+			<link_field name="link">
+				<bounds>5,0,20,20</bounds>
+			</link_field>
+			<string_linked_static name="name">
+				<bounds>30,2,120,15</bounds>
+				<font>reference-r</font>
+				<underlineoffset>0</underlineoffset>
+				<linktarget>link</linktarget>
+			</string_linked_static>
+
+			<genericcontrol name="reftableanchor">
+				<bounds>150,2,0,0</bounds>
+			</genericcontrol>
+			<string_reftable name="cost">
+				<center />
+			</string_reftable>
+			<string_reftable name="damage">
+				<center />
+			</string_reftable>
+			<string_reftable name="critical">
+				<center />
+			</string_reftable>
+			<string_reftable name="range">
+				<center />
+			</string_reftable>
+			<string_reftable name="weight">
+				<center />
+			</string_reftable>
+			<string_reftable name="properties">
+			</string_reftable>
+			<string_reftable name="damagetype">
+				<anchored>
+					<size>
+						<width>150</width>
+					</size>
+				</anchored>
+			</string_reftable>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="reference_weapontablegroup">
+		<sizelimits>
+			<minimum>
+				<height>0</height>
+			</minimum>
+			<maximum>
+				<height>100000</height>
+			</maximum>
+		</sizelimits>
+		<script file="ref/scripts/ref_listgroup.lua" />
+		<sheetdata>
+			<anchor_column name="topanchor" />
+			
+			<string_groupdesc name="description" />
+			<string_groupsubdesc name="subdescription" />
+
+			<list_reftablegroupitems name="list">
+				<datasource>.weapons</datasource>
+				<class>reference_weapontablelistitem</class>
+			</list_reftablegroupitems>
+
+			<ft_reftablefooter name="footer" />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="reference_weapontablelist">
+		<frame>referencepage</frame>
+		<placement>
+			<size>
+				<width>750</width>
+				<height>650</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic>
+				<resize>vertical</resize>
+			</dynamic>
+			<minimum>
+				<width>750</width>
+			</minimum>
+			<maximum>
+				<width>750</width>
+			</maximum>
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip>
+			<field>description</field>
+		</tooltip>
+		<sheetdata>
+			<!-- TITLE -->
+			<windowtitlebar>
+				<title>
+					<field>description</field>
+				</title>
+			</windowtitlebar>
+
+			<!-- HEADERS -->
+			<genericcontrol name="headeranchor">
+				<bounds>55,45,0,0</bounds>
+			</genericcontrol>
+			<label_reftable name="headername">
+				<anchored>
+					<size>
+						<width>120</width>
+					</size>
+				</anchored>
+				<static>Name</static>
+			</label_reftable>
+			<label_reftable name="headercost">
+				<static>Cost</static>
+				<center />
+			</label_reftable>
+			<label_reftable name="headerdamage">
+				<static>Damage</static>
+				<center />
+			</label_reftable>
+			<label_reftable name="headercritical">
+				<static>Critical</static>
+				<center />
+			</label_reftable>
+			<label_reftable name="headerrange">
+				<static>Range Inc.</static>
+				<center />
+			</label_reftable>
+			<label_reftable name="headerweight">
+				<static>Weight</static>
+				<center />
+			</label_reftable>
+			<label_reftable name="headerprops">
+				<static>Property</static>
+			</label_reftable>
+			<label_reftable name="headerdmgtype">
+				<anchored>
+					<size>
+						<width>150</width>
+					</size>
+				</anchored>
+				<static>Type</static>
+			</label_reftable>
+
+			<!-- GROUP LIST -->
+			<list_reftablegroup name="grouplist">
+				<bounds>25,70,-25,-70</bounds>
+				<class>reference_weapontablegroup</class>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>15,15,15,15</offset>
+				</frame>
+			</list_reftablegroup>
+			<scrollbar>
+				<bounds>-35,80,20,-80</bounds>
+				<target>grouplist</target>
+			</scrollbar>
+			
+			<!-- LIST CONTROLS -->
+			<filter_reftable name="filter">
+				<bounds>105,-45,-90,20</bounds>
+			</filter_reftable>
+			<button_filter name="filtertrigger">
+				<bounds>70,-55,21,41</bounds>
+			</button_filter>			
+			<button_expand>
+				<bounds>15,-45,20,20</bounds>
+			</button_expand>
+			<button_collapse>
+				<bounds>40,-45,20,20</bounds>
+			</button_collapse>
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+
+	<!-- ARMOR LINKS -->
+	<windowclass name="reference_armortablelistitem">
+		<sizelimits>
+			<minimum>
+				<height>20</height>
+				<width>550</width>
+			</minimum>
+		</sizelimits>
+		<sheetdata>
+			<link_field name="link">
+				<bounds>5,0,20,20</bounds>
+			</link_field>
+			<string_linked_static name="name">
+				<bounds>30,2,120,15</bounds>
+				<font>reference-r</font>
+				<underlineoffset>0</underlineoffset>
+				<linktarget>link</linktarget>
+			</string_linked_static>
+
+			<genericcontrol name="reftableanchor">
+				<bounds>150,2,0,0</bounds>
+			</genericcontrol>
+			<string_reftable name="cost">
+				<center />
+			</string_reftable>
+			<string_reftable name="ac">
+				<center />
+			</string_reftable>
+			<string_reftable name="maxstatbonus">
+				<center />
+			</string_reftable>
+			<string_reftable name="checkpenalty">
+				<center />
+			</string_reftable>
+			<string_reftable name="spellfailure">
+				<center />
+			</string_reftable>
+			<string_reftable name="speed30">
+				<center />
+			</string_reftable>
+			<string_reftable name="speed20">
+				<center />
+			</string_reftable>
+			<string_reftable name="weight">
+				<center />
+			</string_reftable>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="reference_armortablegroup">
+		<sizelimits>
+			<minimum>
+				<width>550</width>
+				<height>0</height>
+			</minimum>
+			<maximum>
+				<height>100000</height>
+			</maximum>
+		</sizelimits>
+		<script file="ref/scripts/ref_listgroup.lua" />
+		<sheetdata>
+			<anchor_column name="topanchor" />
+			
+			<string_groupdesc name="description" />
+			<string_groupsubdesc name="subdescription" />
+
+			<list_reftablegroupitems name="list">
+				<datasource>.armor</datasource>
+				<class>reference_armortablelistitem</class>
+			</list_reftablegroupitems>
+
+			<ft_reftablefooter name="footer" />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="reference_armortablelist">
+		<frame>referencepage</frame>
+		<placement>
+			<size>
+				<width>750</width>
+				<height>650</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic>
+				<resize>vertical</resize>
+			</dynamic>
+			<minimum>
+				<width>700</width>
+			</minimum>
+			<maximum>
+				<width>700</width>
+			</maximum>
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip>
+			<field>description</field>
+		</tooltip>
+		<sheetdata>
+			<!-- TITLE -->
+			<windowtitlebar>
+				<title>
+					<field>description</field>
+				</title>
+			</windowtitlebar>
+
+			<!-- HEADERS -->
+			<genericcontrol name="headeranchor">
+				<bounds>55,40,0,0</bounds>
+			</genericcontrol>
+			<label_reftable name="headername">
+				<anchored>
+					<size>
+						<width>120</width>
+					</size>
+				</anchored>
+				<static>\rName</static>
+			</label_reftable>
+			<label_reftable name="headercost">
+				<static>\rCost</static>
+				<center />
+			</label_reftable>
+			<label_reftable name="headerac">
+				<static>AC\rBonus</static>
+				<center />
+			</label_reftable>
+			<label_reftable name="headermaxstat">
+				<static>Max Dex\rBonus</static>
+				<center />
+			</label_reftable>
+			<label_reftable name="headercheckpenalty">
+				<static>Skill\rPenalty</static>
+				<center />
+			</label_reftable>
+			<label_reftable name="headerspellfailure">
+				<static>Arc. Spell\rFailure</static>
+				<center />
+			</label_reftable>
+			<label_reftable name="headerspeed30">
+				<static>Speed\r(30')</static>
+				<center />
+			</label_reftable>
+			<label_reftable name="headerspeed20">
+				<static>Speed\r(20')</static>
+				<center />
+			</label_reftable>
+			<label_reftable name="headerweight">
+				<static>\rWeight</static>
+				<center />
+			</label_reftable>
+			
+			<!-- GROUP LIST -->
+			<list_reftablegroup name="grouplist">
+				<bounds>25,80,-25,-70</bounds>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>15,15,15,15</offset>
+				</frame>
+				<class>reference_armortablegroup</class>
+			</list_reftablegroup>
+			<scrollbar>
+				<bounds>-35,75,20,-80</bounds>
+				<target>grouplist</target>
+			</scrollbar>
+			
+			<!-- LIST CONTROLS -->
+			<filter_reftable name="filter">
+				<bounds>105,-45,-90,20</bounds>
+			</filter_reftable>
+			<button_filter name="filtertrigger">
+				<bounds>70,-55,21,41</bounds>
+			</button_filter>			
+			<button_expand>
+				<bounds>15,-45,20,20</bounds>
+			</button_expand>
+			<button_collapse>
+				<bounds>40,-45,20,20</bounds>
+			</button_collapse>
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+
+	<!-- EQUIPMENT LINKS -->
+	<windowclass name="reference_equipmenttablelistitem">
+		<sizelimits>
+			<minimum>
+				<width>350</width>
+				<height>0</height>
+			</minimum>
+			<maximum>
+				<width>350</width>
+			</maximum>
+		</sizelimits>
+		<sheetdata>
+			<link_field name="link">
+				<bounds>5,0,20,20</bounds>
+			</link_field>
+			<string_linked_static name="name">
+				<bounds>30,2,140,15</bounds>
+				<font>reference-r</font>
+				<underlineoffset>0</underlineoffset>
+				<linktarget>link</linktarget>
+			</string_linked_static>
+
+			<genericcontrol name="reftableanchor">
+				<bounds>170,2,0,0</bounds>
+			</genericcontrol>
+			<string_reftable name="cost">
+				<center />
+			</string_reftable>
+			<string_reftable name="weight">
+				<center />
+			</string_reftable>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="reference_equipmenttablegroup">
+		<sizelimits>
+			<minimum>
+				<width>350</width>
+				<height>0</height>
+			</minimum>
+			<maximum>
+				<width>350</width>
+				<height>10000</height>
+			</maximum>
+		</sizelimits>
+		<script file="ref/scripts/ref_listgroup.lua" />
+		<sheetdata>
+			<anchor_column name="topanchor" />
+			
+			<string_groupdesc name="description" />
+			<string_groupsubdesc name="subdescription" />
+
+			<list_reftablegroupitems name="list">
+				<datasource>.equipment</datasource>
+				<class>reference_equipmenttablelistitem</class>
+			</list_reftablegroupitems>
+
+			<ft_reftablefooter name="footer" />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="reference_equipmenttablelist">
+		<frame>referencepage</frame>
+		<placement>
+			<size>
+				<width>350</width>
+				<height>650</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic>
+				<resize>vertical</resize>
+			</dynamic>
+			<minimum>
+				<width>350</width>
+			</minimum>
+			<maximum>
+				<width>350</width>
+			</maximum>
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip>
+			<field>description</field>
+		</tooltip>
+		<sheetdata>
+			<!-- TITLE -->
+			<windowtitlebar>
+				<title>
+					<field>description</field>
+				</title>
+			</windowtitlebar>
+
+			<!-- HEADERS -->
+			<genericcontrol name="headeranchor">
+				<bounds>55,45,0,0</bounds>
+			</genericcontrol>
+			<label_reftable name="headername">
+				<anchored>
+					<size>
+						<width>140</width>
+					</size>
+				</anchored>
+				<static>Name</static>
+			</label_reftable>
+			<label_reftable name="headercost">
+				<static>Cost</static>
+				<center />
+			</label_reftable>
+			<label_reftable name="headerweight">
+				<static>Weight</static>
+				<center />
+			</label_reftable>
+			
+			<!-- GROUP LIST -->
+			<list_reftablegroup name="grouplist">
+				<bounds>25,70,-25,-70</bounds>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>15,15,15,15</offset>
+				</frame>
+				<class>reference_equipmenttablegroup</class>
+			</list_reftablegroup>
+			<scrollbar>
+				<bounds>-35,80,20,-80</bounds>
+				<target>grouplist</target>
+			</scrollbar>
+			
+			<!-- LIST CONTROLS -->
+			<filter_reftable name="filter">
+				<bounds>105,-45,-90,20</bounds>
+			</filter_reftable>
+			<button_filter name="filtertrigger">
+				<bounds>70,-55,21,41</bounds>
+			</button_filter>			
+			<button_expand>
+				<bounds>15,-45,20,20</bounds>
+			</button_expand>
+			<button_collapse>
+				<bounds>40,-45,20,20</bounds>
+			</button_collapse>
+
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+</root>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="npc_spells">
+		<script file="campaign/scripts/campaign_npc_spells.lua" />
+		<sheetdata>
+			<button_expand name="expand">
+				<bounds>0,2,12,12</bounds>
+				<script>
+					function onButtonPress()
+						window.onSetVisibleAll(true);
+					end
+				</script>
+			</button_expand>
+			<button_collapse name="collapse">
+				<bounds>15,2,12,12</bounds>
+				<script>
+					function onButtonPress()
+						window.onSetVisibleAll(false);
+					end
+				</script>
+			</button_collapse>
+
+			<label name="mode_label">
+				<anchored>
+					<to>collapse</to>
+					<position>righthigh</position>
+					<offset>15,-1</offset>
+				</anchored>
+				<static>Mode:</static>
+			</label>
+			<buttongroup_radio name="spellmode">
+				<anchored>
+					<to>mode_label</to>
+					<position>right</position>
+					<offset>2</offset>
+				</anchored>
+				<parameters>
+					<optionwidth>75</optionwidth>
+					<labels>Standard|Prep|Combat</labels>
+					<values>standard|preparation|combat</values>
+					<defaultindex>1</defaultindex>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.onModeChanged();
+					end
+				</script>
+			</buttongroup_radio>
+
+			<genericcontrol name="columnanchor">
+				<bounds>0,22,0,0</bounds>
+			</genericcontrol>
+			
+			<list_spellclass name="spellclasslist">
+				<anchored>
+					<top>
+						<parent>columnanchor</parent>
+					</top>
+					<left />
+					<right />
+				</anchored>
+				<class>spell_class</class>
+				<npc />
+				<noscroll />
+			</list_spellclass>
+			<list_spellclass name="spellclasslist_mini">
+				<anchored>
+					<top>
+						<parent>columnanchor</parent>
+					</top>
+					<left />
+					<right />
+				</anchored>
+				<class>spell_class_mini</class>
+				<npc />
+				<readonly />
+				<invisible />
+				<noscroll />
+			</list_spellclass>
+		</sheetdata>
+	</windowclass>
+</root>

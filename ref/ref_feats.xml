@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="referencefeatcontent">
+		<script>
+			function onInit()
+				label_type.setValue("[" .. type.getValue() .. "]");
+			end
+		</script>
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<hs name="type" />
+			<label_reftype name="label_type" />
+
+			<spacer>
+				<anchor>columnanchor</anchor>
+				<height>5</height>
+				<relative />
+			</spacer>
+			
+			<string_column name="prerequisites" />
+			<label_column>
+				<anchor>prerequisites</anchor>
+				<static>Prerequisites</static>
+			</label_column>
+			
+			<line_column name="line_benefit" />
+
+			<label_refdesc name="label_benefit">
+				<static>Benefit</static>
+			</label_refdesc>
+			<ft_refdesc name="benefit">
+				<label>label_benefit</label>
+				<separator>line_benefit</separator>
+			</ft_refdesc>
+
+			<line_column name="line_normal" />
+
+			<label_refdesc name="label_normal">
+				<static>Normal</static>
+			</label_refdesc>
+			<ft_refdesc name="normal">
+				<label>label_normal</label>
+				<separator>line_normal</separator>
+			</ft_refdesc>
+
+			<line_column name="line_special" />
+
+			<label_refdesc name="label_special">
+				<static>Special</static>
+			</label_refdesc>
+			<ft_refdesc name="special">
+				<label>label_special</label>
+				<separator>line_special</separator>
+			</ft_refdesc>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="referencefeat">
+		<frame>whitecontrolarea</frame>
+		<placement>
+			<size>
+				<width>400</width>
+				<height>350</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip>
+			<field>name</field>
+		</tooltip>
+		<sheetdata>
+			<string_name_static name="name" />
+			<link_tl name="open">
+				<class>referencefeat</class>
+			</link_tl>
+
+			<subwindow name="content">
+				<bounds>20,40,-20,-10</bounds>
+				<class>referencefeatcontent</class>
+				<activate />
+			</subwindow>
+			<scrollbar>
+				<bounds>-25,50,20,-15</bounds>
+				<target>content</target>
+			</scrollbar>
+			
+			<resize />
+			<close />
+		</sheetdata>
+	</windowclass>
+</root>

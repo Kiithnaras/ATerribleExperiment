@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="frame_ctsub">
+		<genericcontrol>
+			<anchored>
+				<left>
+					<anchor>left</anchor>
+					<offset>68</offset>
+				</left>
+				<top>
+					<anchor>top</anchor>
+					<offset>-6</offset>
+				</top>
+				<right>
+					<anchor>right</anchor>
+					<offset>-4</offset>
+				</right>
+				<bottom>
+					<anchor>bottom</anchor>
+					<offset>6</offset>
+				</bottom>
+			</anchored>
+			<frame>
+				<name>ct_subgroup</name>
+			</frame>
+			<disabled />
+		</genericcontrol>
+	</template>
+	<template name="icon_ctsection">
+		<genericcontrol>
+			<anchored>
+				<left>
+					<anchor>left</anchor>
+					<offset>48</offset>
+				</left>
+				<top>
+					<parent>name</parent>
+					<anchor>bottom</anchor>
+					<relation>current</relation>
+					<offset>6</offset>
+				</top>
+				<size>
+					<width>20</width>
+					<height>21</height>
+				</size>
+			</anchored>
+		</genericcontrol>
+	</template>
+	
+	<template name="number_ct_static">
+		<number>
+			<readonly />
+			<nodrag />
+			<hideonvalue value="0" />
+			<font>sheetnumbersmall</font>
+			<frame>
+				<name>modifier</name>
+				<offset>2,2,2,2</offset>
+			</frame>
+		</number>
+	</template>
+	<template name="number_ct">
+		<number_crosslink>
+			<font>sheetnumbersmall</font>
+			<frame>
+				<name>bonus</name>
+				<offset>2,2,2,2</offset>
+			</frame>
+			<stateframe>
+				<keyedit>
+					<name>sheetfocus</name>
+					<offset>2,2,2,2</offset>
+				</keyedit>
+				<hover>
+					<name>sheetfocus</name>
+					<offset>2,2,2,2</offset>
+					<hidereadonly />
+				</hover>
+				<drophilight>
+					<name>sheetfocus</name>
+					<offset>2,2,2,2</offset>
+					<hidereadonly />
+				</drophilight>
+			</stateframe>
+			<droptypes>
+				<type>number</type>
+			</droptypes>
+			<gmeditonly />
+		</number_crosslink>
+	</template>
+	<template name="number_ct_underline">
+		<number_crosslink>
+			<anchored>
+				<size>
+					<width>25</width>
+					<height>15</height>
+				</size>
+			</anchored>
+			<font>sheetnumbersmall</font>
+			<frame>
+				<name>textlinesmall</name>
+				<offset>0,-1,0,0</offset>
+			</frame>
+			<stateframe>
+				<keyedit>
+					<name>sheetfocus</name>
+					<offset>5,5,5,5</offset>
+				</keyedit>
+				<hover>
+					<name>sheetfocus</name>
+					<offset>5,5,5,5</offset>
+					<hidereadonly />
+				</hover>
+				<drophilight>
+					<name>sheetfocus</name>
+					<offset>5,5,5,5</offset>
+					<hidereadonly />
+				</drophilight>
+			</stateframe>
+			<droptypes>
+				<type>number</type>
+			</droptypes>
+			<gmeditonly />
+		</number_crosslink>
+	</template>
+	<template name="number_ct_save">
+		<number_ct_underline>
+			<displaysign />
+			<script>
+				function action(draginfo)
+					local rActor = ActorManager.getActor("ct", window.getDatabaseNode());
+					ActionSpell.performSaveRoll(draginfo, rActor, target[1], nil, not window.isClientVisible());
+					
+					return true;
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+
+				function onDoubleClick(x,y)
+					return action();
+				end
+			</script>
+		</number_ct_underline>
+	</template>
+	<template name="number_ct_init">
+		<number_ct_underline>
+			<displaysign />
+			<script>
+				function action(draginfo)
+					local rActor = ActorManager.getActor("ct", window.getDatabaseNode());
+					ActionInit.performRoll(draginfo, rActor, not window.isClientVisible());
+					
+					return true;
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+
+				function onDoubleClick(x,y)
+					return action();
+				end
+			</script>
+		</number_ct_underline>
+	</template>
+	<template name="number_ct_grapple">
+		<number_ct_underline>
+			<displaysign />
+			<script>
+				function action(draginfo)
+					local rActor = ActorManager.getActor("ct", window.getDatabaseNode());
+					local rAction;
+					if rActor.sType == "pc" then
+						rAction = CharManager.getGrappleRollStructures(rActor, "");
+					else
+						rAction = {};
+						rAction.label = "";
+						rAction.modifier = getValue();
+						rAction.stat = "strength";
+					end
+					ActionAttack.performGrappleRoll(draginfo, rActor, rAction);
+					
+					return true;
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+
+				function onDoubleClick(x,y)
+					return action();
+				end
+			</script>
+		</number_ct_underline>
+	</template>
+	
+	<template name="label_ct_sm">
+		<stringcontrol>
+			<anchored>
+				<position>lefthigh</position>
+				<offset>3,2</offset>
+			</anchored>
+			<font>sheetlabelsmall</font>
+		</stringcontrol>
+	</template>
+	
+	<template name="string_ct">
+		<string_crosslink>
+			<font>ct_text</font>
+			<lineoffset default="on">-1</lineoffset>
+		</string_crosslink>
+	</template>
+	<template name="string_ctname">
+		<string_ct>
+			<script>
+				function onInit()
+					super.onInit();
+					setHoverCursor("hand");
+				end
+
+				function onClickDown(button, x, y)
+					if Input.isShiftPressed() then
+						return true;
+					end
+				end
+				
+				function onClickRelease(button, x, y)
+					if Input.isShiftPressed() then
+						local nodeActiveCT = CTManager.getActiveCT();
+						if nodeActiveCT then
+							local nodeWin = window.getDatabaseNode();
+							if nodeWin then
+								TargetingManager.toggleTarget("host", nodeActiveCT.getNodeName(), nodeWin.getNodeName());
+							end
+						end
+						return true;
+					end
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					if User.isHost() then
+						draginfo.setType("combattrackerentry");
+						draginfo.setStringData(getValue());
+						draginfo.setCustomData(window.getDatabaseNode());
+						
+						return true;
+					end
+				end
+			</script>
+		</string_ct>
+	</template>
+
+	<template name="button_ct_friendfoe">
+		<genericcontrol>
+			<script>
+				function onInit()
+					setHoverCursor("hand");
+				end
+
+				function onDragStart(button, x, y, draginfo)
+					draginfo.setType("combattrackerff");
+					draginfo.setIcon(icon[1]);
+					draginfo.setStringData(value[1]);
+
+					return true;
+				end
+			</script>
+		</genericcontrol>
+	</template>
+
+	<template name="string_ct_effectlabel">
+		<stringu_sm>
+			<stateframe>
+				<drophilight>
+					<name>sheetfocus</name>
+					<offset>7,6,7,3</offset>
+				</drophilight>
+			</stateframe>
+			<droptypes>
+				<type>combattrackerentry</type>
+			</droptypes>
+			<script file="ct/scripts/ct_effectlabel.lua" />
+		</stringu_sm>
+	</template>
+</root>

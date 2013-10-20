@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="library_booklistcategory">
+		<frame>rowshade</frame>
+		<sizelimits>
+			<minimum>
+				<height>30</height>
+			</minimum>
+		</sizelimits>
+		<sheetdata>
+			<stringcontrol name="name">
+				<bounds>5,8,-1,15</bounds>
+				<font>sheetlabel</font>
+				<static />
+			</stringcontrol>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="library_booklistentry">
+		<sizelimits>
+			<minimum>
+				<height>70</height>
+			</minimum>
+		</sizelimits>
+		<sheetdata>
+			<thumbnail_librarymodule name="thumbnail">
+				<bounds>4,0,63,63</bounds>
+			</thumbnail_librarymodule>
+			<string_librarymodule name="name">
+				<bounds>70,20,-1,20</bounds>
+			</string_librarymodule>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="library_pagelistentry">
+		<sizelimits>
+			<minimum>
+				<height>20</height>
+			</minimum>
+		</sizelimits>
+		<sheetdata>
+			<link_field name="librarylink">
+				<bounds>5,0,20,20</bounds>
+			</link_field>
+			<string_librarypage name="name">
+				<bounds>25,0,-1,-1</bounds>
+			</string_librarypage>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="library">
+		<frame>indexbox</frame>
+		<placement>
+			<size>
+				<width>700</width>
+				<height>550</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum>
+				<width>500</width>
+				<height>250</height>
+			</minimum>
+		</sizelimits>
+		<sheetdata>
+			<!-- TITLE -->
+			<windowtitlebar>
+				<title>
+					<text>Library</text>
+				</title>
+			</windowtitlebar>
+			
+			<!-- BOOK LIST -->
+			<list_refsections name="booklist">
+				<class>library_booklistentry</class>
+				<datasource>library</datasource>
+				<useallmodules/>
+				<script file="ref/scripts/library_list_book.lua" />
+			</list_refsections>
+			<scrollbar_refsections>
+				<target>booklist</target>
+			</scrollbar_refsections>
+
+			<button_text>
+				<anchored>
+					<left><offset>55</offset></left>
+					<bottom><offset>-30</offset></bottom>
+					<size>
+						<width>200</width>
+						<height>25</height>
+					</size>
+				</anchored>
+				<text>Module Activation</text>
+				<script>
+					function onButtonPress()
+						Interface.openWindow("moduleselection", "");
+					end
+				</script>
+			</button_text>
+
+			<!-- PAGE LIST -->
+			<list_refpages name="pagelist">
+				<class>library_pagelistentry</class>
+				<sortby><control>name</control></sortby>
+				<filter><control>filter</control></filter>
+				<filteron><control>name</control></filteron>
+			</list_refpages>
+			<scrollbar_refpages />
+
+			<!-- CONTROLS -->		
+			<filter_refpages name="filter" />
+			<button_filter_refpages name="filtertrigger" />
+			
+			<resize_library />
+			<close_library />
+		</sheetdata>
+	</windowclass>
+</root>

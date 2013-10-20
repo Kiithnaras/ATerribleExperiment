@@ -1,0 +1,764 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="charsheet_weaponlistitem">
+		<sizelimits>
+			<minimum>
+				<height>30</height>
+			</minimum>
+		</sizelimits>
+		<script file="charsheet/scripts/charsheet_weapon.lua" />
+		<sheetdata>
+			<link_field name="shortcut">
+				<bounds>-22,5,20,20</bounds>
+			</link_field>
+
+			<state_charweapontype name="type">
+				<anchored>
+					<position>insidetopright</position>
+					<offset>325,3</offset>
+				</anchored>
+				<script>
+					function onValueChanged()
+						window.onTypeChanged();
+					end
+				</script>
+			</state_charweapontype>
+
+			<stringu name="name">
+				<anchored>
+					<position>insidetopleft</position>
+					<offset>5,8</offset>
+					<right>
+						<parent>type</parent>
+						<anchor>left</anchor>
+						<offset>0</offset>
+					</right>
+					<size>
+						<height>20</height>
+					</size>
+				</anchored>
+			</stringu>
+
+			<button_chartoggledetail name="activatedetail">
+				<anchored>
+					<position>insidetopright</position>
+					<offset>25,5</offset>
+				</anchored>
+			</button_chartoggledetail>
+
+			<genericcontrol name="damageframe">
+				<anchored>
+					<position>insidetopright</position>
+					<offset>45,0</offset>
+					<size>
+						<width>105</width>
+						<height>30</height>
+					</size>
+				</anchored>
+				<frame>
+					<name>slottedbonus</name>
+				</frame>
+			</genericcontrol>
+			<dice_charweapondamage name="damagedice">
+				<anchored>
+					<to>damageframe</to>
+					<position>insideleft</position>
+					<size>
+						<width>70</width>
+					</size>
+				</anchored>
+			</dice_charweapondamage>
+			<number_charweapondamagetotal name="damagetotalbonus">
+				<anchored>
+					<to>damageframe</to>
+					<position>insideright</position>
+					<offset>0,0</offset>
+					<size>
+						<width>45</width>
+					</size>
+				</anchored>
+			</number_charweapondamagetotal>
+			
+			<genericcontrol name="attackframe">
+				<anchored>
+					<position>insidetopright</position>
+					<offset>150,0</offset>
+					<size>
+						<width>137</width>
+						<height>30</height>
+					</size>
+				</anchored>
+				<frame>
+					<name>slottedmodifier</name>
+				</frame>
+			</genericcontrol>
+
+			<number_charweaponattacktotal name="attack1">
+				<anchored>
+					<to>attackframe</to>
+					<position>insidetopleft</position>
+					<offset>6,5</offset>
+					<size>
+						<width>27</width>
+					</size>
+				</anchored>
+				<modifier>0</modifier>
+				<name>Attack 1</name>
+				<source>
+					<name>attack1modifier</name>
+					<op>+</op>
+				</source>
+			</number_charweaponattacktotal>
+			<number_charweaponattacktotal name="attack2">
+				<anchored>
+					<to>attack1</to>
+					<position>right</position>
+					<offset>5,0</offset>
+					<size>
+						<width>27</width>
+					</size>
+				</anchored>
+				<modifier>-5</modifier>
+				<name>Attack 2</name>
+				<source>
+					<name>attack2modifier</name>
+					<op>+</op>
+				</source>
+			</number_charweaponattacktotal>
+			<number_charweaponattacktotal name="attack3">
+				<anchored>
+					<to>attack2</to>
+					<position>right</position>
+					<offset>5,0</offset>
+					<size>
+						<width>27</width>
+					</size>
+				</anchored>
+				<modifier>-10</modifier>
+				<name>Attack 3</name>
+				<source>
+					<name>attack3modifier</name>
+					<op>+</op>
+				</source>
+			</number_charweaponattacktotal>
+			<number_charweaponattacktotal name="attack4">
+				<anchored>
+					<to>attack3</to>
+					<position>right</position>
+					<offset>5,0</offset>
+					<size>
+						<width>27</width>
+					</size>
+				</anchored>
+				<modifier>-15</modifier>
+				<name>Attack 4</name>
+				<source>
+					<name>attack4modifier</name>
+					<op>+</op>
+				</source>
+			</number_charweaponattacktotal>
+
+			<genericcontrol name="attackicons">
+				<anchored>
+					<position>insidetopright</position>
+					<offset>285,0</offset>
+					<size>
+						<width>40</width>
+						<height>30</height>
+					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+				</frame>
+			</genericcontrol>
+			<number_charweaponfullattack name="attacks">
+				<anchored>
+					<to>attackicons</to>
+					<position>over</position>
+				</anchored>
+			</number_charweaponfullattack>
+
+			<!-- ATTACK DETAILS -->
+			<label_sm name="label_atkdetail">
+				<anchored>
+					<top>
+						<parent>name</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>5</offset>
+					</top>
+					<left>
+						<anchor>left</anchor>
+						<offset>15</offset>
+					</left>
+					<size>
+						<width>70</width>
+						<height>15</height>
+					</size>
+				</anchored>
+				<static>Atk Details:</static>
+			</label_sm>
+			<cycler_ability_sm name="attackstat">
+				<anchored>
+					<to>label_atkdetail</to>
+					<position>righthigh</position>
+					<offset>0,-1</offset>
+					<size>
+						<height>15</height>
+						<width>30</width>
+					</size>
+				</anchored>
+				<script>
+					function onValueChanged()
+						window.onAttackChanged();
+					end
+				</script>
+			</cycler_ability_sm>
+			<label_sm name="label_atkplus">
+				<anchored>
+					<to>attackstat</to>
+					<position>right</position>
+					<offset>7</offset>
+					<size>
+						<width>8</width>
+					</size>
+				</anchored>
+				<static>+</static>
+			</label_sm>
+			<number_charweapon_sm name="bonus">
+				<anchored>
+					<to>label_atkplus</to>
+					<position>righthigh</position>
+					<offset>0,-5</offset>
+					<size>
+						<width>35</width>
+						<height>25</height>
+					</size>
+				</anchored>
+				<hideonvalue>0</hideonvalue>
+			</number_charweapon_sm>
+			<label_sm name="label_atkplus2">
+				<anchored>
+					<to>label_atkplus</to>
+					<position>right</position>
+					<offset>37</offset>
+					<size>
+						<width>8</width>
+					</size>
+				</anchored>
+				<static>+</static>
+			</label_sm>
+			<genericcontrol name="attackmodframe">
+				<anchored>
+					<to>attackframe</to>
+					<position>below</position>
+					<offset>0,-3</offset>
+					<size>
+						<height>25</height>
+					</size>
+				</anchored>
+				<frame>
+					<name>slottedmodifier</name>
+				</frame>
+			</genericcontrol>
+
+			<number_charweaponattackmod name="attack1modifier">
+				<anchored>
+					<to>attackmodframe</to>
+					<position>insidetopleft</position>
+					<offset>3,0</offset>
+					<size>
+						<width>32</width>
+						<height>25</height>
+					</size>
+				</anchored>
+			</number_charweaponattackmod>
+			<number_charweaponattackmod name="attack2modifier">
+				<anchored>
+					<to>attack1modifier</to>
+					<position>right</position>
+					<size>
+						<width>32</width>
+					</size>
+				</anchored>
+			</number_charweaponattackmod>
+			<number_charweaponattackmod name="attack3modifier">
+				<anchored>
+					<to>attack2modifier</to>
+					<position>right</position>
+					<size>
+						<width>32</width>
+					</size>
+				</anchored>
+			</number_charweaponattackmod>
+			<number_charweaponattackmod name="attack4modifier">
+				<anchored>
+					<to>attack3modifier</to>
+					<position>right</position>
+					<size>
+						<width>32</width>
+					</size>
+				</anchored>
+			</number_charweaponattackmod>
+			
+			<label_sm name="label_critrange">
+				<anchored>
+					<top>
+						<parent>label_atkdetail</parent>
+						<anchor>top</anchor>
+					</top>
+					<left>
+						<parent>damageframe</parent>
+						<anchor>left</anchor>
+						<offset>5</offset>
+					</left>
+					<size>
+						<width>65</width>
+						<height>15</height>
+					</size>
+				</anchored>
+				<static>Crit Rng:</static>
+			</label_sm>
+			<number_charweapon_sm name="critatkrange">
+				<anchored>
+					<to>label_critrange</to>
+					<position>righthigh</position>
+					<offset>0,-5</offset>
+					<size>
+						<width>35</width>
+						<height>25</height>
+					</size>
+				</anchored>
+				<default>18</default>
+				<min>2</min>
+				<max>18</max>
+			</number_charweapon_sm>
+
+			<!-- DAMAGE DETAILS -->
+			<label_sm name="label_dmgdetail">
+				<anchored>
+					<top>
+						<parent>name</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>6</offset>
+					</top>
+					<left>
+						<anchor>left</anchor>
+						<offset>15</offset>
+					</left>
+					<size>
+						<width>70</width>
+						<height>15</height>
+					</size>
+				</anchored>
+				<static>Dmg Details:</static>
+			</label_sm>
+			<dice name="damagedicedetail" source="damagedice">
+				<anchored>
+					<to>label_dmgdetail</to>
+					<position>righthigh</position>
+					<offset>-3,-1</offset>
+					<size>
+						<height>15</height>
+						<width>60</width>
+					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>3,5,3,5</offset>
+				</frame>
+				<shadow>
+					<offset>8,0</offset>
+					<size>60,15</size>
+				</shadow>
+				<stateframe>
+					<drophilight>
+						<name>sheetfocus</name>
+						<offset>3,5,3,5</offset>
+					</drophilight>
+				</stateframe>
+				<script>
+					function onInit()
+						registerMenuItem("Clear Dice", "erase", 4);
+					end
+					
+					function onMenuSelection(selection)
+						if selection == 4 then
+							reset();
+						end
+					end
+					
+					function onValueChanged()
+						super.onValueChanged();
+						
+						window.onDamageChanged();
+					end
+				</script>
+			</dice>
+			<label_sm name="label_dmgplus">
+				<anchored>
+					<to>damagedicedetail</to>
+					<position>right</position>
+					<offset>4</offset>
+					<size>
+						<width>8</width>
+					</size>
+				</anchored>
+				<static>+</static>
+			</label_sm>
+			<cycler_ability_sm name="damagestat1">
+				<anchored>
+					<to>label_dmgplus</to>
+					<position>right</position>
+					<offset>6,0</offset>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<script>
+					function onValueChanged()
+						window.onDamageChanged();
+					end
+				</script>
+			</cycler_ability_sm>
+			<label_sm name="label_dmgplus2">
+				<anchored>
+					<to>damagestat1</to>
+					<position>right</position>
+					<offset>7</offset>
+					<size>
+						<width>8</width>
+					</size>
+				</anchored>
+				<static>+</static>
+			</label_sm>
+			<cycler_ability_sm name="damagestat2">
+				<anchored>
+					<to>label_dmgplus2</to>
+					<position>right</position>
+					<offset>6,0</offset>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<parameters>
+					<defaultlabel>-</defaultlabel>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.onDamageChanged();
+					end
+				</script>
+			</cycler_ability_sm>
+			<label_sm name="label_dmgplus3">
+				<anchored>
+					<to>damagestat2</to>
+					<position>right</position>
+					<offset>7</offset>
+					<size>
+						<width>8</width>
+					</size>
+				</anchored>
+				<static>+</static>
+			</label_sm>
+			<number_charweapon_sm name="damagebonus">
+				<anchored>
+					<to>label_dmgplus3</to>
+					<position>righthigh</position>
+					<offset>0,-5</offset>
+					<size>
+						<width>35</width>
+						<height>25</height>
+					</size>
+				</anchored>
+				<hideonvalue>0</hideonvalue>
+				<script>
+					function onValueChanged()
+						window.onDamageChanged();
+					end
+				</script>
+			</number_charweapon_sm>
+
+			<label_sm name="label_critmult">
+				<anchored>
+					<top>
+						<parent>label_dmgdetail</parent>
+						<anchor>top</anchor>
+					</top>
+					<left>
+						<parent>label_critrange</parent>
+						<anchor>left</anchor>
+					</left>
+					<size>
+						<width>65</width>
+						<height>15</height>
+					</size>
+				</anchored>
+				<static>Crit Mult:</static>
+			</label_sm>
+			<number_charweapon_sm name="critdmgmult">
+				<anchored>
+					<to>label_critmult</to>
+					<position>righthigh</position>
+					<offset>0,-5</offset>
+					<size>
+						<width>35</width>
+						<height>25</height>
+					</size>
+				</anchored>
+				<default>2</default>
+				<min>1</min>
+				<max>5</max>
+			</number_charweapon_sm>
+
+			<genericcontrol name="damageadjanchor">
+				<anchored>
+					<top>
+						<parent>name</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>5</offset>
+					</top>
+					<left>
+						<anchor>left</anchor>
+						<offset>85</offset>
+					</left>
+					<size>
+						<height>15</height>
+						<width>1</width>
+					</size>
+				</anchored>
+				<disabled />
+			</genericcontrol>
+			<cycler_damagestatadj name="damagemeleestatadj">
+				<anchored>
+					<to>damageadjanchor</to>
+					<position>insidetopleft</position>
+					<size>
+						<width>110</width>
+						<height>15</height>
+					</size>
+				</anchored>
+				<parameters>
+					<defaultlabel>Melee One-Handed</defaultlabel>
+					<labels>Melee Two-Handed|Melee Off-Hand</labels>
+					<values>2h|oh</values>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.onDamageChanged();
+					end
+				</script>
+			</cycler_damagestatadj>
+			<cycler_damagestatadj name="damagerangedstatadj">
+				<anchored>
+					<to>damageadjanchor</to>
+					<position>insidetopleft</position>
+					<size>
+						<width>110</width>
+						<height>15</height>
+					</size>
+				</anchored>
+				<parameters>
+					<defaultlabel>Ranged No Stat</defaultlabel>
+					<labels>Ranged Bow|Ranged Sling|Ranged Thrown|Ranged Thrown OH</labels>
+					<values>bow|sling|thrown|thrownoh</values>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.onDamageChanged();
+						window.onTypeChanged();
+					end
+				</script>
+			</cycler_damagestatadj>
+			<number_charweapon_sm name="damagemaxstat">
+				<anchored>
+					<to>damageadjanchor</to>
+					<position>insidetopleft</position>
+					<offset>115, -5</offset>
+					<size>
+						<width>35</width>
+						<height>25</height>
+					</size>
+				</anchored>
+				<hideonvalue>0</hideonvalue>
+				<min>0</min>
+				<script>
+					function onValueChanged()
+						window.onDamageChanged();
+					end
+				</script>
+				<tooltip>
+					<text>Maximum ability modifier allowed</text>
+				</tooltip>
+			</number_charweapon_sm>
+
+			<label_sm name="label_dmgtype">
+				<anchored>
+					<top>
+						<parent>damageadjanchor</parent>
+						<anchor>top</anchor>
+					</top>
+					<left>
+						<anchor>left</anchor>
+						<offset>250</offset>
+					</left>
+					<size>
+						<width>50</width>
+						<height>15</height>
+					</size>
+				</anchored>
+				<static>Dmg Type:</static>
+			</label_sm>
+			<stringu name="damagetype">
+				<anchored>
+					<top>
+						<parent>label_dmgtype</parent>
+						<anchor>top</anchor>
+					</top>
+					<left>
+						<parent>label_dmgtype</parent>
+						<anchor>right</anchor>
+						<offset>5</offset>
+					</left>
+					<right>
+						<anchor>right</anchor>
+						<offset>-15</offset>
+					</right>
+				</anchored>
+			</stringu>
+
+			<spacer name="damageadjspacer">
+				<anchor>damageadjanchor</anchor>
+				<height>2</height>
+			</spacer>
+			
+			<!-- RANGE AND AMMO -->
+			<label_sm name="label_range">
+				<anchored>
+					<top>
+						<parent>name</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>5</offset>
+					</top>
+					<left>
+						<anchor>left</anchor>
+						<offset>15</offset>
+					</left>
+					<size>
+						<width>70</width>
+						<height>15</height>
+					</size>
+				</anchored>
+				<static>Rng incr.</static>
+			</label_sm>
+			<number_charweapon_sm name="rangeincrement">
+				<anchored>
+					<to>label_range</to>
+					<position>righthigh</position>
+					<offset>-6,-5</offset>
+					<size>
+						<width>35</width>
+						<height>25</height>
+					</size>
+				</anchored>
+				<hideonvalue>0</hideonvalue>
+				<min>0</min>
+			</number_charweapon_sm>
+
+			<label_sm name="label_ammo">
+				<anchored>
+					<top>
+						<parent>label_range</parent>
+						<anchor>top</anchor>
+					</top>
+					<left>
+						<anchor>left</anchor>
+						<offset>130</offset>
+					</left>
+					<size>
+						<width>50</width>
+					</size>
+				</anchored>
+				<static>Ammo</static>
+			</label_sm>
+			<number_charweapon_sm name="maxammo">
+				<anchored>
+					<to>label_ammo</to>
+					<position>righthigh</position>
+					<offset>0,-5</offset>
+					<size>
+						<width>35</width>
+						<height>25</height>
+					</size>
+				</anchored>
+				<min>0</min>
+				<max>20</max>
+			</number_charweapon_sm>
+			
+			<state_charammocounter name="ammocounter">
+				<anchored>
+					<to>maxammo</to>
+					<position>righthigh</position>
+					<offset>3,2</offset>
+					<size>
+						<width>102</width>
+						<height>22</height>
+					</size>
+				</anchored>
+			</state_charammocounter>
+			
+			<!-- RANGE AND AMMO -->
+			<label_sm name="label_properties">
+				<anchored>
+					<top>
+						<parent>name</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>5</offset>
+					</top>
+					<left>
+						<anchor>left</anchor>
+						<offset>15</offset>
+					</left>
+					<size>
+						<width>65</width>
+						<height>15</height>
+					</size>
+				</anchored>
+				<static>Properties</static>
+			</label_sm>
+			<stringu name="properties">
+				<anchored>
+					<top>
+						<parent>label_properties</parent>
+						<anchor>top</anchor>
+					</top>
+					<left>
+						<parent>label_properties</parent>
+						<anchor>right</anchor>
+						<offset>5</offset>
+					</left>
+					<right>
+						<anchor>right</anchor>
+						<offset>-15</offset>
+					</right>
+				</anchored>
+			</stringu>
+			
+			<spacer name="spacer">
+				<anchor>name</anchor>
+				<relative />
+				<height>8</height>
+			</spacer>
+		</sheetdata>
+	</windowclass>
+</root>

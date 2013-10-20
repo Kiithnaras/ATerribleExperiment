@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="battle_npcmaplinkitem">
+		<sizelimits>
+			<minimum>
+				<height>27</height>
+				<width>27</width>
+			</minimum>
+		</sizelimits>
+		<script file="campaign/scripts/campaign_encounter_maplink.lua" />
+		<sheetdata>
+			<hn name="imagex" />
+			<hn name="imagey" />
+			<hnc name="imageid" />
+			<hlink name="imageref" />
+
+			<tokencontrol name="token">
+				<bounds>2,2,23,23</bounds>
+				<script>
+					function onDragEnd(draginfo)
+						local prototype, dropref = draginfo.getTokenData();
+						window.setLink(dropref);
+						return true;
+					end
+				</script>
+			</tokencontrol>
+			<buttoncontrol name="linked">
+				<bounds>2,2,23,23</bounds>
+				<invisible />
+				<icon>
+					<normal>icon_maplinked</normal>
+					<pressed>icon_maplinked</pressed>
+				</icon>
+				<script>
+					function onButtonPress()
+						if User.isHost() then
+							window.clearLink();
+						end
+					end
+				</script>
+			</buttoncontrol>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="battle_npclistitem">
+		<sizelimits>
+			<minimum>
+				<height>12</height>
+			</minimum>
+		</sizelimits>
+		<script file="campaign/scripts/campaign_encounter_npc.lua" />
+		<sheetdata>
+			<basicnumber name="count">
+				<bounds>5,6,32,20</bounds>
+				<font>reference-r</font>
+				<default>1</default>
+				<min>1</min>
+				<script>
+					function onValueChanged()
+						window.synchToCount();
+					end
+				</script>
+			</basicnumber>
+			
+			<tokenfield name="token">
+				<bounds>47,4,23,23</bounds>
+				<empty>indicator_emptytoken</empty>
+				<script>
+					function onValueChanged()
+						window.synchTokenView();
+					end
+				</script>
+			</tokenfield>
+			
+			<stringu name="name">
+				<anchored>
+					<position>insidetopleft</position>
+					<offset>75,10</offset>
+					<right><offset>-36</offset></right>
+					<size><height>16</height></size>
+				</anchored>
+				<font>reference-r</font>
+				<multilinespacing>15</multilinespacing>
+			</stringu>
+			
+			<windowreferencefield name="link">
+				<bounds>-26,5,20,20</bounds>
+				<icon>
+					<normal>button_dragtarget</normal>
+				</icon>
+			</windowreferencefield>
+
+			<stringcontrol name="maplinklist_label">
+				<anchored>
+					<top>
+						<parent>name</parent>
+						<anchor>bottom</anchor>
+						<offset>11</offset>
+					</top>
+					<left><offset>5</offset></left>
+					<size>
+						<width>60</width>
+					</size>
+				</anchored>
+				<static>Placement:</static>
+			</stringcontrol>
+			<windowlist name="maplinklist">
+				<anchored>
+					<to>name</to>
+					<top>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>5</offset>
+					</top>
+					<left><offset>5</offset></left>
+					<right><offset>-5</offset></right>
+				</anchored>			
+				<datasource>.maplink</datasource>
+				<class>battle_npcmaplinkitem</class>
+				<skipempty />
+				<noscroll />
+				<columns>
+					<width>27</width>
+					<fillwidth />
+				</columns>
+			</windowlist>
+			
+			<spacer>
+				<anchor>name</anchor>
+				<relative />
+				<height>3</height>
+			</spacer>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="battle">
+		<frame>charsheet</frame>
+		<placement>
+			<size>
+				<width>350</width>
+				<height>400</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum>
+				<width>350</width>
+				<height>300</height>
+			</minimum>
+		</sizelimits>
+		<nodelete />
+		<minimize>minimized_combat</minimize>
+		<tooltip>
+			<field>name</field>
+		</tooltip>
+		<sheetdata>
+			<!-- NAME -->
+			<frame_campaign name="nameframe">
+				<bounds>35,20,-15,35</bounds>
+			</frame_campaign>
+			<link_campaign2>
+				<class>battle</class>
+			</link_campaign2>
+			<string_campaign_encounter_name name="name">
+				<empty>&#171; New Encounter &#187;</empty>
+			</string_campaign_encounter_name>
+
+			<!-- ENCOUNTER DETAILS -->
+			<frame_campaign name="detailframe">
+				<bounds>10,55,-10,45</bounds>
+			</frame_campaign>
+			<basicnumber name="level">
+				<anchored>
+					<to>detailframe</to>
+					<position>insidetopleft</position>
+					<offset>125,13</offset>
+					<size>
+						<width>32</width>
+						<height>20</height>
+					</size>
+				</anchored>
+			</basicnumber>
+			<label>
+				<anchored>
+					<to>level</to>
+					<position>left</position>
+					<offset>10,-4</offset>
+					<size>
+						<width>100</width>
+					</size>
+				</anchored>
+				<static>Challenge Rating</static>
+			</label>
+			<basicnumber name="exp">
+				<anchored>
+					<to>detailframe</to>
+					<position>insidetopleft</position>
+					<offset>215,13</offset>
+					<size>
+						<width>96</width>
+						<height>20</height>
+					</size>
+				</anchored>
+			</basicnumber>
+			<label>
+				<anchored>
+					<to>exp</to>
+					<position>left</position>
+					<offset>10,-4</offset>
+					<size>
+						<width>25</width>
+					</size>
+				</anchored>
+				<static>XP</static>
+			</label>
+			
+			<!-- ENCOUNTER NPCS -->
+			<frame_campaign name="npcframe">
+				<bounds>10,100,-10,-40</bounds>
+			</frame_campaign>
+
+			<stringcontrol>
+				<anchored>
+					<to>npcframe</to>
+					<position>insidetopleft</position>
+					<offset>30,10</offset>
+				</anchored>
+				<center />
+				<font>sheetlabelsmall</font>
+				<static>#</static>
+			</stringcontrol>
+			<stringcontrol>
+				<anchored>
+					<to>npcframe</to>
+					<position>insidetopleft</position>
+					<offset>55,10</offset>
+				</anchored>
+				<font>sheetlabelsmall</font>
+				<static>Token</static>
+			</stringcontrol>
+			<stringcontrol>
+				<anchored>
+					<to>npcframe</to>
+					<position>insidetopleft</position>
+					<offset>110,10</offset>
+				</anchored>
+				<font>sheetlabelsmall</font>
+				<static>Name</static>
+			</stringcontrol>
+
+			<stringcontrol>
+				<anchored>
+					<to>npcframe</to>
+					<position>insidebottomleft</position>
+					<offset>80,10</offset>
+					<size>
+						<width>200</width>
+					</size>
+				</anchored>
+				<font>chatitalicfont</font>
+				<static>Drop NPC links on this frame to add</static>
+			</stringcontrol>
+
+			<list_campaignencounternpc name="npclist">
+				<anchored>
+					<to>npcframe</to>
+					<top><offset>20</offset></top>
+					<left><offset>15</offset></left>
+					<bottom><offset>-25</offset></bottom>
+					<right><offset>-25</offset></right>
+				</anchored>
+				<datasource>.npclist</datasource>
+				<class>battle_npclistitem</class>
+			</list_campaignencounternpc>
+			<scrollbar>
+				<bounds>-40,125,20,-70</bounds>
+				<target>npclist</target>
+			</scrollbar>
+
+			<buttoncontrol name="npcadd">
+				<bounds>22,-40,33,26</bounds>
+				<icon>
+					<normal>button_ctnextactor</normal>
+					<pressed>button_ctnextactor_down</pressed>
+				</icon>
+				<tooltip>
+					<text>Add NPCs to combat tracker</text>
+				</tooltip>
+				<script>
+					function onButtonPress()
+						if User.isHost() then
+							for kNPC, vNPC in pairs(window.npclist.getWindows()) do
+								for kMapLink, vMapLink in pairs(vNPC.maplinklist.getWindows()) do
+									vMapLink.deleteLink();
+								end
+							end
+							
+							CTManager.addBattle(window.getDatabaseNode());
+							Interface.openWindow("combattracker_window", "combattracker");
+						end
+					end
+				</script>
+			</buttoncontrol>
+			
+			<resize_charsheet />
+			<close_charsheetmini />
+		</sheetdata>
+	</windowclass>
+</root>

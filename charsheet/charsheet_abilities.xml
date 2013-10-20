@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="charsheet_abilityitem">
+		<sizelimits>
+			<minimum>
+				<height>10</height>
+			</minimum>
+		</sizelimits>
+		<sheetdata>
+			<link_smart name="shortcut">
+				<bounds>-22,0,20,20</bounds>
+				<defaultclass>ref_ability</defaultclass>
+				<toggle />
+			</link_smart>
+
+			<string_textlistitem name="value">
+				<anchored>
+					<top />
+					<left><offset>2</offset></left>
+					<right><offset>-25</offset></right>
+				</anchored>
+				<multilinespacing>20</multilinespacing>
+			</string_textlistitem>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_abilities">
+		<placement>
+			<size>
+				<width>252</width>
+				<height>611</height>
+			</size>
+		</placement>
+		<nodelete />
+		<sheetdata>
+			<!-- FEATS -->
+			<frame_char name="featframe">
+				<bounds>15,0,240,345</bounds>
+			</frame_char>
+			<label>
+				<anchored>
+					<to>featframe</to>
+					<position>insidetop</position>
+					<offset>0,11</offset>
+				</anchored>
+				<center />
+				<static>Feats</static>
+			</label>
+			<list_charabilities name="featlist">
+				<anchored>
+					<to>featframe</to>
+					<position>over</position>
+					<offset>-15,-15</offset>
+					<top>
+						<offset>30</offset>
+					</top>
+				</anchored>
+				<datasource>.featlist</datasource>
+				<class>charsheet_abilityitem</class>
+			</list_charabilities>
+			<scrollbar_charlist>
+				<anchored>
+					<to>featlist</to>
+				</anchored>
+				<target>featlist</target>
+			</scrollbar_charlist>
+
+			<!-- SPECIAL ABILITIES -->
+			<frame_char name="specialabilityframe">
+				<bounds>255,0,240,345</bounds>
+			</frame_char>
+			<label>
+				<anchored>
+					<to>specialabilityframe</to>
+					<position>insidetop</position>
+					<offset>0,11</offset>
+				</anchored>
+				<center />
+				<static>Special Abilities</static>
+			</label>
+			<list_charabilities name="specialabilitylist">
+				<anchored>
+					<to>specialabilityframe</to>
+					<position>over</position>
+					<offset>-15,-15</offset>
+					<top>
+						<offset>30</offset>
+					</top>
+				</anchored>
+				<datasource>.specialabilitylist</datasource>
+				<class>charsheet_abilityitem</class>
+			</list_charabilities>
+			<scrollbar_charlist>
+				<anchored>
+					<to>specialabilitylist</to>
+				</anchored>
+				<target>specialabilitylist</target>
+			</scrollbar_charlist>
+
+			<!-- ARMOR PROFICIENCY -->
+			<frame_char name="armorprofframe">
+				<bounds>15,345,240,135</bounds>
+			</frame_char>
+			<label>
+				<anchored>
+					<to>armorprofframe</to>
+					<position>insidetop</position>
+					<offset>0,11</offset>
+				</anchored>
+				<center />
+				<static>Armor Proficiency</static>
+			</label>
+			<list_charabilities name="armorproflist">
+				<anchored>
+					<to>armorprofframe</to>
+					<position>over</position>
+					<offset>-15,-15</offset>
+					<top>
+						<offset>25</offset>
+					</top>
+				</anchored>
+				<datasource>.proficiencyarmor</datasource>
+				<class>charsheet_abilityitem</class>
+			</list_charabilities>
+			<scrollbar_charlist>
+				<anchored>
+					<to>armorproflist</to>
+				</anchored>
+				<target>armorproflist</target>
+			</scrollbar_charlist>
+
+			<!-- WEAPON PROFICIENCY -->
+			<frame_char name="weaponprofframe">
+				<bounds>255,345,240,135</bounds>
+			</frame_char>
+			<label>
+				<anchored>
+					<to>weaponprofframe</to>
+					<position>insidetop</position>
+					<offset>0,11</offset>
+				</anchored>
+				<center />
+				<static>Weapon Proficiency</static>
+			</label>
+			<list_charabilities name="weaponproflist">
+				<anchored>
+					<to>weaponprofframe</to>
+					<position>over</position>
+					<offset>-15,-15</offset>
+					<top>
+						<offset>25</offset>
+					</top>
+				</anchored>
+				<datasource>.proficiencyweapon</datasource>
+				<class>charsheet_abilityitem</class>
+			</list_charabilities>
+			<scrollbar_charlist>
+				<anchored>
+					<to>weaponproflist</to>
+				</anchored>
+				<target>weaponproflist</target>
+			</scrollbar_charlist>
+		</sheetdata>
+	</windowclass>
+</root>

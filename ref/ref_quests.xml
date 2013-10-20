@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="quest_stats">
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<button_stringcycler name="type">
+				<anchored>
+					<size>
+						<height>16</height>
+						<width>50</width>
+					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>7,7,7,5</offset>
+					<hidereadonly />
+				</frame>
+				<stateframe>
+					<hover>
+						<name>sheetfocus</name>
+						<offset>7,7,7,5</offset>
+						<hidereadonly />
+					</hover>
+				</stateframe>
+				<font>reference-r</font>
+				<parameters>
+					<defaultlabel>Minor</defaultlabel>
+					<labels>Major</labels>
+					<values>Major</values>
+				</parameters>		
+				<script>
+					function onInit()
+						super.onInit();
+						
+						local nOffsetX = 5;
+						local nTopOffsetY = 3;
+						setAnchor("top", "columnanchor", "bottom", "relative", nTopOffsetY);
+						setAnchor("left", "", "left", "absolute", nOffsetX + 82);
+					end
+				</script>
+			</button_stringcycler>
+			<label_column name="type_label">
+				<anchor>type</anchor>
+				<static>Type</static>
+			</label_column>
+
+			<number_column name="level" />
+			<label_column name="level_label">
+				<anchor>level</anchor>
+				<static>Level</static>
+			</label_column>
+
+			<number_column name="xp" />
+			<label_column name="xp_label">
+				<anchor>xp</anchor>
+				<static>XP</static>
+			</label_column>
+			
+			<ft_campaigndesc name="description">
+				<anchored>
+					<top>
+						<parent>columnanchor</parent>
+						<anchor>bottom</anchor>
+						<relation>relative</relation>
+						<offset>10</offset>
+					</top>
+					<left><offset>5</offset></left>
+					<right><offset>-5</offset></right>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>7,7,7,5</offset>
+					<hidereadonly />
+				</frame>
+				<stateframe>
+					<keyedit>
+						<name>sheetfocus</name>
+						<offset>7,7,7,5</offset>
+					</keyedit>
+					<hover>
+						<name>sheetfocus</name>
+						<offset>7,7,7,5</offset>
+						<hidereadonly />
+					</hover>
+				</stateframe>
+			</ft_campaigndesc>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="quest">
+		<frame>referencepage</frame>
+		<placement>
+			<size>
+				<width>350</width>
+				<height>350</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum>
+				<width>350</width>
+				<height>350</height>
+			</minimum>
+		</sizelimits>
+		<sharable />
+		<minimize>minimized_item</minimize>
+		<tooltip>
+			<field>name</field>
+		</tooltip>
+		<sheetdata>
+			<frame_campaign>
+				<bounds>35,20,-11,35</bounds>
+			</frame_campaign>
+			<link_control>
+				<bounds>18,28,20,20</bounds>
+				<class>quest</class>
+			</link_control>
+			<stringfield name="name">
+				<bounds>50,30,-30,20</bounds>
+				<font>sheettext</font>
+				<selectioncolor>#FFD296</selectioncolor>
+				<nodrag />
+			</stringfield>
+			
+			<genericcontrol name="contentframe">
+				<bounds>25,70,-35,-25</bounds>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>15,15,20,15</offset>
+				</frame>
+				<disabled />
+			</genericcontrol>
+			
+			<subwindow_details name="stats">
+				<class>quest_stats</class>
+				<activate />
+			</subwindow_details>
+			<scrollbar_details>
+				<target>stats</target>
+			</scrollbar_details>
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>	
+	</windowclass>
+</root>

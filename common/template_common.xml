@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="hn">
+		<numberfield>
+			<bounds>0,0,0,0</bounds>
+			<invisible />
+		</numberfield>
+	</template>
+	<template name="hnc">
+		<numbercontrol>
+			<bounds>0,0,0,0</bounds>
+			<invisible />
+		</numbercontrol>
+	</template>
+	<template name="hs">
+		<stringfield>
+			<bounds>0,0,0,0</bounds>
+			<invisible />
+		</stringfield>
+	</template>
+	<template name="hsc">
+		<stringcontrol>
+			<bounds>0,0,0,0</bounds>
+			<invisible />
+		</stringcontrol>
+	</template>
+	<template name="hlink">
+		<windowreferencefield>
+			<bounds>0,0,0,0</bounds>
+			<invisible />
+		</windowreferencefield>
+	</template>
+	
+	<template name="scrollbar">
+		<scrollbarcontrol>
+			<anchored>
+				<size>
+					<width>20</width>
+				</size>
+			</anchored>
+			<frame>
+				<name>scrollbar_base</name>
+				<offset>0,12,0,12</offset>
+			</frame>
+			<normal>
+				<name>scrollbutton_normal</name>
+			</normal>
+		</scrollbarcontrol>
+	</template>
+
+	<template name="spacer">
+		<genericcontrol>
+			<anchored>
+				<top />
+				<left />
+				<right />
+				<size>
+					<height>0</height>
+				</size>
+			</anchored>
+			<disabled />
+			<script>
+				function onInit()
+					if anchor then
+						if relative then
+							setAnchor("top", anchor[1], "bottom", "relative", 0);
+						else
+							setAnchor("top", anchor[1], "bottom", "absolute", 0);
+						end
+					end
+					if height then
+						setAnchoredHeight(tonumber(height[1]) or 0);
+					end
+				end
+			</script>
+		</genericcontrol>
+	</template>
+
+	<template name="windowtitlebar">
+		<genericcontrol>
+			<bounds>0,0,-1,40</bounds>
+			<frame>
+				<name>indexboxtitle</name>
+			</frame>
+			<script>
+				local widgetHighlight = nil;
+				local widgetTitle = nil;
+				
+				function onInit()
+					window.onSizeChanged = updatePosition;
+
+					if title then
+						if title[1].text then
+							widgetHighlight = addTextWidget("index-title-highlight", title[1].text[1]);
+							widgetTitle = addTextWidget("index-title", title[1].text[1]);
+							updatePosition();
+						elseif title[1].field then
+							local nodeWin = window.getDatabaseNode();
+							if nodeWin then
+								local nodeTitle = nodeWin.getChild(title[1].field[1]);
+								if nodeTitle then
+									widgetHighlight = addTextWidget("index-title-highlight", nodeTitle.getValue());
+									widgetTitle = addTextWidget("index-title", nodeTitle.getValue());
+									updatePosition();
+								end
+							end
+						end
+					end
+				end
+				
+				function updatePosition()
+					if widgetTitle then
+						local wTitle, hTitle = widgetTitle.getSize();
+						local wWindow, hWindow = window.getSize();
+						local wControl = wTitle + 80;
+						if (wControl > wWindow) then
+							wControl = wWindow;
+						end
+						setStaticBounds((wWindow - wControl) / 2, 0, wControl, 40);
+					end
+				end
+			</script>
+		</genericcontrol>
+	</template>
+
+	<template name="label">
+		<stringcontrol>
+			<font>sheetlabel</font>
+		</stringcontrol>
+	</template>
+	<template name="label_sm">
+		<stringcontrol>
+			<font>sheetlabelmini</font>
+		</stringcontrol>
+	</template>
+	<template name="label_fieldtop">
+		<stringcontrol>
+			<anchored>
+				<position>above</position>
+				<offset>3,2</offset>
+			</anchored>
+			<font>sheetlabelmini</font>
+			<center />
+		</stringcontrol>
+	</template>
+
+	<template name="string_crosslink">
+		<stringfield>
+			<script file="common/scripts/string_crosslink.lua" />
+		</stringfield>
+	</template>
+	<template name="stringu">
+		<stringfield>
+			<font>sheettext</font>
+			<lineoffset default="on" mergerule="resetandadd">-1</lineoffset>
+		</stringfield>
+	</template>
+	<template name="stringcu">
+		<stringcontrol>
+			<font>sheettext</font>
+			<lineoffset default="on" mergerule="resetandadd">-1</lineoffset>
+		</stringcontrol>
+	</template>
+	<template name="stringu_sm">
+		<stringfield>
+			<font>sheettextsmall</font>
+			<lineoffset default="on">-1</lineoffset>
+		</stringfield>
+	</template>
+	<template name="string_labeled">
+		<stringfield>
+			<font>sheettext</font>
+			<lineoffset default="on">-1</lineoffset>
+			<script>
+				labelwidget = nil;
+			
+				function onInit()
+					labelwidget = addTextWidget("sheetlabelinline", string.upper(label[1]));
+					if labelwidget then
+						local w,h = labelwidget.getSize();
+						labelwidget.setPosition("bottomleft", w/2, h/2-5);
+					end
+				end
+			</script>
+		</stringfield>
+	</template>
+	<template name="string_linked">
+		<stringfield>
+			<underlineoffset>-2</underlineoffset>
+			<nodrag />
+			<script file="common/scripts/string_linked.lua" />
+		</stringfield>
+	</template>
+	<template name="string_linked_static">
+		<stringfield>
+			<underlineoffset>-2</underlineoffset>
+			<nodrag />
+			<static />
+			<script file="common/scripts/string_linked_static.lua" />
+		</stringfield>
+	</template>
+	<template name="stringcontrol_linked_static">
+		<stringcontrol>
+			<font>reference-r</font>
+			<underlineoffset>0</underlineoffset>
+			<linktarget>link</linktarget>
+			<nodrag />
+			<getdata />
+			<static />
+			<script file="common/scripts/string_linked_static.lua" />
+		</stringcontrol>
+	</template>
+	
+	<template name="basicstring">
+		<stringfield>
+			<frame mergerule="replace">
+				<name>bonus</name>
+				<offset>7,7,7,5</offset>
+				<hidereadonly />
+			</frame>
+			<stateframe>
+				<keyedit>
+					<name>sheetfocus</name>
+					<offset>7,7,7,5</offset>
+				</keyedit>
+				<hover>
+					<name>sheetfocus</name>
+					<offset>7,7,7,5</offset>
+					<hidereadonly />
+				</hover>
+				<drophilight>
+					<name>sheetfocus</name>
+					<offset>7,7,7,5</offset>
+					<hidereadonly />
+				</drophilight>
+			</stateframe>
+			<droptypes>
+				<type>string</type>
+			</droptypes>
+			<font>sheettextsmall</font>
+			<selectioncolor>FFD296</selectioncolor>
+		</stringfield>
+	</template>
+
+	<template name="number">
+		<numberfield>
+			<noreset />
+			<script file="common/scripts/number.lua" />
+		</numberfield>
+	</template>
+	<template name="numberc">
+		<numbercontrol>
+			<noreset />
+			<script file="common/scripts/number.lua" />
+		</numbercontrol>
+	</template>
+	<template name="number_crosslink">
+		<number>
+			<script file="common/scripts/number_crosslink.lua" />
+		</number>
+	</template>
+
+	<template name="basicnumber">
+		<number>
+			<frame mergerule="replace">
+				<name>bonus</name>
+				<offset>5,5,5,5</offset>
+			</frame>
+			<stateframe>
+				<keyedit>
+					<name>sheetfocus</name>
+					<offset>5,5,5,5</offset>
+				</keyedit>
+				<hover>
+					<name>sheetfocus</name>
+					<offset>5,5,5,5</offset>
+					<hidereadonly />
+				</hover>
+				<drophilight>
+					<name>sheetfocus</name>
+					<offset>5,5,5,5</offset>
+					<hidereadonly />
+				</drophilight>
+			</stateframe>
+			<droptypes>
+				<type>number</type>
+			</droptypes>
+			<font>sheetnumber</font>
+		</number>
+	</template>
+	<template name="basicnumber_sm">
+		<number>
+			<frame mergerule="replace">
+				<name>bonus</name>
+				<offset>3,3,3,3</offset>
+			</frame>
+			<stateframe>
+				<keyedit>
+					<name>sheetfocus</name>
+					<offset>3,3,3,3</offset>
+				</keyedit>
+				<hover>
+					<name>sheetfocus</name>
+					<offset>3,3,3,3</offset>
+					<hidereadonly />
+				</hover>
+				<drophilight>
+					<name>sheetfocus</name>
+					<offset>3,3,3,3</offset>
+					<hidereadonly />
+				</drophilight>
+			</stateframe>
+			<droptypes>
+				<type>number</type>
+			</droptypes>
+			<font>sheetnumbersmall</font>
+		</number>
+	</template>
+	<template name="number_static">
+		<number>
+			<font>sheetnumber</font>
+			<readonly />
+		</number>
+	</template>
+	<template name="number_sm_static">
+		<number>
+			<font>sheetnumbersmall</font>
+			<readonly />
+		</number>
+	</template>
+
+	<template name="anchor_column">
+		<genericcontrol>
+			<bounds>0,0,0,0</bounds>
+			<invisible />
+		</genericcontrol>
+	</template>
+	<template name="line_column">
+		<genericcontrol>
+			<anchored>
+				<top>
+					<parent>columnanchor</parent>
+					<anchor>bottom</anchor>
+					<relation>relative</relation>
+					<offset mergerule="replace">5</offset>
+				</top>
+				<left />
+				<right />
+				<size>
+					<height>3</height>
+				</size>
+			</anchored>
+			<frame>
+				<name>separatorline</name>
+			</frame>
+			<disabled />
+		</genericcontrol>
+	</template>
+	<template name="label_column">
+		<stringcontrol>
+			<font>sheetlabelsmallbold</font>
+			<script file="common/scripts/column_label.lua" />
+		</stringcontrol>
+	</template>
+	<template name="string_column">
+		<basicstring>
+			<multilinespacing>16</multilinespacing>
+			<script file="common/scripts/column_string.lua" />
+		</basicstring>
+	</template>
+	<template name="string_columnt">
+		<basicstring>
+			<frame />
+			<multilinespacing>16</multilinespacing>
+			<script file="common/scripts/column_string.lua" />
+		</basicstring>
+	</template>
+	<template name="string_columnbottom">
+		<basicstring>
+			<multilinespacing>16</multilinespacing>
+		</basicstring>
+	</template>
+	<template name="number_column">
+		<basicnumber>
+			<font>sheetnumbersmall</font>
+			<script file="common/scripts/column_number.lua" />
+		</basicnumber>
+	</template>
+	
+	<template name="dice">
+		<diefield>
+			<noreset />
+			<droptypes>
+				<type>dice</type>
+			</droptypes>
+			<script file="common/scripts/dice.lua" />
+		</diefield>
+	</template>
+	
+	<template name="link_control">
+		<windowreferencecontrol>
+			<icon>
+				<normal>button_openwindow</normal>
+				<pressed>button_emptytarget</pressed>
+				<empty>button_emptytarget</empty>
+			</icon>
+			<description mergerule="replace">
+				<field>name</field>
+			</description>
+		</windowreferencecontrol>
+	</template>
+	<template name="link_tl">
+		<windowreferencecontrol>
+			<bounds>13,8,20,20</bounds>
+			<icon>
+				<normal>button_openwindow</normal>
+				<pressed>button_emptytarget</pressed>
+				<empty>button_emptytarget</empty>
+			</icon>
+			<description>
+				<field>name</field>
+			</description>
+		</windowreferencecontrol>
+	</template>
+	<template name="link_field">
+		<windowreferencefield>
+			<anchored>
+				<size>
+					<width>20</width>
+					<height>20</height>
+				</size>
+			</anchored>
+			<icon>
+				<normal>button_openwindow</normal>
+				<pressed>button_openwindowdown</pressed>
+				<empty>button_emptytarget</empty>
+			</icon>
+			<description>
+				<field>name</field>
+			</description>
+			<allowdrop />
+		</windowreferencefield>
+	</template>
+
+	<template name="link_smart">
+		<buttoncontrol>
+			<anchored>
+				<size>
+					<width>20</width>
+					<height>20</height>
+				</size>
+			</anchored>
+			<icon>
+				<normal>button_openwindow</normal>
+				<pressed>button_openwindowdown</pressed>
+			</icon>
+			<allowdrop />
+			<script file="common/scripts/link_smart.lua" />
+		</buttoncontrol>
+	</template>
+	
+	<template name="button_activateid">
+		<buttoncontrol>
+			<icon>
+				<normal>button_identityactivate</normal>
+				<pressed>button_identityactivate_down</pressed>
+			</icon>
+			<script>
+				function onButtonPress()
+					GmIdentityManager.addIdentity(window.name.getValue());
+				end
+			</script>
+		</buttoncontrol>
+	</template>
+
+	<template name="string_name_static">
+		<stringfield>
+			<anchored>
+				<position>insidetopleft</position>
+				<offset>40,10</offset>
+				<right>
+					<offset>-30</offset>
+				</right>
+			</anchored>
+			<frame>
+				<name mergerule="replace">headergray</name>
+				<offset>40,10,30,10</offset>
+			</frame>
+			<font>reference-b-large</font>
+			<multilinespacing>18</multilinespacing>
+			<static />
+			<nodrag />
+			<nodragselect />
+		</stringfield>
+	</template>
+</root>

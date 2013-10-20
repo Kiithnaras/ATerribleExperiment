@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="list_utility">
+		<windowlist>
+			<useallmodules />
+			<allowcreate />
+			<allowdelete />
+			<gmeditonly />
+			<sortby><control>label</control></sortby>
+			<filter><control>filter</control></filter>
+			<filteron><control>label</control></filteron>
+			<script file="utility/scripts/utility_list.lua" />
+		</windowlist>
+	</template>
+	
+	<template name="button_modifierkey">
+		<button_toggle_text>
+			<script>
+				local sName = nil;
+				
+				function onInit()
+					super.onInit();
+					
+					sName = getName();
+					if sName == "" then
+						sName = nil;
+					end
+					
+					if sName then 
+						if ModifierStack.getModifierKey(sName) then
+							activate();
+						end
+					end
+				end
+				
+				function onValueChanged()
+					if sName then
+						ModifierStack.setModifierKey(sName, getState());
+					end
+				end
+			</script>
+		</button_toggle_text>
+	</template>
+	
+	<template name="button_import">
+		<button_icon>
+			<anchored>
+				<left>
+					<anchor>center</anchor>
+					<offset>-9</offset>
+				</left>
+				<bottom><offset>-27</offset></bottom>
+				<size>
+					<height>18</height>
+					<width>18</width>
+				</size>
+			</anchored>
+			<icon>
+				<normal>icon_import</normal>
+				<pressed>icon_import</pressed>
+			</icon>
+			<tooltip>
+				<text>Import Character(s)</text>
+			</tooltip>
+			<script>
+				function onButtonPress()
+					if User.isHost() then
+						CharManager.import();
+					else
+						window.setMode(true);
+					end
+				end
+			</script>
+		</button_icon>
+	</template>
+</root>

@@ -1,0 +1,877 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="hnx">
+		<numberfield>
+			<bounds>0,0,0,0</bounds>
+			<invisible />
+			<script file="common/scripts/number_crosslink.lua" />
+		</numberfield>
+	</template>
+	<template name="hsx">
+		<stringfield>
+			<bounds>0,0,0,0</bounds>
+			<invisible />
+			<script file="common/scripts/string_crosslink.lua" />
+		</stringfield>
+	</template>
+	
+	<template name="frame_ps">
+		<genericcontrol>
+			<bounds>10,35,-20,-15</bounds>
+			<frame><name>sheetgroup</name></frame>
+			<disabled />
+		</genericcontrol>
+	</template>
+	<template name="frame_ps_invpitem">
+		<genericcontrol>
+			<bounds>10,35,-350,188</bounds>
+			<frame><name>sheetgroup</name></frame>
+			<disabled />
+		</genericcontrol>
+	</template>
+	<template name="frame_ps_invpcoin">
+		<genericcontrol>
+			<bounds>-350,35,-20,188</bounds>
+			<frame><name>sheetgroup</name></frame>
+			<disabled />
+		</genericcontrol>
+	</template>
+	<template name="frame_ps_invitem">
+		<genericcontrol>
+			<bounds>10,250,-350,-15</bounds>
+			<frame><name>sheetgroup</name></frame>
+			<disabled />
+		</genericcontrol>
+	</template>
+	<template name="frame_ps_invcoin">
+		<genericcontrol>
+			<bounds>-350,250,-20,-15</bounds>
+			<frame><name>sheetgroup</name></frame>
+			<disabled />
+		</genericcontrol>
+	</template>
+	<template name="label_ps_sheet">
+		<label>
+			<anchored>
+				<to mergerule="replace">sheetframe</to>
+				<position>insidetop</position>
+				<offset>0,11</offset>
+			</anchored>
+			<center />
+		</label>
+	</template>
+	
+	<template name="header_ps1">
+		<stringcontrol>
+			<anchored>
+				<to mergerule="replace">sheetframe</to>
+				<top><offset>35</offset></top>
+			</anchored>
+			<font>sheetlabelminibold</font>
+		</stringcontrol>
+	</template>
+	<template name="header_ps2">
+		<stringcontrol>
+			<anchored>
+				<to mergerule="replace">sheetframe</to>
+				<top><offset>47</offset></top>
+			</anchored>
+			<font>sheetlabelminibold</font>
+		</stringcontrol>
+	</template>
+	<template name="header_psinv">
+		<stringcontrol>
+			<anchored>
+				<to mergerule="replace">sheetframe</to>
+				<top><offset>25</offset></top>
+			</anchored>
+			<font>sheetlabelminibold</font>
+		</stringcontrol>
+	</template>
+	<template name="header_psorder">
+		<stringcontrol>
+			<anchored>
+				<to mergerule="replace">sheetframe</to>
+				<top><offset>25</offset></top>
+			</anchored>
+			<font>sheetlabelminibold</font>
+		</stringcontrol>
+	</template>
+	<template name="header_psxp">
+		<stringcontrol>
+			<anchored>
+				<to mergerule="replace">sheetframe</to>
+				<top>
+					<anchor>bottom</anchor>
+					<offset>-315</offset>
+				</top>
+			</anchored>
+			<font>sheetlabelminibold</font>
+		</stringcontrol>
+	</template>
+	<template name="header_psxp2">
+		<stringcontrol>
+			<anchored>
+				<to>sheetframe</to>
+				<left mergerule="replace"><offset>10</offset></left>
+				<top>
+					<anchor>bottom</anchor>
+					<offset>-330</offset>
+				</top>
+				<right mergerule="replace"><offset>-10</offset></right>
+				<size><height>15</height></size>
+			</anchored>
+			<font>sheetlabelminibold</font>
+			<center />
+		</stringcontrol>
+	</template>
+
+	<template name="list_ps">
+		<windowlist>
+			<anchored>
+				<to>sheetframe</to>
+				<left><offset>10</offset></left>
+				<top mergerule="replace"><offset>68</offset></top>
+				<right><offset>-20</offset></right>
+				<bottom mergerule="replace"><offset>-13</offset></bottom>
+			</anchored>
+			<frame>
+				<name>sheetgroup</name>
+				<offset>5,8,15,8</offset>
+			</frame>
+			<datasource>.partyinformation</datasource>
+			<sortby><control>name</control></sortby>
+		</windowlist>
+	</template>
+	<template name="list_ps_inv">
+		<windowlist>
+			<anchored>
+				<to mergerule="replace">sheetframe</to>
+				<left><offset>15</offset></left>
+				<top><offset>43</offset></top>
+				<right><offset>-20</offset></right>
+				<bottom><offset>-13</offset></bottom>
+			</anchored>
+			<frame>
+				<name>sheetgroup</name>
+				<offset>10,8,15,8</offset>
+			</frame>
+			<child><backcolor>1A40301E</backcolor></child>
+			<child></child>
+		</windowlist>
+	</template>
+	<template name="list_ps_xp_encounter">
+		<windowlist>
+			<anchored>
+				<to>sheetframe</to>
+				<left><offset>10</offset></left>
+				<top>
+					<anchor>bottom</anchor>
+					<offset>-297</offset>
+				</top>
+				<right><offset>-400</offset></right>
+				<bottom><offset>-53</offset></bottom>
+			</anchored>
+			<frame>
+				<name>sheetgroup</name>
+				<offset>5,8,15,8</offset>
+			</frame>
+			<footer>footer_narrow</footer>
+			<datasource>.encounters</datasource>
+			<useallmodules />
+			<child><backcolor>1A40301E</backcolor></child>
+			<child></child>
+			<filter><control>encfilter</control></filter>
+			<filteron><control>name</control></filteron>
+		</windowlist>
+	</template>
+	<template name="list_ps_xp_quest">
+		<windowlist>
+			<anchored>
+				<to>sheetframe</to>
+				<left>
+					<anchor>right</anchor>
+					<offset>-385</offset>
+				</left>
+				<top>
+					<anchor>bottom</anchor>
+					<offset>-297</offset>
+				</top>
+				<right><offset>-20</offset></right>
+				<bottom><offset>-53</offset></bottom>
+			</anchored>
+			<frame>
+				<name>sheetgroup</name>
+				<offset>5,8,15,8</offset>
+			</frame>
+			<footer>footer_narrow</footer>
+			<datasource>.quests</datasource>
+			<useallmodules />
+			<allowcreate />
+			<child><backcolor>1A40301E</backcolor></child>
+			<child></child>
+			<filter><control>questfilter</control></filter>
+			<filteron><control>name</control></filteron>
+		</windowlist>
+	</template>
+	<template name="scrollbar_ps">
+		<scrollbar>
+			<anchored>
+				<to mergerule="replace">partylist</to>
+				<position>right</position>
+				<offset mergerule="replace">-5,-5</offset>
+			</anchored>
+			<target mergerule="replace">partylist</target>
+		</scrollbar>
+	</template>
+	
+	<template name="string_ps">
+		<string_crosslink>
+			<font>sheettextsupersmall</font>
+			<lineoffset default="on">-1</lineoffset>
+			<readonly />
+			<nodrag />
+			<nodragselect />
+			<nolinkwidget />
+		</string_crosslink>
+	</template>
+	<template name="string_psname">
+		<string_crosslink>
+			<font>sheetlabel</font>
+			<lineoffset default="on">-1</lineoffset>
+			<readonly />
+			<nodrag />
+			<nodragselect />
+			<nolinkwidget />
+		</string_crosslink>
+	</template>
+
+	<template name="number_ps">
+		<number>
+			<frame>
+				<name>modifier</name>
+				<offset>5,5,5,5</offset>
+			</frame>
+			<font>sheetnumbersmall</font>
+			<readonly />
+		</number>
+	</template>
+	<template name="number_ps_linked">
+		<number_crosslink>
+			<frame>
+				<name>modifier</name>
+				<offset>5,5,5,5</offset>
+			</frame>
+			<font>sheetnumbersmall</font>
+			<readonly />
+			<nolinkwidget />
+		</number_crosslink>
+	</template>
+	<template name="number_ps_ability">
+		<number_ps_linked>
+			<anchored>
+				<top><parent>level</parent></top>
+				<left>
+					<anchor>right</anchor>
+					<offset mergerule="replace">5</offset>
+				</left>
+				<size>
+					<width>30</width>
+					<height>20</height>
+				</size>
+			</anchored>
+			<nodrag />
+		</number_ps_linked>
+	</template>
+	<template name="number_ps_abilitycheck">
+		<number_ps_linked>
+			<anchored>
+				<left />
+				<top>
+					<anchor>bottom</anchor>
+					<offset>1</offset>
+				</top>
+				<size>
+					<width>30</width>
+					<height>20</height>
+				</size>
+			</anchored>
+			<gmrollable />
+			<displaysign />
+			<nodrag />
+			<script>
+				function onInit()
+					super.onInit();
+					if not User.isHost() then
+						setEnabled(false);
+					end
+				end
+				
+				function action(draginfo)
+					if not User.isHost() then
+						return false;
+					end
+					
+					local rActor = ActorManager.getActor("pc", window.link.getTargetDatabaseNode());
+
+					local nTargetDC = DB.getValue("partysheet.abilitydc", 0);
+					if nTargetDC == 0 then
+						nTargetDC = nil;
+					end
+					
+					local bSecretRoll = (DB.getValue("partysheet.hiderollresults", 0) == 1);
+					
+					ActionAbility.performRoll(draginfo, rActor, self.target[1], nTargetDC, bSecretRoll, true);
+					return true;
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+					
+				function onDoubleClick(x,y)
+					return action();
+				end
+			</script>
+		</number_ps_linked>
+	</template>
+	<template name="number_ps_defense">
+		<number_ps_linked>
+			<anchored>
+				<top />
+				<left>
+					<anchor>right</anchor>
+					<offset mergerule="replace">5</offset>
+				</left>
+				<size>
+					<width>30</width>
+					<height>20</height>
+				</size>
+			</anchored>
+			<nodrag />
+		</number_ps_linked>
+	</template>
+	<template name="number_ps_save">
+		<number_ps_linked>
+			<anchored>
+				<top />
+				<left>
+					<anchor>right</anchor>
+					<offset mergerule="replace">5</offset>
+				</left>
+				<size>
+					<width>30</width>
+					<height>20</height>
+				</size>
+			</anchored>
+			<gmrollable />
+			<displaysign />
+			<script>
+				function onInit()
+					super.onInit();
+					if not User.isHost() then
+						setEnabled(false);
+					end
+				end
+				
+				function action(draginfo)
+					if not User.isHost() then
+						return false;
+					end
+					
+					local rActor = ActorManager.getActor("pc", window.link.getTargetDatabaseNode());
+
+					local nTargetDC = DB.getValue("partysheet.abilitydc", 0);
+					if nTargetDC == 0 then
+						nTargetDC = nil;
+					end
+					
+					local bSecretRoll = (DB.getValue("partysheet.hiderollresults", 0) == 1);
+
+					ActionSpell.performSaveRoll(draginfo, rActor, target[1], nTargetDC, bSecretRoll, true);
+					return true;
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+					
+				function onDoubleClick(x,y)	
+					return action();
+				end
+			</script>
+		</number_ps_linked>
+	</template>
+	<template name="label_skill">
+		<stringcontrol>
+			<anchored>
+				<to>anchorlabel</to>
+				<top />
+				<left>
+					<anchor>right</anchor>
+					<relation>relative</relation>
+					<offset>10</offset>
+				</left>
+				<bottom />
+				<size>
+					<width>25</width>
+				</size>
+			</anchored>
+			<center />
+			<font>sheetlabelminibold</font>
+		</stringcontrol>
+	</template>
+	<template name="spacer_label">
+		<genericcontrol>
+			<anchored>
+				<to>anchorlabel</to>
+				<top />
+				<left>
+					<anchor>right</anchor>
+					<relation>relative</relation>
+					<offset>5</offset>
+				</left>
+				<bottom />
+				<size>
+					<width>0</width>
+				</size>
+			</anchored>
+		</genericcontrol>
+	</template>
+	<template name="spacer_skill">
+		<genericcontrol>
+			<anchored>
+				<to>anchorskill</to>
+				<top />
+				<left>
+					<anchor>right</anchor>
+					<relation>relative</relation>
+					<offset>5</offset>
+				</left>
+				<bottom />
+				<size>
+					<width>0</width>
+				</size>
+			</anchored>
+		</genericcontrol>
+	</template>
+	<template name="number_ps_skill">
+		<number_ps_linked>
+			<anchored>
+				<to>anchorskill</to>
+				<top />
+				<left>
+					<anchor>right</anchor>
+					<relation>relative</relation>
+					<offset>10</offset>
+				</left>
+				<bottom />
+				<size>
+					<width>25</width>
+				</size>
+			</anchored>
+			<gmrollable />
+			<script>
+				function onInit()
+					super.onInit();
+					if not User.isHost() then
+						setEnabled(false);
+					end
+				end
+				
+				function action(draginfo)
+					if not User.isHost() then
+						return false;
+					end
+					
+					if skill then
+						local rActor = ActorManager.getActor("pc", window.link.getTargetDatabaseNode());
+						local nValue;
+						
+						local sSkill = skill[1];
+						local sSkillLookup = sSkill;
+						local sSubSkill = nil;
+						if subskill then
+							sSubSkill = subskill[1];
+							sSkill = sSkill .. " (" .. sSubSkill .. ")";
+						end
+						
+						nValue = CharManager.getSkillValue(rActor, sSkillLookup, sSubSkill);
+
+						local nTargetDC = DB.getValue("partysheet.skilldc", 0);
+						if nTargetDC == 0 then
+							nTargetDC = nil;
+						end
+
+						local bSecretRoll = (DB.getValue("partysheet.hiderollresults", 0) == 1);
+						
+						ActionSkill.performRoll(draginfo, rActor, sSkill, nValue, nil, nTargetDC, bSecretRoll, true);
+						return true;
+					end
+					
+					return false;
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+					
+				function onDoubleClick(x,y)	
+					return action();
+				end
+			</script>
+		</number_ps_linked>
+	</template>
+
+	<template name="statusbarindicator">
+		<genericcontrol>
+			<bounds>0,0,0,0</bounds>
+			<backcolor>0F0B0B</backcolor>
+		</genericcontrol>
+	</template>
+	<template name="statusbar">
+		<genericcontrol>
+			<script file="ps/scripts/ps_statusbar.lua" />
+		</genericcontrol>
+	</template>
+	
+	<template name="portrait_base">
+		<genericcontrol>
+			<icon>charlist_base</icon>
+			<script>
+				function onClickDown()
+					if User.isHost() then
+						return true;
+					end
+				end
+				
+				function onClickRelease()
+					if User.isHost() then
+						window.link.activate();
+						return true;
+					end
+				end
+			</script>
+		</genericcontrol>
+	</template>
+	<template name="portrait">
+		<genericcontrol>
+			<disabled />
+			<script>
+				function onInit()
+					update();
+				end
+				
+				function update()
+					local _,sCharNode = window.link.getValue();
+					local sCharNodeName = sCharNode:match("%.([%w-]+)$");
+					if sCharNodeName then
+						setIcon("portrait_" .. sCharNodeName .. "_charlist");
+					else
+						setIcon();
+					end
+				end
+			</script>
+		</genericcontrol>
+	</template>
+
+	<template name="button_ps">
+		<buttoncontrol>
+			<anchored>
+				<size>
+					<width>25</width>
+					<height>25</height>
+				</size>
+			</anchored>
+			<icon>
+				<normal>button_roll</normal>
+				<pressed>button_roll_down</pressed>
+			</icon>
+		</buttoncontrol>
+	</template>
+
+	<template name="string_dropdown">
+		<stringfield>
+			<frame>
+				<name>modifier</name>
+				<offset>7,7,7,5</offset>
+			</frame>
+			<font>sheettextcycler</font>
+			<readonly />
+		</stringfield>
+	</template>
+	<template name="dropdown">
+		<genericcontrol>
+			<anchored>
+				<top />
+				<right />
+				<size>
+					<width>15</width>
+					<height>10</height>
+				</size>
+			</anchored>
+			<icon>indicator_dropdown</icon>
+			<fonts>
+				<normal mergerule="replace">chatfont</normal>
+				<selected mergerule="replace">narratorfont</selected>
+			</fonts>
+			<frames>
+				<normal mergerule="replace"></normal>
+				<selected mergerule="replace">rowshade</selected>
+			</frames>
+			<position mergerule="replace">0,0</position>
+			<size mergerule="replace">0</size>
+			<lookup mergerule="resetandadd" />
+			<script file="ps/scripts/template_dropdown.lua"/>
+		</genericcontrol>
+	</template>
+	<template name="dropdownlist">
+		<windowlist>
+			<anchored>
+				<right />
+				<bottom />
+				<size>
+					<width>80</width>
+					<height>50</height>
+				</size>
+			</anchored>
+			<frame>
+				<name>control_white</name>
+				<offset>2,2,2,2</offset>
+			</frame>
+			<datasource/>
+			<class>dropdownoption</class>
+			<invisible/>
+			<skipempty/>
+			<sortby><control>Value</control></sortby>
+			<script file="ps/scripts/template_dropdownlist.lua" />
+		</windowlist>
+	</template>
+    <windowclass name="dropdownoption">
+		<sizelimits>
+			<minimum>
+				<height>15</height>
+			</minimum>
+		</sizelimits>
+		<script file="ps/scripts/template_dropdownoption.lua" />
+		<sheetdata>
+			<hsc name="Value" />
+
+			<stringcontrol name="Text">
+				<anchored>
+					<left />
+					<top />
+					<right />
+					<bottom />
+				</anchored>
+				<static />
+				<script>
+					function onClickDown()
+						return true;
+					end
+
+					function onClickRelease()
+						window.clicked();
+					end
+				</script>
+			</stringcontrol>
+		</sheetdata>
+	</windowclass>
+	<template name="dropdownscrollbar">
+		<scrollbarcontrol>
+			<anchored>
+				<top />
+				<bottom />
+				<right />
+				<size>
+					<width>10</width>
+				</size>
+			</anchored>
+			<normal>
+				<name>control_grey</name>
+			</normal>
+		</scrollbarcontrol>
+	</template>
+
+	<template name="number_ps_invcoin">
+		<basicnumber>
+			<bounds>10,3,40,15</bounds>
+			<frame />
+			<font>reference-r-small</font>
+			<hideonvalue>0</hideonvalue>
+			<delaykeyupdate />
+			<script>
+				function onDrop(x, y, draginfo)
+					if draginfo.isType("number") and not isReadOnly() then
+						setValue(getValue() + draginfo.getNumberData());
+						return true;
+					end
+				end
+			</script>
+		</basicnumber>
+	</template>
+	<template name="string_ps_invcoin">
+		<basicstring>
+			<anchored>
+				<left><offset>55</offset></left>
+				<top><offset>4</offset></top>
+				<size>
+					<width>70</width>
+				</size>
+			</anchored>
+			<frame />
+			<font>reference-r-small</font>
+			<multilinespacing>15</multilinespacing>
+		</basicstring>
+	</template>
+	<template name="string_ps_invcoinassign">
+		<basicstring>
+			<anchored>
+				<left>
+					<parent>name</parent>
+					<anchor>right</anchor>
+					<offset>5</offset>
+				</left>
+				<top><offset>4</offset></top>
+				<right><offset>-10</offset></right>
+			</anchored>
+			<frame />
+			<font>reference-r-small</font>
+			<multilinespacing>15</multilinespacing>
+		</basicstring>
+	</template>
+	
+	<template name="number_ps_invitem">
+		<basicnumber>
+			<bounds>10,3,25,15</bounds>
+			<frame />
+			<font>reference-r-small</font>
+			<hideonvalue>0</hideonvalue>
+			<delaykeyupdate />
+			<script>
+				function onDrop(x, y, draginfo)
+					if draginfo.isType("number") and not isReadOnly() then
+						setValue(getValue() + draginfo.getNumberData());
+						return true;
+					end
+				end
+			</script>
+		</basicnumber>
+	</template>
+	<template name="string_ps_invitem">
+		<basicstring>
+			<anchored>
+				<left><offset>40</offset></left>
+				<top><offset>4</offset></top>
+				<right><offset>-180</offset></right>
+			</anchored>
+			<frame />
+			<font>reference-r-small</font>
+			<multilinespacing>15</multilinespacing>
+		</basicstring>
+	</template>
+	<template name="string_ps_invitemassign">
+		<basicstring>
+			<anchored>
+				<left>
+					<anchor>right</anchor>
+					<offset>-175</offset>
+				</left>
+				<top><offset>4</offset></top>
+				<right><offset>-30</offset></right>
+			</anchored>
+			<frame />
+			<font>reference-r-small</font>
+			<multilinespacing>15</multilinespacing>
+		</basicstring>
+	</template>
+	
+	<template name="string_ps_xpitem">
+		<basicstring>
+			<anchored>
+				<top><offset>4</offset></top>
+			</anchored>
+			<frame />
+			<font>reference-r-small</font>
+			<multilinespacing>15</multilinespacing>
+		</basicstring>
+	</template>
+
+	<template name="basicnumber_ps">
+		<number>
+			<frame mergerule="replace">
+				<name>bonus</name>
+				<offset>5,7,5,5</offset>
+			</frame>
+			<stateframe>
+				<keyedit>
+					<name>sheetfocus</name>
+					<offset>5,7,5,5</offset>
+				</keyedit>
+				<hover>
+					<name>sheetfocus</name>
+					<offset>5,7,5,5</offset>
+					<hidereadonly />
+				</hover>
+				<drophilight>
+					<name>sheetfocus</name>
+					<offset>5,7,5,5</offset>
+					<hidereadonly />
+				</drophilight>
+			</stateframe>
+			<droptypes>
+				<type>number</type>
+			</droptypes>
+			<font>sheetnumber</font>
+		</number>
+	</template>
+
+	<template name="number_ps_questitem">
+		<number>
+			<stateframe>
+				<keyedit>
+					<name>sheetfocus</name>
+					<offset>5,7,5,5</offset>
+				</keyedit>
+				<hover>
+					<name>sheetfocus</name>
+					<offset>5,7,5,5</offset>
+					<hidereadonly />
+				</hover>
+				<drophilight>
+					<name>sheetfocus</name>
+					<offset>5,7,5,5</offset>
+					<hidereadonly />
+				</drophilight>
+			</stateframe>
+			<droptypes>
+				<type>number</type>
+			</droptypes>
+			<font>sheetnumber</font>
+			<hideonvalue>0</hideonvalue>
+			<nodrag />
+			<delaykeyupdate />
+		</number>
+	</template>
+
+	<template name="button_datetime">
+		<buttoncontrol>
+			<anchored>
+				<size>
+					<width>23</width>
+					<height>22</height>
+				</size>
+			</anchored>
+			<icon>
+				<normal>button_identityactivate</normal>
+				<pressed>button_identityactivate_down</pressed>
+			</icon>
+		</buttoncontrol>
+	</template>
+</root>

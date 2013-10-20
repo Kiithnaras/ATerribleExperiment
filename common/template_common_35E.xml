@@ -1,0 +1,784 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="close_charsheet">
+		<close>
+			<anchored>
+				<top>
+					<offset>0</offset>
+				</top>
+				<right>
+					<offset>-8</offset>
+				</right>
+			</anchored>
+		</close>
+	</template>
+	<template name="close_charsheetmini">
+		<close>
+			<anchored>
+				<top>
+					<offset>0</offset>
+				</top>
+				<right>
+					<offset>-8</offset>
+				</right>
+			</anchored>
+		</close>
+	</template>
+	<template name="close_ps">
+		<close>
+			<anchored>
+				<top>
+					<offset>10</offset>
+				</top>
+				<right>
+					<offset>-8</offset>
+				</right>
+			</anchored>
+		</close>
+	</template>
+	<template name="close_lighting">
+		<close>
+			<anchored>
+				<top>
+					<offset>5</offset>
+				</top>
+				<right>
+					<offset>-10</offset>
+				</right>
+			</anchored>
+		</close>
+	</template>
+	<template name="close_combattracker">
+		<close>
+			<anchored>
+				<top>
+					<offset>7</offset>
+				</top>
+				<right>
+					<offset>-19</offset>
+				</right>
+			</anchored>
+		</close>
+	</template>
+	<template name="close_utility">
+		<close>
+			<anchored>
+				<top>
+					<offset>0</offset>
+				</top>
+				<right>
+					<offset>-8</offset>
+				</right>
+			</anchored>
+		</close>
+	</template>
+	<template name="close_image">
+		<close>
+			<anchored>
+				<top>
+					<offset>14</offset>
+				</top>
+				<right>
+					<offset>-19</offset>
+				</right>
+			</anchored>
+		</close>
+	</template>
+	<template name="close_campaign_tabbed">
+		<close>
+			<anchored>
+				<top>
+					<offset>0</offset>
+				</top>
+				<right>
+					<offset>-5</offset>
+				</right>
+			</anchored>
+		</close>
+	</template>
+	<template name="close_notes">
+		<close>
+			<anchored>
+				<top>
+					<offset>1</offset>
+				</top>
+				<right>
+					<offset>-11</offset>
+				</right>
+			</anchored>
+		</close>
+	</template>
+	<template name="close_library">
+		<close>
+			<anchored>
+				<top>
+					<offset>18</offset>
+				</top>
+				<right>
+					<offset>-28</offset>
+				</right>
+			</anchored>
+		</close>
+	</template>
+	<template name="close_tokenbag">
+		<close>
+			<anchored>
+				<top>
+					<offset>0</offset>
+				</top>
+				<right>
+					<offset>-17</offset>
+				</right>
+			</anchored>
+		</close>
+	</template>
+	<template name="close_scrollbox">
+		<close>
+			<anchored>
+				<top>
+					<offset>2</offset>
+				</top>
+				<right>
+					<offset>-16</offset>
+				</right>
+			</anchored>
+		</close>
+	</template>
+	<template name="close_referencepage">
+		<close>
+			<anchored>
+				<top>
+					<offset>0</offset>
+				</top>
+				<right>
+					<offset>-9</offset>
+				</right>
+			</anchored>
+		</close>
+	</template>
+
+	<template name="resize">
+		<genericcontrol>
+			<anchored>
+				<right />
+				<bottom />
+				<size>
+					<height>18</height>
+					<width>18</width>
+				</size>
+			</anchored>
+			<icon>indicator_resize</icon>
+			<disabled />
+		</genericcontrol>
+	</template>
+	<template name="resize_scrollboxfortabs">
+		<resize>
+			<anchored>
+				<right>
+					<offset>-10</offset>
+				</right>
+				<bottom>
+					<offset>-12</offset>
+				</bottom>
+			</anchored>
+		</resize>
+	</template>
+	<template name="resize_storybox">
+		<resize>
+			<anchored>
+				<right>
+					<offset>-10</offset>
+				</right>
+				<bottom>
+					<offset>-5</offset>
+				</bottom>
+			</anchored>
+		</resize>
+	</template>
+	<template name="resize_charsheet">
+		<resize>
+			<anchored>
+				<right>
+					<offset>-10</offset>
+				</right>
+				<bottom>
+					<offset>-10</offset>
+				</bottom>
+			</anchored>
+		</resize>
+	</template>
+	<template name="resize_ps">
+		<resize>
+			<anchored>
+				<right>
+					<offset>-10</offset>
+				</right>
+				<bottom>
+					<offset>-10</offset>
+				</bottom>
+			</anchored>
+		</resize>
+	</template>
+	<template name="resize_ctbox">
+		<resize>
+			<anchored>
+				<right>
+					<offset>-7</offset>
+				</right>
+				<bottom>
+					<offset>-7</offset>
+				</bottom>
+			</anchored>
+		</resize>
+	</template>
+	<template name="resize_library">
+		<resize>
+			<anchored>
+				<right>
+					<offset>-5</offset>
+				</right>
+				<bottom>
+					<offset>-7</offset>
+				</bottom>
+			</anchored>
+		</resize>
+	</template>
+	<template name="resize_referencepage">
+		<resize>
+			<anchored>
+				<right>
+					<offset>-10</offset>
+				</right>
+				<bottom>
+					<offset>-6</offset>
+				</bottom>
+			</anchored>
+		</resize>
+	</template>
+	<template name="resize_utilitybox">
+		<resize>
+			<anchored>
+				<right>
+					<offset>-10</offset>
+				</right>
+				<bottom>
+					<offset>-10</offset>
+				</bottom>
+			</anchored>
+		</resize>
+	</template>
+	<template name="resize_utilityboxfortabs">
+		<resize>
+			<anchored>
+				<right>
+					<offset>-10</offset>
+				</right>
+				<bottom>
+					<offset>-20</offset>
+				</bottom>
+			</anchored>
+		</resize>
+	</template>
+	<template name="resize_framebox">
+		<resize>
+			<anchored>
+				<right>
+					<offset>-7</offset>
+				</right>
+				<bottom>
+					<offset>-8</offset>
+				</bottom>
+			</anchored>
+		</resize>
+	</template>
+	<template name="resize_tokenbag">
+		<resize>
+			<anchored>
+				<right>
+					<offset>-16</offset>
+				</right>
+				<bottom>
+					<offset>-16</offset>
+				</bottom>
+			</anchored>
+		</resize>
+	</template>
+
+	<template name="resize_image">
+		<genericcontrol>
+			<anchored>
+				<right>
+					<offset>-20</offset>
+				</right>
+				<bottom>
+					<offset>-22</offset>
+				</bottom>
+				<size>
+					<height>18</height>
+					<width>18</width>
+				</size>
+			</anchored>
+			<icon>indicator_resize_filled</icon>
+			<disabled />
+		</genericcontrol>
+	</template>
+	
+	<template name="scrollbar_charlist">
+		<scrollbar>
+			<anchored>
+				<position>right</position>
+				<top>
+					<offset>-10</offset>
+				</top>
+				<bottom>
+					<offset>-3</offset>
+				</bottom>
+			</anchored>
+		</scrollbar>
+	</template>
+	<template name="scrollbar_charminilist">
+		<scrollbar>
+			<anchored>
+				<position>right</position>
+				<offset>0,-5</offset>
+			</anchored>
+		</scrollbar>
+	</template>
+
+	<template name="frame_campaign">
+		<genericcontrol>
+			<frame>
+				<name>sheetgroup</name>
+			</frame>
+		</genericcontrol>
+	</template>
+	<template name="frame_char">
+		<genericcontrol>
+			<frame>
+				<name>sheetgroup</name>
+			</frame>
+		</genericcontrol>
+	</template>
+	<template name="frame_ct">
+		<genericcontrol>
+			<frame>
+				<name>ctwindow_sheetgroup</name>
+			</frame>
+		</genericcontrol>
+	</template>
+
+	<template name="string_columnfull">
+		<basicstring>
+			<multilinespacing>16</multilinespacing>
+			<script>
+				function onInit()
+					local nOffsetX = 5;
+					local nOffsetY = 7;
+					if offset then
+						local sOffsetX, sOffsetY = string.match(offset[1], "^(%d+),(%d+)$");
+						if sOffsetX and sOffsetY then
+							nOffsetX = tonumber(sOffsetX) or 5;
+							nOffsetY = tonumber(sOffsetY) or 7;
+						end
+					end
+					
+					if anchor then
+						setAnchor("top", anchor[1], "bottom", "relative", nOffsetY);
+					elseif window.columnanchor then
+						setAnchor("top", "columnanchor", "bottom", "relative", nOffsetY);
+					else
+						setAnchor("top", "", "top", "absolute", nOffsetY);
+					end
+					
+					setAnchor("left", "", "left", "absolute", nOffsetX);
+					setAnchor("right", "", "right", "absolute", -nOffsetX);
+					
+					local node = getDatabaseNode();
+					if not node or node.isReadOnly() then
+						if getValue() == "" then
+							setVisible(false);
+						end
+					end
+				end
+			</script>
+		</basicstring>
+	</template>
+	
+	<!-- SPELLS -->
+	<template name="list_spellitem">
+		<windowlist>
+			<noscroll />
+			<datasource>.spells</datasource>
+			<sortby><control>name</control></sortby>
+			<script file="common/scripts/list_spell.lua" />
+		</windowlist>
+	</template>
+	<template name="list_spelllevel">
+		<windowlist>
+			<datasource>.levels</datasource>
+			<noscroll />
+			<script file="common/scripts/list_spelllevel.lua" />
+		</windowlist>
+	</template>
+	<template name="list_spellclass">
+		<windowlist>
+			<datasource>.spellset</datasource>
+			<footer>footer_wide</footer>
+			<script file="common/scripts/list_spellclass.lua" />
+		</windowlist>
+	</template>
+
+	<template name="button_spellaction_mini">
+		<buttoncontrol>
+			<anchored>
+				<top>
+					<anchor>top</anchor>
+					<offset>2</offset>
+				</top>
+				<left>
+					<anchor>left</anchor>
+					<offset>2</offset>
+				</left>
+				<size>
+					<height>16</height>
+					<width>16</width>
+				</size>
+			</anchored>
+			<icon>
+				<normal>button_roll</normal>
+				<pressed>button_roll_down</pressed>
+			</icon>
+			<script>
+				function action(draginfo)
+					local nodeAction = window.getDatabaseNode();
+					local rActor = ActorManager.getActor(window.getActorType(), nodeAction.getChild("........."));
+					SpellsManager.onSpellAction(rActor, nodeAction, draginfo);
+				end
+				
+				function onButtonPress()
+					action();
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					action(draginfo);
+					return true;
+				end
+			</script>
+		</buttoncontrol>
+	</template>
+	<template name="icon_spellaction">
+		<button_iconcycler>
+			<bounds>2,2,20,20</bounds>
+			<frame>
+				<name>modifier</name>
+				<offset>6,5,5,5</offset>
+			</frame>
+			<parameters>
+				<defaulticon>indicator_question</defaulticon>
+				<icons>indicator_cast_small|indicator_damage_small|indicator_heal_small|indicator_effect_small</icons>
+				<values>cast|damage|heal|effect</values>
+				<tooltips>Cast|Damage|Heal|Effect</tooltips>
+			</parameters>
+			<readonly />
+			<script>
+				function onInit()
+					super.onInit();
+					
+					onValueChanged();
+				end
+				
+				function onValueChanged()
+					window.updateDisplay();
+				end
+			</script>
+		</button_iconcycler>
+	</template>
+	<template name="button_cc">
+		<buttoncontrol>
+			<icon>
+				<normal>button_roll</normal>
+				<pressed>button_roll_down</pressed>
+			</icon>
+			<tooltip>
+				<text>Concentration Check</text>
+			</tooltip>
+			<script>
+				function action(draginfo)
+					local nodeSpellClass = window.getDatabaseNode();
+					local rActor = ActorManager.getActor(window.getActorType(), nodeSpellClass.getChild("..."));
+
+					GameSystemManager.performConcentrationCheck(draginfo, rActor, nodeSpellClass);
+				end
+				
+				function onButtonPress()
+					action();
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					action(draginfo);
+					return true;
+				end
+			</script>
+		</buttoncontrol>
+	</template>
+	
+	<template name="string_spellactionview">
+		<stringcontrol>
+			<anchored>
+				<size>
+					<width>75</width>
+				</size>
+			</anchored>
+			<nodrag />
+			<readonly />
+			<center />
+			<font>sheettextblock</font>
+			<frame>
+				<name>modifier</name>
+				<offset>10,7,7,4</offset>
+			</frame>
+			<script>
+				function onInit()
+					setHoverCursor("hand");
+					addBitmapWidget("indicator_fullattackdie").setPosition("bottomleft", -6, -5);
+				end
+				
+				function action(draginfo)
+					local sSubRoll = nil;
+					if subroll then
+						sSubRoll = subroll[1];
+					end
+					
+					local nodeAction = window.getDatabaseNode();
+					local rActor = ActorManager.getActor(window.getActorType(), nodeAction.getChild("........."));
+					SpellsManager.onSpellAction(rActor, nodeAction, draginfo, sSubRoll);
+				end
+
+				function onDoubleClick(x, y)
+					action();
+					return true;
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					action(draginfo);
+					return true;
+				end
+			</script>
+		</stringcontrol>
+	</template>
+	<template name="button_spellactiontoggle">
+		<button_toggle>
+			<anchored>
+				<position>rightlow</position>
+				<offset>4,0</offset>
+				<size>
+					<width>15</width>
+					<height>15</height>
+				</size>
+			</anchored>
+			<icon>indicator_expanddown</icon>
+			<tooltip>
+				<text>Click to edit / hide details</text>
+			</tooltip>
+			<script>
+				function onValueChanged()
+					window.updateDisplay();
+				end
+			</script>
+		</button_toggle>
+	</template>
+
+	<template name="number_spelldc">
+		<number_linked>
+			<anchored>
+				<size>
+					<width>25</width>
+					<height>22</height>
+				</size>
+			</anchored>
+			<frame>
+				<name>modifier</name>
+				<offset>2,1,2,1</offset>
+			</frame>
+			<font>sheetnumbersmall</font>
+			<readonly />
+			<source>
+				<name>dc.misc</name>
+				<op>+</op>
+			</source>
+			<source>
+				<name>dc.abilitymod</name>
+				<op>+</op>
+			</source>
+			<script>
+				function onSourceUpdate()
+					setValue(10 + calculateSources());
+				end
+			</script>
+		</number_linked>
+	</template>
+	<template name="number_spell">
+		<basicnumber_sm>
+			<anchored>
+				<size>
+					<width>25</width>
+					<height>22</height>
+				</size>
+			</anchored>
+			<frame>
+				<name>bonus</name>
+				<offset>2,1,2,1</offset>
+			</frame>
+			<stateframe>
+				<keyedit>
+					<name>sheetfocus</name>
+					<offset>2,1,2,1</offset>
+				</keyedit>
+				<drophilight>
+					<name>sheetfocus</name>
+					<offset>2,1,2,1</offset>
+				</drophilight>
+			</stateframe>
+		</basicnumber_sm>
+	</template>
+	<template name="number_spellsavailable">
+		<number_spell>
+			<anchored>
+				<top>
+					<parent>availablelevel</parent>
+					<anchor>top</anchor>
+					<offset>-4</offset>
+				</top>
+				<left>
+					<parent>availablelevel</parent>
+					<anchor>right</anchor>
+					<relation>relative</relation>
+					<offset>-2</offset>
+				</left>
+				<size>
+					<width>25</width>
+				</size>
+			</anchored>
+			<script>
+				function onValueChanged()
+					window.onSpellCounterUpdate();
+				end
+			</script>
+		</number_spell>
+	</template>
+	<template name="number_spellsavailable_mini">
+		<numberfield>
+			<bounds>0,0,0,0</bounds>
+			<invisible />
+			<script>
+				function onValueChanged()
+					window.onSpellCounterUpdate();
+				end
+			</script>
+		</numberfield>
+	</template>
+	
+	<template name="string_spelllevellabel_mini">
+		<stringcontrol>
+			<frame>
+				<name>rowshade</name>
+			</frame>
+			<font>sheetlabelsmallbold</font>
+			<empty>&#171; Class level &#187;</empty>
+			<static />
+			<script>
+				function onClickDown(button, x, y)
+					window.spells.setVisible(not window.spells.isVisible());
+				end
+			</script>
+		</stringcontrol>
+	</template>
+	<template name="string_spell">
+		<stringfield>
+			<font>sheettextsmall</font>
+			<frame>
+				<name>modifier</name>
+				<offset>6,5,5,5</offset>
+			</frame>
+			<script>
+				function onEnter()
+					if window.windowlist and window.windowlist.onEnter then
+						return window.windowlist.onEnter();
+					end
+				end
+			</script>
+		</stringfield>
+	</template>
+	
+	<template name="icon_usepower">
+		<buttoncontrol>
+			<anchored>
+				<size>
+					<height>10</height>
+					<width>10</width>
+				</size>
+			</anchored>
+			<icon>
+				<normal>indicator_cast_small</normal>
+				<pressed>indicator_cast_small</pressed>
+			</icon>
+			<tooltip>
+				<text>Spend points</text>
+			</tooltip>
+			<script>
+				function onButtonPress()
+					window.usePower();
+				end
+			</script>
+		</buttoncontrol>
+	</template>
+	<template name="state_spellcounter">
+		<genericcontrol>
+			<stateicons>
+				<on>indicator_checkon</on>
+				<off>indicator_checkoff</off>
+			</stateicons>
+			<spacing>10</spacing>
+			<script file="common/scripts/counter_spell.lua" />
+		</genericcontrol>
+	</template>
+
+	<template name="link_spell">
+		<buttoncontrol>
+			<icon>
+				<normal>button_openwindow</normal>
+				<pressed>button_openwindowdown</pressed>
+			</icon>
+			<script>
+				function onInit()
+					setHoverCursor("hand");
+				end
+				
+				function onClickDown(button, x, y)
+					return true;
+				end
+				
+				function onClickRelease(button, x, y)
+					Interface.openWindow("spelldesc2", window.getDatabaseNode().getNodeName());
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					local nodeWin = window.getDatabaseNode();
+					
+					draginfo.setType("shortcut");
+					draginfo.setIcon("button_openwindow");
+					draginfo.setDescription(DB.getValue(nodeWin, "name", ""));
+					draginfo.setShortcutData("spelldesc2", nodeWin.getNodeName());
+					
+					return true;
+				end
+			</script>
+		</buttoncontrol>
+	</template>
+</root>

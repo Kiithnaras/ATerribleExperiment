@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="ps_watchitem">
+		<sizelimits>
+			<minimum>
+				<height>55</height>
+			</minimum>
+		</sizelimits>
+		<frame>modifier</frame>
+		<script>
+			function onInit()
+				local imageinstance = token.populateFromImageNode(tokenrefnode.getValue(), tokenrefid.getValue());
+				if imageinstance then
+					PartyManager.linkToken(getDatabaseNode(), imageinstance);
+				end
+			end
+		</script>
+		<sheetdata>
+			<hs name="tokenrefid" />
+			<hs name="tokenrefnode" />
+			<hn name="tokenscale">
+				<default>1</default>
+				<script>
+					function onValueChanged()
+						window.token.onScaleChanged();
+					end
+				</script>
+			</hn>
+
+			<basicnumber name="watchid">
+				<bounds>10,18,20,15</bounds>
+				<font>sheetnumbersmall</font>
+			</basicnumber>
+			<string_psname name="name">
+				<anchored>
+					<left><offset>35</offset></left>
+					<top><offset>17</offset></top>
+					<size>
+						<width>80</width>
+						<height>20</height>
+					</size>
+				</anchored>
+				<empty>&#171; Unnamed &#187;</empty>
+			</string_psname>
+			<tokenfield name="token">
+				<bounds>120,8,40,40</bounds>
+				<empty>indicator_emptytoken</empty>
+				<script file="ps/scripts/ps_token.lua" />
+			</tokenfield>
+		</sheetdata>
+	</windowclass>		
+
+	<windowclass name="ps_order">
+		<placement>
+			<size>
+				<width>700</width>
+				<height>360</height>
+			</size>
+		</placement>
+		<sheetdata>
+			<frame_ps name="sheetframe" />
+			<label_ps_sheet>
+				<static>Order Information</static>
+			</label_ps_sheet>
+			
+			<header_psorder>
+				<anchored>
+					<left><offset>10</offset></left>
+					<right><offset>-615</offset></right>
+				</anchored>
+				<center />
+				<static>Watch Order</static>
+			</header_psorder>
+			<windowlist name="watchlist">
+				<anchored>
+					<to>sheetframe</to>
+					<left><offset>15</offset></left>
+					<top><offset>43</offset></top>
+					<right><offset>-615</offset></right>
+					<bottom><offset>-13</offset></bottom>
+				</anchored>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>10,8,15,8</offset>
+				</frame>
+				<datasource>.partyinformation</datasource>
+				<class>ps_watchitem</class>
+				<sortby><control>watchid</control></sortby>
+				<empty>
+					<font>reference-i</font>
+					<gmtext>Add PCs to main tab.</gmtext>
+				</empty>
+			</windowlist>
+			
+			<header_psorder>
+				<anchored>
+					<left>
+						<anchor>right</anchor>
+						<offset>-580</offset>
+					</left>
+					<right><offset>-10</offset></right>
+				</anchored>
+				<center />
+				<static>Marching &amp; Formation</static>
+			</header_psorder>		
+			<imagecontrol name="image">
+				<anchored>
+					<to>sheetframe</to>
+					<left>
+						<anchor>right</anchor>
+						<offset>-595</offset>
+					</left>
+					<top><offset>43</offset></top>
+					<right><offset>-15</offset></right>
+					<bottom><offset>-13</offset></bottom>
+				</anchored>
+				<frame>
+					<name>sheetgroup</name>
+					<offset>10,8,10,8</offset>
+				</frame>
+				<indicators>
+					<availability>indicator_sent</availability>
+					<locked>indicator_locked</locked>
+					<loading>indicator_loading</loading>
+					<zoom>indicator_zoom</zoom>
+					<shortcuts>indicator_shortcuts</shortcuts>
+				</indicators>
+				<shortcut>
+					<icon>pin</icon>
+					<hotspot>2,21</hotspot>
+				</shortcut>
+				<default>
+					<snap>on</snap>
+					<drawingsize>500,500</drawingsize>
+					<gridsize>50</gridsize>
+				</default>
+				<script>
+					function onMaskingStateChanged(tool)
+						window.drawtools.onValueChanged();
+					end
+
+					function onDrawStateChanged(tool)
+						window.drawtools.onValueChanged();
+					end
+				</script>
+			</imagecontrol>
+			<scrollercontrol>
+				<anchored>
+					<to>image</to>
+					<position>insidebottomright</position>
+					<offset>25,-10</offset>
+					<size>
+						<height>45</height>
+						<width>27</width>
+					</size>
+				</anchored>
+				<target>image</target>
+				<button>
+					<normal>button_scroller</normal>
+					<pressed>button_scroller_down</pressed>
+				</button>
+			</scrollercontrol> 
+
+			<toolbar_20 name="drawtools">
+				<anchored>
+					<to>image</to>
+					<position>insidetopleft</position>
+					<offset>1,1</offset>
+					<size>
+						<width>43</width>
+						<height>24</height>
+					</size>
+				</anchored>
+				<button>
+					<id>paint</id>
+					<icon>tool_paint_20</icon>
+					<tooltip>Drawing Mode</tooltip>
+				</button>
+				<button>
+					<id>erase</id>
+					<icon>tool_erase_20</icon>
+					<tooltip>Eraser Mode</tooltip>
+				</button>
+				<toggle />
+				<script>
+					function onValueChanged()
+						local sDrawTool = window.image.getDrawingTool();
+						if sDrawTool then
+							if sDrawTool == "erase" then
+								setActive("erase");
+							else
+								setActive("paint");
+							end
+							return;
+						end
+						
+						setActive("");
+					end
+					
+					function onButtonPress(id)
+						if id == "paint" then
+							if window.image.getDrawingTool() ~= "paint" then
+								window.image.setDrawingTool("paint");
+							else
+								window.image.setDrawingTool("");
+							end
+						elseif id == "erase" then
+							if window.image.getDrawingTool() ~= "erase" then
+								window.image.setDrawingTool("erase");
+							else
+								window.image.setDrawingTool("");
+							end
+						end
+					end
+				</script>
+			</toolbar_20>
+		</sheetdata>
+	</windowclass>
+</root>

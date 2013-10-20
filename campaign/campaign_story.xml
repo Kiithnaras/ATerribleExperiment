@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="encounter">
+		<frame>storybox</frame>
+		<placement>
+			<size>
+				<width>400</width>
+				<height>650</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+		</sizelimits>
+		<minimize>minimized_encounter</minimize>
+		<playercontrol />
+		<sharable />
+		<nodelete />
+		<tooltip>
+			<field>name</field>
+		</tooltip>
+		<sheetdata>
+			<link_campaign>
+				<class>encounter</class>
+			</link_campaign>
+			<string_campaign_details_name name="name">
+				<empty>&#171; New Story &#187;</empty>
+				<font>story-title</font>
+			</string_campaign_details_name>
+
+			<formattedtextfield name="text">
+				<bounds>25,44,-25,-35</bounds>
+				<font>
+					<normal>story-r</normal>
+					<bold>story-b</bold>
+					<italic>story-i</italic>
+					<bolditalic>story-bi</bolditalic>
+					<title>story-h</title>
+				</font>
+				<linkicon>
+					<link>button_openwindow</link>
+					<emptylink>button_emptytarget</emptylink>
+				</linkicon>
+				<footer>footer_wide</footer>
+				<selectioncolor>#BBBBBB</selectioncolor>
+				<empty>Click to enter text</empty>
+			</formattedtextfield>
+			<scrollbar>
+				<bounds>-30,50,20,-20</bounds>
+				<target>text</target>
+			</scrollbar>
+
+			<list_viewers />
+			
+			<resize_storybox />
+			<close_notes />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="encountersmall">
+		<sizelimits>
+			<minimum>
+				<height>10</height>
+			</minimum>
+		</sizelimits>
+		<nodelete />
+		<script file="campaign/scripts/campaign_list_record.lua" />
+		<sheetdata>
+			<link_list name="open">
+				<class>encounter</class>
+			</link_list>
+
+			<icon_access name="access" />
+			<icon_modified name="modified" />
+			
+			<string_campaignrecordname name="name">
+				<empty>&#171; New Story &#187;</empty>
+			</string_campaignrecordname>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="encounterlist">
+		<frame>scrollboxfortabs</frame>
+		<softclose />
+		<placement>
+			<size>
+				<width>275</width>
+				<height>350</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum>
+				<width>200</width>
+				<height>300</height>
+			</minimum>
+		</sizelimits>
+		<nodelete />
+		<sheetdata>
+			<banner_campaign>
+				<icon>title_story</icon>
+			</banner_campaign>
+
+			<list_campaign name="list">
+				<datasource>.</datasource>
+				<class>encountersmall</class>
+			</list_campaign>
+			<scrollbar_campaign>
+				<target>list</target>
+			</scrollbar_campaign>
+
+			<button_new>
+				<class>encounter</class>
+				<gmvisibleonly />
+			</button_new>
+			<categories>
+				<targetcontrol>list</targetcontrol>
+			</categories>
+
+			<filter_campaign name="filter" />
+			<filtertrigger_campaign name="filtertrigger" />
+
+			<resize_scrollboxfortabs />
+			<close_scrollbox />
+		</sheetdata>
+	</windowclass>
+</root>

@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="charsheetmini_basic">
+		<placement>
+			<size>
+				<width>360</width>
+				<height>220</height>
+			</size>
+		</placement>
+		<nodelete />
+		<minisheet />
+		<script file="charsheet/scripts/charsheet_tabmain.lua" />
+		<sheetdata>
+			<!-- HEALTH -->
+			<frame_char name="mini_hpframe">
+				<bounds>0,10,180,75</bounds>
+			</frame_char>
+
+			<number_charadd name="hp" source="hp.total">
+				<anchored>
+					<to>mini_hpframe</to>
+					<position>insidetopleft</position>
+					<offset>15,24</offset>
+					<size>
+						<width>30</width>
+						<height>25</height>
+					</size>
+				</anchored>
+			</number_charadd>
+			<label_fieldtop>
+				<anchored>
+					<to>hp</to>
+				</anchored>
+				<static>HP</static>
+			</label_fieldtop>
+
+			<number_charadd name="hptemp" source="hp.temporary">
+				<anchored>
+					<to>hp</to>
+					<position>right</position>
+					<offset>10,0</offset>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<color>#FF0000AA</color>
+			</number_charadd>
+			<label_fieldtop>
+				<anchored>
+					<to>hptemp</to>
+				</anchored>
+				<static>Temp</static>
+			</label_fieldtop>
+
+			<number_charwounds name="wounds" source="hp.wounds">
+				<anchored>
+					<to>hptemp</to>
+					<position>right</position>
+					<offset>10,0</offset>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+			</number_charwounds>
+			<label_fieldtop>
+				<anchored>
+					<to>wounds</to>
+				</anchored>
+				<static>Wnd</static>
+			</label_fieldtop>
+
+			<number_charadd name="nonlethal" source="hp.nonlethal">
+				<anchored>
+					<to>wounds</to>
+					<position>right</position>
+					<offset>10,0</offset>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+				<hideonvalue>0</hideonvalue>
+				<script>
+					function onValueChanged()
+						window.onWoundsChanged();
+					end
+				</script>
+			</number_charadd>
+			<label_fieldtop>
+				<anchored>
+					<to>nonlethal</to>
+				</anchored>
+				<static>Subdual</static>
+			</label_fieldtop>
+			
+			<label_sm>
+				<anchored>
+					<to>mini_hpframe</to>
+					<position>insidetopleft</position>
+					<offset>15,53</offset>
+					<size>
+						<height>15</height>
+						<width>20</width>
+					</size>
+				</anchored>
+				<static>DR:</static>
+			</label_sm>
+			<stringu_sm name="dr" source="defenses.damagereduction">
+				<anchored>
+					<to>mini_hpframe</to>
+					<position>insidetopleft</position>
+					<offset>40,53</offset>
+					<size>
+						<height>15</height>
+						<width>125</width>
+					</size>
+				</anchored>
+			</stringu_sm>
+
+			<!-- ARMOR -->
+			<frame_char name="mini_armorframe">
+				<bounds>0,85,180,60</bounds>
+			</frame_char>
+
+			<number_chartotalac name="ac" source="ac.totals.general">
+				<anchored>
+					<to>mini_armorframe</to>
+					<position>insidetopleft</position>
+					<offset>15,24</offset>
+					<size>
+						<width>30</width>
+						<height>25</height>
+					</size>
+				</anchored>
+			</number_chartotalac>
+			<label_fieldtop>
+				<anchored>
+					<to>ac</to>
+				</anchored>
+				<static>AC</static>
+			</label_fieldtop>
+
+			<number_charflatfootedac name="flatfootedac" source="ac.totals.flatfooted">
+				<anchored>
+					<to>ac</to>
+					<position>right</position>
+					<offset>10,0</offset>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+			</number_charflatfootedac>
+			<label_fieldtop>
+				<anchored>
+					<to>flatfootedac</to>
+				</anchored>
+				<static>Flat</static>
+			</label_fieldtop>
+
+			<number_chartouchac name="touchac" source="ac.totals.touch">
+				<anchored>
+					<to>flatfootedac</to>
+					<position>right</position>
+					<offset>10,0</offset>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+			</number_chartouchac>
+			<label_fieldtop>
+				<anchored>
+					<to>touchac</to>
+				</anchored>
+				<static>Touch</static>
+			</label_fieldtop>
+
+			<number_charcmd name="cmd" source="ac.totals.cmd">
+				<anchored>
+					<to>touchac</to>
+					<position>right</position>
+					<offset>10,0</offset>
+					<size>
+						<width>30</width>
+					</size>
+				</anchored>
+			</number_charcmd>
+			<label_fieldtop name="label_cmd">
+				<anchored>
+					<to>cmd</to>
+				</anchored>
+				<static>CMD</static>
+			</label_fieldtop>
+
+			<!-- SAVING THROWS -->
+			<frame_char name="mini_saves_frame">
+				<bounds>0,145,180,80</bounds>
+			</frame_char>
+
+			<number_charsavefort name="save_fort" source="saves.fortitude.total">
+				<anchored>
+					<to>mini_saves_frame</to>
+					<position>insidetopleft</position>
+					<offset>20,24</offset>
+					<size>
+						<width>35</width>
+						<height>25</height>
+					</size>
+				</anchored>
+			</number_charsavefort>
+			<label_fieldtop>
+				<anchored>
+					<to>save_fort</to>
+				</anchored>
+				<static>Fort</static>
+			</label_fieldtop>
+
+			<number_charsaveref name="save_ref" source="saves.reflex.total">
+				<anchored>
+					<to>save_fort</to>
+					<position>right</position>
+					<offset>15,0</offset>
+					<size>
+						<width>35</width>
+					</size>
+				</anchored>
+			</number_charsaveref>
+			<label_fieldtop>
+				<anchored>
+					<to>save_ref</to>
+				</anchored>
+				<static>Ref</static>
+			</label_fieldtop>
+
+			<number_charsavewill name="save_will" source="saves.will.total">
+				<anchored>
+					<to>save_ref</to>
+					<position>right</position>
+					<offset>15,0</offset>
+					<size>
+						<width>35</width>
+					</size>
+				</anchored>
+			</number_charsavewill>
+			<label_fieldtop>
+				<anchored>
+					<to>save_will</to>
+				</anchored>
+				<static>Will</static>
+			</label_fieldtop>
+
+			<number_charsr name="srfinal" source="defenses.sr.total">
+				<anchored>
+					<to>save_ref</to>
+					<position>below</position>
+					<offset>0,6</offset>
+					<size>
+						<height>15</height>
+					</size>
+				</anchored>
+			</number_charsr>
+			<label_sm>
+				<anchored>
+					<to>srfinal</to>
+					<position>left</position>
+					<offset>5,0</offset>
+				</anchored>
+				<static>SR</static>
+			</label_sm>
+
+
+			<!-- ABILITIES -->
+			<frame_char name="mini_abilityframe">
+				<bounds>180,10,235,215</bounds>
+			</frame_char>
+
+			<number_charabilityscore name="strength" source="abilities.strength.score">
+				<anchored>
+					<to>mini_abilityframe</to>
+					<position>insidetopleft</position>
+					<offset>103,28</offset>
+				</anchored>
+			</number_charabilityscore>
+			<number_charabilityscore name="dexterity" source="abilities.dexterity.score">
+				<anchored>
+					<to>strength</to>
+					<position>belowleft</position>
+					<offset>0,10</offset>
+				</anchored>
+			</number_charabilityscore>
+			<number_charabilityscore name="constitution" source="abilities.constitution.score">
+				<anchored>
+					<to>dexterity</to>
+					<position>belowleft</position>
+					<offset>0,10</offset>
+				</anchored>
+			</number_charabilityscore>
+			<number_charabilityscore name="intelligence" source="abilities.intelligence.score">
+				<anchored>
+					<to>constitution</to>
+					<position>belowleft</position>
+					<offset>0,10</offset>
+				</anchored>
+			</number_charabilityscore>
+			<number_charabilityscore name="wisdom" source="abilities.wisdom.score">
+				<anchored>
+					<to>intelligence</to>
+					<position>belowleft</position>
+					<offset>0,10</offset>
+				</anchored>
+			</number_charabilityscore>
+			<number_charabilityscore name="charisma" source="abilities.charisma.score">
+				<anchored>
+					<to>wisdom</to>
+					<position>belowleft</position>
+					<offset>0,10</offset>
+				</anchored>
+			</number_charabilityscore>
+			
+			<string_charabilitylabel>
+				<anchored>
+					<to>strength</to>
+				</anchored>
+				<static>Strength</static>
+			</string_charabilitylabel>
+			<string_charabilitylabel>
+				<anchored>
+					<to>dexterity</to>
+				</anchored>
+				<static>Dexterity</static>
+			</string_charabilitylabel>
+			<string_charabilitylabel>
+				<anchored>
+					<to>constitution</to>
+				</anchored>
+				<static>Constitution</static>
+			</string_charabilitylabel>
+			<string_charabilitylabel>
+				<anchored>
+					<to>intelligence</to>
+				</anchored>
+				<static>Intelligence</static>
+			</string_charabilitylabel>
+			<string_charabilitylabel>
+				<anchored>
+					<to>wisdom</to>
+				</anchored>
+				<static>Wisdom</static>
+			</string_charabilitylabel>
+			<string_charabilitylabel>
+				<anchored>
+					<to>charisma</to>
+				</anchored>
+				<static>Charisma</static>
+			</string_charabilitylabel>
+			
+			<number_charabilitydamage name="strengthdamage" source="abilities.strength.damage">
+				<anchored>
+					<to>strength</to>
+				</anchored>
+				<target>strength</target>
+			</number_charabilitydamage>
+			<number_charabilitydamage name="dexteritydamage" source="abilities.dexterity.damage">
+				<anchored>
+					<to>dexterity</to>
+				</anchored>
+				<target>dexterity</target>
+			</number_charabilitydamage>
+			<number_charabilitydamage name="constitutiondamage" source="abilities.constitution.damage">
+				<anchored>
+					<to>constitution</to>
+				</anchored>
+				<target>constitution</target>
+			</number_charabilitydamage>
+			<number_charabilitydamage name="intelligencedamage" source="abilities.intelligence.damage">
+				<anchored>
+					<to>intelligence</to>
+				</anchored>
+				<target>intelligence</target>
+			</number_charabilitydamage>
+			<number_charabilitydamage name="wisdomdamage" source="abilities.wisdom.damage">
+				<anchored>
+					<to>wisdom</to>
+				</anchored>
+				<target>wisdom</target>
+			</number_charabilitydamage>
+			<number_charabilitydamage name="charismadamage" source="abilities.charisma.damage">
+				<anchored>
+					<to>charisma</to>
+				</anchored>
+				<target>charisma</target>
+			</number_charabilitydamage>
+			
+			<number_charabilitybonus name="strengthbonus" source="abilities.strength.bonus">
+				<anchored>
+					<to>strength</to>
+				</anchored>
+				<target>strength</target>
+				<modifierfield>abilities.strength.bonusmodifier</modifierfield>
+				<description>
+					<text>Strength bonus</text>
+				</description>
+			</number_charabilitybonus>
+			<number_charabilitybonus name="dexteritybonus" source="abilities.dexterity.bonus">
+				<anchored>
+					<to>dexterity</to>
+				</anchored>
+				<target>dexterity</target>
+				<modifierfield>abilities.dexterity.bonusmodifier</modifierfield>
+				<description>
+					<text>Dexterity bonus</text>
+				</description>
+			</number_charabilitybonus>
+			<number_charabilitybonus name="constitutionbonus" source="abilities.constitution.bonus">
+				<anchored>
+					<to>constitution</to>
+				</anchored>
+				<target>constitution</target>
+				<modifierfield>abilities.constitution.bonusmodifier</modifierfield>
+				<description>
+					<text>Constitution bonus</text>
+				</description>
+			</number_charabilitybonus>
+			<number_charabilitybonus name="intelligencebonus" source="abilities.intelligence.bonus">
+				<anchored>
+					<to>intelligence</to>
+				</anchored>
+				<target>intelligence</target>
+				<modifierfield>abilities.intelligence.bonusmodifier</modifierfield>
+				<description>
+					<text>Intelligence bonus</text>
+				</description>
+			</number_charabilitybonus>
+			<number_charabilitybonus name="wisdombonus" source="abilities.wisdom.bonus">
+				<anchored>
+					<to>wisdom</to>
+				</anchored>
+				<target>wisdom</target>
+				<modifierfield>abilities.wisdom.bonusmodifier</modifierfield>
+				<description>
+					<text>Wisdom bonus</text>
+				</description>
+			</number_charabilitybonus>
+			<number_charabilitybonus name="charismabonus" source="abilities.charisma.bonus">
+				<anchored>
+					<to>charisma</to>
+				</anchored>
+				<target>charisma</target>
+				<modifierfield>abilities.charisma.bonusmodifier</modifierfield>
+				<description>
+					<text>Charisma bonus</text>
+				</description>
+			</number_charabilitybonus>
+
+			<label_fieldtop>
+				<anchored>
+					<to>strengthbonus</to>
+				</anchored>
+				<static>Bonus</static>
+			</label_fieldtop>
+			<label_fieldtop>
+				<anchored>
+					<to>strengthdamage</to>
+				</anchored>
+				<static>Damage</static>
+			</label_fieldtop>
+
+			<!-- COMBAT ROLLS -->
+			<frame_char name="mini_combatframe">
+				<bounds>0,225,225,65</bounds>
+			</frame_char>
+
+			<number_charinit name="initiative" source="initiative.total">
+				<anchored>
+					<to>mini_combatframe</to>
+					<position>insidetopleft</position>
+					<offset>20,24</offset>
+					<size>
+						<width>35</width>
+						<height>25</height>
+					</size>
+				</anchored>
+			</number_charinit>
+			<label_fieldtop>
+				<anchored>
+					<to>initiative</to>
+				</anchored>
+				<static>Init</static>
+			</label_fieldtop>
+
+			<number_charmeleetotal name="melee" source="attackbonus.melee.total">
+				<anchored>
+					<to>initiative</to>
+					<position>right</position>
+					<offset>15,0</offset>
+					<size>
+						<width>35</width>
+					</size>
+				</anchored>
+			</number_charmeleetotal>
+			<label_fieldtop>
+				<anchored>
+					<to>melee</to>
+				</anchored>
+				<static>Melee</static>
+			</label_fieldtop>
+
+			<number_charrangedtotal name="ranged" source="attackbonus.ranged.total">
+				<anchored>
+					<to>melee</to>
+					<position>right</position>
+					<offset>15,0</offset>
+					<size>
+						<width>35</width>
+					</size>
+				</anchored>
+			</number_charrangedtotal>
+			<label_fieldtop>
+				<anchored>
+					<to>ranged</to>
+				</anchored>
+				<static>Rng</static>
+			</label_fieldtop>
+
+			<number_chargrappletotal name="grapple" source="attackbonus.grapple.total">
+				<anchored>
+					<to>ranged</to>
+					<position>right</position>
+					<offset>15,0</offset>
+					<size>
+						<width>35</width>
+					</size>
+				</anchored>
+			</number_chargrappletotal>
+			<label_fieldtop name="label_grapple">
+				<anchored>
+					<to>grapple</to>
+				</anchored>
+				<static>Grp</static>
+			</label_fieldtop>
+
+			
+			<!-- SPEED -->
+			<frame_char name="mini_speedframe">
+				<bounds>225,225,190,65</bounds>
+			</frame_char>
+			<number_charspeed name="speedfinal" source="speed.total">
+				<anchored>
+					<to>mini_speedframe</to>
+					<position>insidetopleft</position>
+					<offset>15,24</offset>
+					<size>
+						<width>35</width>
+						<height>25</height>
+					</size>
+				</anchored>
+			</number_charspeed>
+			<label_fieldtop>
+				<anchored>
+					<to>speedfinal</to>
+				</anchored>
+				<static>Spd</static>
+			</label_fieldtop>
+			<string_labeled name="speedspecial" source="speed.special">
+				<anchored>
+					<to>mini_speedframe</to>
+					<position>insidetopleft</position>
+					<offset>55,28</offset>
+					<size>
+						<width>120</width>
+						<height>20</height>
+					</size>
+				</anchored>
+				<label>Special Move</label>
+			</string_labeled>
+
+
+			<!-- SENSES -->
+			<frame_char name="sensesframe">
+				<bounds>0,290,415,60</bounds>
+			</frame_char>
+			
+			<genericcontrol name="anchor_charmainskill">
+				<anchored>
+					<to>sensesframe</to>
+					<position>insidetopleft</position>
+					<offset>5,24</offset>
+					<size>
+						<height>20</height>
+						<width>0</width>
+					</size>
+				</anchored>
+			</genericcontrol>
+			
+			<button_charmainskill name="spot">
+				<skill>Spot</skill>
+			</button_charmainskill>
+			<label_charmainskill name="label_spot">
+				<anchored>
+					<to>spot</to>
+				</anchored>
+				<static>Spot</static>
+			</label_charmainskill>
+			
+			<button_charmainskill name="listen">
+				<skill>Listen</skill>
+			</button_charmainskill>
+			<label_charmainskill name="label_listen">
+				<anchored>
+					<to>listen</to>
+				</anchored>
+				<static>Listen</static>
+			</label_charmainskill>
+			
+			<button_charmainskill name="search">
+				<skill>Search</skill>
+			</button_charmainskill>
+			<label_charmainskill name="label_search">
+				<anchored>
+					<to>search</to>
+				</anchored>
+				<static>Search</static>
+			</label_charmainskill>
+			
+			<button_charmainskill name="notice">
+				<skill>Notice</skill>
+				<invisible />
+			</button_charmainskill>
+			<label_charmainskill name="label_notice">
+				<anchored>
+					<to>notice</to>
+				</anchored>
+				<static>Notice</static>
+				<invisible />
+			</label_charmainskill>
+
+			<string_labeled name="senses">
+				<anchored>
+					<top>
+						<parent>sensesframe</parent>
+						<anchor>top</anchor>
+						<offset>26</offset>
+					</top>
+					<left>
+						<parent>anchor_charmainskill</parent>
+						<anchor>right</anchor>
+						<relation>relative</relation>
+						<offset>10</offset>
+					</left>
+					<right>
+						<parent>sensesframe</parent>
+						<anchor>right</anchor>
+						<offset>-15</offset>
+					</right>
+					<size>
+						<height>20</height>
+					</size>
+				</anchored>
+				<label>Vision / Special Senses</label>
+			</string_labeled>
+		</sheetdata>
+	</windowclass>
+</root>

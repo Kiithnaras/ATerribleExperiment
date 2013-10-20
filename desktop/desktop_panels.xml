@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<panel name="shortcuts">
+		<class>shortcuts</class>
+		<bounds>-106,0,98,-38</bounds>
+	</panel>
+
+	<panel name="characterlist">
+		<class>characterlist</class>
+		<anchored>
+			<top>
+				<anchor>top</anchor>
+			</top>
+			<right>
+				<parent>shortcuts</parent>
+				<anchor>left</anchor>
+			</right>
+			<left>
+				<anchor>left</anchor>
+			</left>
+			<size>
+				<height>82</height>
+			</size>
+		</anchored>
+	</panel>
+	
+	<panel name="chat" modes="host,client">
+		<class>chat</class>
+		<bounds>15,100,390,-156</bounds>
+		<dynamic />
+		<locked />
+	</panel>
+
+	<panel name="identitylist" modes="host">
+		<class>identitylist</class>
+		<anchored>
+			<top>
+				<parent>chat</parent>
+				<anchor>bottom</anchor>
+				<offset>2</offset>
+			</top>
+			<left>
+				<parent>chat</parent>
+				<anchor>left</anchor>
+			</left>
+			<right>
+				<parent>shortcuts</parent>
+				<anchor>left</anchor>
+			</right>
+			<size>
+				<height>20</height>
+			</size>
+		</anchored>
+	</panel>
+
+	<panel name="modifierstack" modes="host,client">
+		<class>modifierstack</class>
+		<bounds>20,-110,64,57</bounds>
+		<dynamic />
+		<locked />
+	</panel>
+
+	<panel name="chat" modes="local">
+		<class>statchat</class>
+		<bounds>15,90,390,560</bounds>
+	</panel>
+	
+	<panel name="statdiecup" modes="local">
+		<class>statdiecup</class>
+		<bounds>45,-57,330,40</bounds>
+	</panel>
+</root>

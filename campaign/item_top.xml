@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="item">
+		<frame>charsheet</frame>
+		<placement>
+			<size>
+				<width>300</width>
+				<height>400</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum>
+				<width>300</width>
+				<height>400</height>
+			</minimum>
+		</sizelimits>
+		<minimize>minimized_item</minimize>
+		<nodelete />
+		<playercontrol />
+		<sharable />
+		<tooltip>
+			<field>name</field>
+		</tooltip>
+		<script file="campaign/scripts/campaign_item_top.lua" />
+		<sheetdata>
+			<frame_campaign>
+				<bounds>9,-50,-11,-15</bounds>
+			</frame_campaign>
+			<button_checkbox name="locked">
+				<bounds>20,-43,20,20</bounds>
+				<parameters>
+					<icons>indicator_padlock_closed</icons>
+					<tooltips>Fields locked</tooltips>
+					<defaulticon>indicator_padlock_open</defaulticon>
+					<defaulttooltip>Fields unlocked</defaulttooltip>
+				</parameters>
+				<sourceless />
+				<script>
+					function onValueChanged()
+						window.StateChanged();
+					end
+				</script>
+			</button_checkbox>
+			<genericcontrol name="hardlocked">
+				<bounds>20,-43,20,20</bounds>
+				<icon>indicator_padlock_closed_red</icon>
+			</genericcontrol>
+			<button_checkbox name="playeredit">
+				<bounds>45,-42,30,20</bounds>
+				<parameters>
+					<icons>indicator_padlock_sopen</icons>
+					<tooltips>PC Edit Allowed</tooltips>
+					<defaulticon>indicator_padlock_sclosed</defaulticon>
+					<defaulttooltip>PC Edit Not Allowed</defaulttooltip>
+				</parameters>
+				<gmeditonly />
+				<invisible />
+				<script>
+					function onValueChanged()
+						window.StateChanged();
+					end
+				</script>
+			</button_checkbox>
+			<button_checkbox name="isidentified">
+				<bounds>-45,-42,20,20</bounds>
+				<parameters>
+					<icons>indicator_identified</icons>
+					<tooltips>Item Identified</tooltips>
+					<defaulticon>indicator_unidentified</defaulticon>
+					<defaulttooltip>Item Not Identified</defaulttooltip>
+				</parameters>
+				<gmeditonly />
+				<script>
+					function onValueChanged()
+						window.StateChanged();
+					end
+				</script>
+			</button_checkbox>
+
+			<frame_campaign name="nameframe">
+				<bounds>35,20,-11,35</bounds>
+			</frame_campaign>
+			<link_campaign2>
+				<class>item</class>
+			</link_campaign2>
+			<string_campaign_item_name name="name">
+				<empty>&#171; New Item &#187;</empty>
+			</string_campaign_item_name>
+			<string_campaign_item_name name="nonid_name">
+				<empty>Unidentified Item</empty>
+			</string_campaign_item_name>
+
+			<frame_campaign>
+				<bounds>10,53,-11,-50</bounds>
+			</frame_campaign>
+			<genericcontrol name="contentframe">
+				<bounds>22,65,-31,-62</bounds>
+			</genericcontrol>
+
+			<subwindow_details name="stats">
+				<class>item_stats</class>
+				<script file="campaign/scripts/campaign_itemdrop.lua" />
+				<activate />
+			</subwindow_details>
+
+			<scrollbar_details>
+				<target>stats</target>
+			</scrollbar_details>
+		
+			<resize_charsheet />
+			<close_charsheetmini />
+		</sheetdata>
+	</windowclass>
+</root>

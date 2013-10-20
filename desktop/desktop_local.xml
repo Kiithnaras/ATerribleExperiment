@@ -1,0 +1,788 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="statchat_rollmode_listentry">
+		<sizelimits>
+			<minimum>
+				<height>45</height>
+			</minimum>
+		</sizelimits>
+		<frame>ctentrybox</frame>
+		<script file="desktop/scripts/statchat_rollmode_listentry.lua" />
+		<sheetdata>
+			<genericcontrol name="dieslotanchor">
+				<bounds>37,4,1,1</bounds>
+			</genericcontrol>
+			
+			<numbercontrol name="total">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>4</offset>
+					</top>
+					<right>
+						<anchor>right</anchor>
+						<offset>-10</offset>
+					</right>
+					<size>
+						<width>46</width>
+						<height>34</height>
+					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>2,2,2,2</offset>
+				</frame>
+				<font>diemod</font>
+				<readonly />
+			</numbercontrol>
+
+			<numbercontrol name="modifier">
+				<anchored>
+					<to>total</to>
+					<position>left</position>
+					<offset>4,0</offset>
+					<size>
+						<width>40</width>
+					</size>
+				</anchored>
+				<font>diemod</font>
+				<displaysign />
+				<hideonvalue>0</hideonvalue>
+				<readonly />
+			</numbercontrol>
+
+			<genericcontrol name="rolled">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+					</top>
+					<bottom>
+						<anchor>bottom</anchor>
+					</bottom>
+					<left>
+						<anchor>left</anchor>
+					</left>
+					<size>
+						<width>33</width>
+					</size>
+				</anchored>
+				<icon>indicator_ctpassive</icon>
+				<activeicon>indicator_statrolled</activeicon>
+				<script file="desktop/scripts/statchat_rollmode_rolled.lua" />
+			</genericcontrol>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="statchat_pointmode_listentry">
+		<sizelimits>
+			<minimum>
+				<height>45</height>
+			</minimum>
+		</sizelimits>
+		<frame>ctentrybox</frame>
+		<sheetdata>
+			<numbercontrol name="score">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>4</offset>
+					</top>
+					<left>
+						<anchor>left</anchor>
+						<offset>100</offset>
+					</left>
+					<size>
+						<width>46</width>
+						<height>34</height>
+					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>2,2,2,2</offset>
+				</frame>
+				<font>diemod</font>
+				<script>
+					function onValueChanged()
+						window.windowlist.updateTotals();
+					end
+				</script>
+			</numbercontrol>
+			<stringcontrol>
+				<anchored>
+					<to>score</to>
+					<position>lefthigh</position>
+					<offset>12,12</offset>
+				</anchored>
+				<font>sheetlabel</font>
+				<static>Score</static>
+			</stringcontrol>
+
+			<numbercontrol name="points">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>4</offset>
+					</top>
+					<right>
+						<anchor>right</anchor>
+						<offset>-10</offset>
+					</right>
+					<size>
+						<width>46</width>
+						<height>34</height>
+					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>2,2,2,2</offset>
+				</frame>
+				<font>diemod</font>
+				<readonly />
+			</numbercontrol>
+			<stringcontrol>
+				<anchored>
+					<to>points</to>
+					<position>lefthigh</position>
+					<offset>12,12</offset>
+				</anchored>
+				<font>sheetlabel</font>
+				<static>Cost</static>
+			</stringcontrol>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="statchat_pointmode_rangeentry">
+		<sizelimits>
+			<minimum>
+				<height>45</height>
+			</minimum>
+		</sizelimits>
+		<sheetdata>
+			<numbercontrol name="from">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>4</offset>
+					</top>
+					<left>
+						<anchor>left</anchor>
+						<offset>20</offset>
+					</left>
+					<size>
+						<width>46</width>
+						<height>34</height>
+					</size>
+				</anchored>
+				<font>diemod</font>
+				<readonly />
+			</numbercontrol>
+			
+			<stringcontrol name="dash">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>16</offset>
+					</top>
+					<left>
+						<anchor>left</anchor>
+						<offset>73</offset>
+					</left>
+				</anchored>
+				<font>sheetlabel</font>
+				<static>to</static>
+			</stringcontrol>
+			<stringcontrol name="upto">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>16</offset>
+					</top>
+					<left>
+						<anchor>left</anchor>
+						<offset>53</offset>
+					</left>
+				</anchored>
+				<font>sheetlabel</font>
+				<static>Up to</static>
+				<invisible />
+			</stringcontrol>
+
+			<numbercontrol name="to">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>4</offset>
+					</top>
+					<left>
+						<anchor>left</anchor>
+						<offset>100</offset>
+					</left>
+					<size>
+						<width>46</width>
+						<height>34</height>
+					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>2,2,2,2</offset>
+				</frame>
+				<stateframe>
+					<keyedit>
+						<name>sheetfocus</name>
+						<offset>2,2,2,2</offset>
+					</keyedit>
+				</stateframe>
+				<font>diemod</font>
+				<script>
+					function onValueChanged()
+						window.windowlist.update();
+					end
+				</script>
+			</numbercontrol>
+
+			<numbercontrol name="cost">
+				<anchored>
+					<top>
+						<anchor>top</anchor>
+						<offset>4</offset>
+					</top>
+					<right>
+						<anchor>right</anchor>
+						<offset>-15</offset>
+					</right>
+					<size>
+						<width>46</width>
+						<height>34</height>
+					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>2,2,2,2</offset>
+				</frame>
+				<stateframe>
+					<keyedit>
+						<name>sheetfocus</name>
+						<offset>2,2,2,2</offset>
+					</keyedit>
+				</stateframe>
+				<font>diemod</font>
+				<script>
+					function onValueChanged()
+						window.windowlist.update();
+					end
+				</script>
+			</numbercontrol>
+
+			<stringcontrol>
+				<anchored>
+					<to>cost</to>
+					<position>lefthigh</position>
+					<offset>12,12</offset>
+				</anchored>
+				<font>sheetlabel</font>
+				<static>Point cost</static>
+			</stringcontrol>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="statchat_rollmode">
+		<sheetdata>
+			<stringcontrol>
+				<bounds>40,15,80,15</bounds>
+				<font>sheetlabelsmall</font>
+				<color>#ffffffff</color>
+				<static>Dice rolled</static>
+			</stringcontrol>
+			<stringcontrol>
+				<bounds>-66,15,50,15</bounds>
+				<font>sheetlabelsmall</font>
+				<color>#ffffffff</color>
+				<static>Score</static>
+			</stringcontrol>
+
+			<!-- Roll mode contents -->
+			<windowlist name="rolls">
+				<bounds>0,31,371,479</bounds>
+				<class>statchat_rollmode_listentry</class>
+				<skipempty />
+				<script file="desktop/scripts/statchat_rollmode_rolls.lua" />
+				<noscroll />
+			</windowlist>
+
+			<numbercontrol name="rows">
+				<anchored>
+					<bottom>
+						<anchor>bottom</anchor>
+						<offset>-20</offset>
+					</bottom>
+					<left>
+						<anchor>left</anchor>
+						<offset>47</offset>
+					</left>
+					<size>
+						<width>28</width>
+						<height>24</height>
+					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>2,2,2,2</offset>
+				</frame>
+				<stateframe>
+					<keyedit>
+						<name>sheetfocus</name>
+						<offset>2,2,2,2</offset>
+					</keyedit>
+				</stateframe>
+				<font>sheetnumber</font>
+				<default>6</default>
+				<min>1</min>
+				<max>10</max>
+				<script>
+					function onValueChanged()
+						window.rolls.setRows(getValue());
+					end
+
+					function onInit()
+						onValueChanged();
+					end
+				</script>
+			</numbercontrol>
+			<stringcontrol>
+				<anchored>
+					<to>rows</to>
+					<position>lefthigh</position>
+					<offset>3,6</offset>
+				</anchored>
+				<font>hotkey</font>
+				<static>Roll</static>
+			</stringcontrol>
+			<stringcontrol>
+				<anchored>
+					<to>rows</to>
+					<position>righthigh</position>
+					<offset>3,6</offset>
+				</anchored>
+				<font>hotkey</font>
+				<static>scores of</static>
+			</stringcontrol>
+
+			<numbercontrol name="dice">
+				<anchored>
+					<to>rows</to>
+					<position>right</position>
+					<offset>50,0</offset>
+					<size>
+						<width>28</width>
+					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>2,2,2,2</offset>
+				</frame>
+				<stateframe>
+					<keyedit>
+						<name>sheetfocus</name>
+						<offset>2,2,2,2</offset>
+					</keyedit>
+				</stateframe>
+				<font>sheetnumber</font>
+				<default>3</default>
+				<min>1</min>
+				<max>5</max>
+				<script>
+					function onValueChanged()
+						window.rolls.setDice(getValue());
+						window.dropdice.checkValue();
+					end
+
+					function onInit()
+						onValueChanged();
+					end
+				</script>
+			</numbercontrol>
+			<stringcontrol>
+				<anchored>
+					<to>dice</to>
+					<position>righthigh</position>
+					<offset>3,6</offset>
+				</anchored>
+				<font>hotkey</font>
+				<static>dice, drop</static>
+			</stringcontrol>
+
+			<numbercontrol name="dropdice">
+				<anchored>
+					<to>dice</to>
+					<position>right</position>
+					<offset>54,0</offset>
+					<size>
+						<width>28</width>
+					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>2,2,2,2</offset>
+				</frame>
+				<stateframe>
+					<keyedit>
+						<name>sheetfocus</name>
+						<offset>2,2,2,2</offset>
+					</keyedit>
+				</stateframe>
+				<font>sheetnumber</font>
+				<min>0</min>
+				<script>
+					function onValueChanged()
+						local dice = window.dice.getValue();
+						local value = getValue();
+						
+						if dice &lt; value+1 then
+							setValue(dice-1);
+						end
+						
+						window.rolls.updateTotals();
+					end
+					
+					function checkValue()
+						onValueChanged();
+					end
+				</script>
+			</numbercontrol>
+			<stringcontrol>
+				<anchored>
+					<to>dropdice</to>
+					<position>righthigh</position>
+					<offset>3,6</offset>
+				</anchored>
+				<font>hotkey</font>
+				<static>and modify by</static>
+			</stringcontrol>
+
+			<numbercontrol name="modifier">
+				<anchored>
+					<to>dropdice</to>
+					<position>right</position>
+					<offset>73,0</offset>
+					<size>
+						<width>28</width>
+					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>2,2,2,2</offset>
+				</frame>
+				<stateframe>
+					<keyedit>
+						<name>sheetfocus</name>
+						<offset>2,2,2,2</offset>
+					</keyedit>
+				</stateframe>
+				<font>sheetnumber</font>
+				<script>
+					function onValueChanged()
+						window.rolls.updateModifiers();
+						window.rolls.updateTotals();
+					end
+				</script>
+			</numbercontrol>
+
+			<buttoncontrol>
+				<anchored>
+					<to>modifier</to>
+					<position>righthigh</position>
+					<offset>3,0</offset>
+					<size>
+						<width>33</width>
+						<height>26</height>
+					</size>
+				</anchored>
+				<icon>
+					<normal>button_ctnextactor</normal>
+					<pressed>button_ctnextactor_down</pressed>
+				</icon>
+				<tooltip>
+					<text>Sort</text>
+				</tooltip>
+				<script>
+					function onButtonPress()
+						window.rolls.sortTotals();
+					end
+				</script>
+			</buttoncontrol>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="statchat_pointmode">
+		<sheetdata>
+			<windowlist name="scores">
+				<bounds>0,31,371,479</bounds>
+				<class>statchat_pointmode_listentry</class>
+				<skipempty />
+				<script file="desktop/scripts/statchat_pointmode_scores.lua" />
+				<noscroll />
+			</windowlist>
+			<stringcontrol name="costwarning">
+				<bounds>1,470,-1,15</bounds>
+				<font>sheetlabelsmall</font>
+				<color>#fff79063</color>
+				<static>Point costs are undefined</static>
+				<center />
+				<invisible />
+			</stringcontrol>
+			
+			<windowlist name="ranges">
+				<bounds>40,60,310,410</bounds>
+				<frame>
+					<name>tooltipbox</name>
+					<offset>10,25,15,15</offset>
+				</frame>
+				<class>statchat_pointmode_rangeentry</class>
+				<skipempty />
+				<allowcreate />
+				<allowdelete />
+				<invisible />
+				<sortby><control>to</control></sortby>
+				<script file="desktop/scripts/statchat_pointmode_ranges.lua" />
+			</windowlist>
+			<stringcontrol name="rangelabel">
+				<anchored>
+					<to>ranges</to>
+					<position>above</position>
+				</anchored>
+				<font>sheetlabel</font>
+				<static>Point costs</static>
+				<center />
+				<invisible />
+			</stringcontrol>
+
+
+			<numbercontrol name="rows">
+				<anchored>
+					<bottom>
+						<anchor>bottom</anchor>
+						<offset>-20</offset>
+					</bottom>
+					<left>
+						<anchor>left</anchor>
+						<offset>62</offset>
+					</left>
+					<size>
+						<width>28</width>
+						<height>24</height>
+					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>2,2,2,2</offset>
+				</frame>
+				<stateframe>
+					<keyedit>
+						<name>sheetfocus</name>
+						<offset>2,2,2,2</offset>
+					</keyedit>
+				</stateframe>
+				<font>sheetnumber</font>
+				<default>6</default>
+				<min>1</min>
+				<max>10</max>
+				<script>
+					function onValueChanged()
+						window.scores.setRows(getValue());
+					end
+
+					function onInit()
+						onValueChanged();
+					end
+				</script>
+			</numbercontrol>
+			<stringcontrol>
+				<anchored>
+					<to>rows</to>
+					<position>lefthigh</position>
+					<offset>3,6</offset>
+				</anchored>
+				<font>hotkey</font>
+				<static>Assign</static>
+			</stringcontrol>
+			<stringcontrol>
+				<anchored>
+					<to>rows</to>
+					<position>righthigh</position>
+					<offset>3,6</offset>
+				</anchored>
+				<font>hotkey</font>
+				<static>scores</static>
+			</stringcontrol>
+
+			<numbercontrol name="total">
+				<anchored>
+					<to>rows</to>
+					<position>right</position>
+					<offset>100,0</offset>
+					<size>
+						<width>34</width>
+					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+					<offset>2,2,2,2</offset>
+				</frame>
+				<font>sheetnumber</font>
+				<readonly />
+			</numbercontrol>
+			<stringcontrol>
+				<anchored>
+					<to>total</to>
+					<position>lefthigh</position>
+					<offset>3,6</offset>
+				</anchored>
+				<font>hotkey</font>
+				<static>Currently</static>
+			</stringcontrol>
+			<stringcontrol>
+				<anchored>
+					<to>total</to>
+					<position>righthigh</position>
+					<offset>3,6</offset>
+				</anchored>
+				<font>hotkey</font>
+				<static>points used</static>
+			</stringcontrol>
+			
+			<button_checkbox>
+				<anchored>
+					<to>total</to>
+					<position>righthigh</position>
+					<offset>113,0</offset>
+					<size>
+						<width>33</width>
+						<height>26</height>
+					</size>
+				</anchored>
+				<parameters>
+					<icons>button_statpointmode_down</icons>
+					<defaulticon>button_statpointmode</defaulticon>
+					<tooltips>Define point ranges</tooltips>
+					<defaulttooltip>Define point ranges</defaulttooltip>
+				</parameters>
+				<script>
+					function onValueChanged()
+						local state = getState();
+						
+						window.scores.setVisible(not state);
+						window.ranges.setVisible(state);
+						window.rangelabel.setVisible(state);
+					end
+				</script>
+			</button_checkbox>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="statchat">
+		<frame>ctbox</frame>
+		<sheetdata>
+			<chatwindow name="chat">
+				<bounds>35,25,-35,-70</bounds>
+				<droptypes>
+					<type>dice</type>
+				</droptypes>
+				<stateframe>
+					<drophilight>
+						<name>chatboxhilight</name>
+						<offset>-6,2,-3,9</offset>
+					</drophilight>
+				</stateframe>
+				<script file="desktop/scripts/statchat_window.lua" />
+			</chatwindow>
+
+			<subwindow name="rollmode">
+				<anchored>
+					<position>over</position>
+				</anchored>
+				<class>statchat_rollmode</class>
+				<activate />
+			</subwindow>			
+			<subwindow name="pointmode">
+				<anchored>
+					<position>over</position>
+				</anchored>
+				<class>statchat_pointmode</class>
+			</subwindow>			
+
+			<genericcontrol>
+				<bounds>95,-65,87,15</bounds>
+				<icon>tabhorizontal</icon>
+				<script>
+					function onInit()
+						labelwidget = addTextWidget("sheetlabelsmall", "Points");
+						labelwidget.setPosition("center", 0, 1);
+					end
+					
+					function onClickDown(button, x, y)
+						return true;
+					end
+					
+					function onClickRelease(button, x, y)
+						window.rollmode.setVisible(false);
+						window.pointmode.setVisible(true);
+					
+						bringToFront();
+						return true;
+					end
+				</script>
+			</genericcontrol>
+			<genericcontrol>
+				<bounds>25,-65,87,15</bounds>
+				<icon>tabhorizontal</icon>
+				<script>
+					function onInit()
+						labelwidget = addTextWidget("sheetlabelsmall", "Rolls");
+						labelwidget.setPosition("center", 0, 1);
+					end
+					
+					function onClickDown(button, x, y)
+						return true;
+					end
+					
+					function onClickRelease(button, x, y)
+						window.rollmode.setVisible(true);
+						window.pointmode.setVisible(false);
+					
+						bringToFront();
+						return true;
+					end
+				</script>
+			</genericcontrol>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="statdiecup">
+		<sizelimits>
+			<minimum>
+				<height>30</height>
+			</minimum>
+		</sizelimits>
+		<frame>collector</frame>
+		<sheetdata>
+			<diecontrol>
+				<bounds>0,0,-1,-1</bounds>
+				<droptypes>
+					<type>dice</type>
+				</droptypes>
+				<stateframe>
+					<drophilight>
+						<name>modstackfocus</name>
+						<offset>-3,-3,-2,-2</offset>
+					</drophilight>
+				</stateframe>
+			</diecontrol>
+		</sheetdata>
+	</windowclass>
+</root>

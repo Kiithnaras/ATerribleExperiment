@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="number_linked">
+		<number>
+			<readonly />
+			<source mergerule="resetandadd" />
+			<script file="charsheet/scripts/charsheet_linkednumber.lua" />
+		</number>
+	</template>
+	<template name="number_modifier">
+		<number_linked>
+			<readonly />
+			<script file="charsheet/scripts/charsheet_modifiernumber.lua" />
+		</number_linked>
+	</template>
+
+	<template name="number_charadd">
+		<basicnumber>
+			<font>sheetnumber</font>
+			<stateframe>
+				<drophilight>
+					<name>sheetfocusplus</name>
+					<offset>5,5,5,5</offset>
+				</drophilight>
+			</stateframe>
+			<script>
+				function onDrop(x, y, draginfo)
+					if draginfo.isType("number") then
+						setValue(getValue() + draginfo.getNumberData());
+						return true;
+					end
+				end
+			</script>
+		</basicnumber>
+	</template>
+	<template name="number_charadd_sm">
+		<number_charadd>
+			<font>sheetnumbersmall</font>
+		</number_charadd>
+	</template>
+	<template name="number_chartotal">
+		<number_modifier>
+			<frame>
+				<name>modifier</name>
+				<offset>5,5,5,5</offset>
+			</frame>
+			<font>sheetnumber</font>
+			<readonly />
+			<showemptywidget />
+		</number_modifier>
+	</template>
+	<template name="number_chartotalnomod">
+		<number_linked>
+			<frame>
+				<name>modifier</name>
+				<offset>5,5,5,5</offset>
+			</frame>
+			<font>sheetnumber</font>
+			<readonly />
+		</number_linked>
+	</template>
+	<template name="number_chartotalwithability">
+		<number_chartotal>
+			<ability mergerule="resetandadd" />
+			<script file="charsheet/scripts/charsheet_totalwithability.lua" />
+		</number_chartotal>
+	</template>
+	<template name="number_chartotalwithabilitynomod">
+		<number_chartotalnomod>
+			<ability mergerule="resetandadd" />
+			<script file="charsheet/scripts/charsheet_totalwithability.lua" />
+		</number_chartotalnomod>
+	</template>
+	
+	<template name="cycler_ability">
+		<button_stringcycler>
+			<frame mergerule="replace">
+				<name>bonus</name>
+				<offset>6,6,6,6</offset>
+			</frame>
+			<stateframe mergerule="replace">
+				<hover>
+					<name>sheetfocus</name>
+					<offset>6,6,6,6</offset>
+				</hover>
+			</stateframe>
+			<parameters>
+				<defaultlabel mergerule="replace">Base</defaultlabel>
+				<labels mergerule="replace">Str|Dex|Con|Int|Wis|Cha</labels>
+				<values mergerule="replace">strength|dexterity|constitution|intelligence|wisdom|charisma</values>
+			</parameters>
+		</button_stringcycler>
+	</template>
+	<template name="cycler_charability">
+		<cycler_ability>
+			<script>
+				function onValueChanged()
+					if window.isInitialized() then
+						local sValue = getStringValue();
+						if sValue == "" and baseability then
+							sValue = baseability[1];
+						end
+						
+						local sCharRelative = "";
+						if abilityrelative then
+							sCharRelative = abilityrelative[1];
+						end
+						
+						if fieldabilitymod and window[fieldabilitymod[1]] then
+							window[fieldabilitymod[1]].updateAbility(sCharRelative, sValue);
+						end
+					end
+				end
+			</script>
+		</cycler_ability>
+	</template>
+	<template name="number_charabilitymod">
+		<number>
+			<font>sheetnumber</font>
+			<readonly />
+			<displaysign />
+			<disabled />
+			<script>
+				local sLocalAbility = "";
+				local nodeLocal = nil;
+				local nodeCreature = nil;
+				
+				function updateAbility(sCharRelative, sAbility)
+					if sLocalAbility == sAbility then
+						return;
+					end
+					if nodeLocal then
+						nodeLocal.onUpdate = function () end;
+						nodeLocal = nil;
+						nodeCreature = nil;
+					end
+					
+					if sAbility ~= "" then
+						local nodeSpellClass = window.getDatabaseNode();
+						nodeCreature = nodeSpellClass.getChild(sCharRelative);
+						local nodeParent = nodeCreature.getParent();
+						
+						if nodeParent.getName() == "charsheet" then
+							if StringManager.contains(DataCommon.abilities, sAbility) then
+								nodeLocal = nodeCreature.getChild("abilities." .. sAbility .. ".bonus");
+							elseif sAbility == "bab" then
+								nodeLocal = nodeCreature.getChild("attackbonus.base");
+							elseif sAbility == "level" then
+								nodeLocal = nodeCreature.getChild("level");
+							end
+						elseif nodeParent.getName() == "npc" then
+							if StringManager.contains(DataCommon.abilities, sAbility) then
+								nodeLocal = nodeCreature.getChild(sAbility);
+							elseif sAbility == "bab" then
+								nodeLocal = nodeCreature.getChild("babgrp");
+							elseif sAbility == "level" then
+								nodeLocal = nodeCreature.getChild("hd");
+							end
+						end
+						
+						if nodeLocal then
+							nodeLocal.onUpdate = updateValue;
+							sLocalAbility = sAbility;
+						end
+					end
+
+					updateValue();
+				end
+				
+				function updateValue()
+					if nodeLocal then
+						local nodeParent = nodeCreature.getParent();
+						
+						if nodeParent.getName() == "charsheet" then
+							setValue(nodeLocal.getValue());
+						elseif nodeParent.getName() == "npc" then
+							local rActor = ActorManager.getActor("npc", nodeCreature);
+							local nValue = ActorManager.getAbilityBonus(rActor, sLocalAbility);
+							setValue(nValue);
+						end
+					else
+						setValue(0);
+					end
+				end
+			</script>
+		</number>
+	</template>
+	<template name="cycler_ability_sm">
+		<button_stringcycler>
+			<font>sheettextsmall</font>
+			<frame mergerule="replace">
+				<name>bonus</name>
+				<offset>6,5,6,5</offset>
+			</frame>
+			<stateframe mergerule="replace">
+				<hover>
+					<name>sheetfocus</name>
+					<offset>6,5,6,5</offset>
+				</hover>
+			</stateframe>
+			<parameters>
+				<defaultlabel mergerule="replace">Base</defaultlabel>
+				<labels mergerule="replace">Str|Dex|Con|Int|Wis|Cha</labels>
+				<values mergerule="replace">strength|dexterity|constitution|intelligence|wisdom|charisma</values>
+			</parameters>
+		</button_stringcycler>
+	</template>
+
+	<template name="button_charfull">
+		<windowreferencecontrol>
+			<icon>
+				<normal>button_fullsheet</normal>
+				<pressed>button_fullsheet_down</pressed>
+			</icon>
+			<class>charsheet</class>
+			<tooltip>
+				<text>Full Sheet</text>
+			</tooltip>
+			<script>
+				function onClickRelease(button, x, y)
+					local wnd = WindowManager.toggle("charsheet", window.getDatabaseNode());
+					if wnd then
+						local tabindex = window.tabs.getIndex();
+						if tabindex == 1 then
+							wnd.tabs.activateTab(1);
+						elseif tabindex == 2 then
+							wnd.tabs.activateTab(4);
+						elseif tabindex == 3 then
+							wnd.tabs.activateTab(5);
+						elseif tabindex == 4 then
+							wnd.tabs.activateTab(7);
+						end
+					end
+					return true;
+				end
+			</script>
+		</windowreferencecontrol>
+	</template>
+	<template name="button_charmini">
+		<windowreferencecontrol>
+			<icon>
+				<normal>button_minisheet</normal>
+				<pressed>button_minisheet_down</pressed>
+			</icon>
+			<class>charsheetmini_top</class>
+			<tooltip>
+				<text>Mini sheet</text>
+			</tooltip>
+			<script>
+				function onClickRelease(button, x, y)
+					local wnd = WindowManager.toggle("charsheetmini_top", window.getDatabaseNode());
+					if wnd then
+						local tabindex = window.tabs.getIndex();
+						if tabindex == 1 or tabindex == 2 or tabindex == 6 then
+							wnd.tabs.activateTab(1);
+						elseif tabindex == 3 or tabindex == 4 then
+							wnd.tabs.activateTab(2);
+						elseif tabindex == 5 then
+							wnd.tabs.activateTab(3);
+						elseif tabindex == 7 then
+							wnd.tabs.activateTab(4);
+						end
+					end
+					return true;
+				end
+			</script>
+		</windowreferencecontrol>
+	</template>
+</root>

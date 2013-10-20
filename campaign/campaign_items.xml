@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="itemsmall">
+		<sizelimits>
+			<minimum>
+				<height>10</height>
+			</minimum>
+		</sizelimits>
+		<nodelete />
+		<script file="campaign/scripts/campaign_list_record.lua" />
+		<sheetdata>
+			<hn name="isidentified">
+				<script>
+					function onValueChanged()
+						window.onIdentifiedChange();
+					end
+				</script>
+			</hn>
+			
+			<link_list name="open">
+				<class>item</class>
+			</link_list>
+
+			<icon_access name="access" />
+			<icon_modified name="modified" />
+			
+			<string_campaignrecordname name="name">
+				<empty>&#171; New Item &#187;</empty>
+			</string_campaignrecordname>
+			<string_campaignrecordname name="nonid_name">
+				<empty>Unidentified Item</empty>
+			</string_campaignrecordname>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="treasureparcelsmall">
+		<sizelimits>
+			<minimum>
+				<height>10</height>
+			</minimum>
+		</sizelimits>
+		<nodelete />
+		<script file="campaign/scripts/campaign_list_record.lua" />
+		<sheetdata>
+			<link_list name="open">
+				<class>treasureparcel</class>
+			</link_list>
+
+			<icon_access name="access" />
+			<icon_modified name="modified" />
+			
+			<string_campaignrecordname name="name">
+				<empty>&#171; New Treasure Parcel &#187;</empty>
+			</string_campaignrecordname>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="itemlist">
+		<frame>scrollboxfortabs</frame>
+		<placement>
+			<size>
+				<width>350</width>
+				<height>350</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum>
+				<width>350</width>
+				<height>350</height>
+			</minimum>
+		</sizelimits>
+		<softclose />
+		<nodelete />
+		<sheetdata>
+			<banner_campaign name="banner_item">
+				<icon>title_items</icon>
+				<invisible />
+			</banner_campaign>
+			<banner_campaign name="banner_parcel">
+				<icon>title_treasureparcel</icon>
+				<invisible />
+			</banner_campaign>
+
+			<list_campaign_tabbed name="list_items">
+				<datasource>.</datasource>
+				<class>itemsmall</class>
+				<acceptdrop>
+					<class>item</class>
+					<class>referenceweapon</class>
+					<class>referencearmor</class>
+					<class>referenceequipment</class>
+					<field>*</field>
+				</acceptdrop>
+				<script>
+					function onSortCompare(w1, w2)
+						return ItemsManager.getVisibleName(w1.getDatabaseNode()):lower() &gt; ItemsManager.getVisibleName(w2.getDatabaseNode()):lower();
+					end
+				</script>
+			</list_campaign_tabbed>
+			<scrollbar_campaign_tabbed>
+				<target>list_items</target>
+			</scrollbar_campaign_tabbed>
+			<list_campaign_tabbed name="list_parcels">
+				<datasource>..treasureparcels</datasource>
+				<class>treasureparcelsmall</class>
+				<invisible />
+			</list_campaign_tabbed>
+			<scrollbar_campaign_tabbed>
+				<target>list_parcels</target>
+			</scrollbar_campaign_tabbed>
+
+			<categories name="category_item">
+				<targetcontrol>list_items</targetcontrol>
+				<invisible />
+			</categories>
+			<categories name="category_parcel">
+				<targetcontrol>list_parcels</targetcontrol>
+				<invisible />
+			</categories>
+
+			<filter_campaign name="filter" />
+			<filtertrigger_campaign name="filtertrigger" />
+
+			<button_new name="button_new">
+				<gmvisibleonly />
+				<script>
+					function onButtonPress()
+						if User.isHost() then
+							local nIndex = window.tabs.getIndex();
+
+							local node = window.getDatabaseNode();
+							local sClass = "item";
+							if nIndex == 2 then
+								node = DB.getRoot().getChild("treasureparcels");
+								sClass = "treasureparcel";
+							end
+
+							local nodeChild = nil;
+							if node then
+								nodeChild = node.createChild();
+							end
+							if nodeChild then
+								local w = Interface.openWindow(sClass, nodeChild.getNodeName());
+								if w and w.name then
+									w.name.setFocus();
+								end
+							end
+						end
+					end
+				</script>
+			</button_new>
+			
+			<buttongroup_tabs_long name="tabs">
+				<anchored>
+					<right><offset>-11</offset></right>
+				</anchored>
+				<tab>
+					<icon>tab_items</icon>
+					<subwindow>banner_item,list_items,category_item</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_parcels</icon>
+					<subwindow>banner_parcel,list_parcels,category_parcel</subwindow>
+				</tab>
+			</buttongroup_tabs_long>
+
+			<resize_scrollboxfortabs />
+			<close_scrollbox />
+		</sheetdata>
+	</windowclass>
+</root>

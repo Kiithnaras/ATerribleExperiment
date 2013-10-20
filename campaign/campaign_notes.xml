@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="note">
+		<frame>storybox</frame>
+		<placement>
+			<size>
+				<width>250</width>
+				<height>306</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic>
+				<offset>10,5</offset>
+			</dynamic>
+		</sizelimits>
+		<minimize>minimized_note</minimize>
+		<playercontrol />
+		<nodelete />
+		<sharable />
+		<tooltip>
+			<field>name</field>
+		</tooltip>
+		<sheetdata>
+			<link_campaign>
+				<class>note</class>
+			</link_campaign>
+			<string_campaign_details_name name="name">
+				<empty>&#171; New Note &#187;</empty>
+				<font>note-title</font>
+			</string_campaign_details_name>
+
+			<stringfield name="text">
+				<bounds>25,45,-25,-15</bounds>
+				<multilinespacing>16</multilinespacing>
+				<font>note-text</font>
+				<selectioncolor>#FFD296</selectioncolor>
+			</stringfield>
+			<scrollbar>
+				<bounds>-30,50,20,-20</bounds>
+				<target>text</target>
+			</scrollbar>
+
+			<resize_storybox />
+			<close_notes />
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="notesmall">
+		<sizelimits>
+			<minimum>
+				<height>10</height>
+			</minimum>
+		</sizelimits>
+		<playercontrol />
+		<nodelete />
+		<script file="campaign/scripts/campaign_list_record.lua" />
+		<sheetdata>
+			<link_list name="open">
+				<class>note</class>
+			</link_list>
+			
+			<icon_access name="access" />
+			<icon_modified name="modified" />
+			
+			<stringcontrol name="owner">
+				<anchored>
+					<right>
+						<parent>modified</parent>
+						<anchor>left</anchor>
+						<offset>-2</offset>
+					</right>
+					<top>
+						<offset>1</offset>
+					</top>
+					<size>
+						<height>20</height>
+					</size>
+				</anchored>
+				<font>sheettext</font>
+				<invisible />
+				<readonly />
+			</stringcontrol>
+
+			<string_campaignrecordname name="name">
+				<anchored>
+					<right>
+						<parent>owner</parent>
+						<anchor>left</anchor>
+						<offset>-5</offset>
+					</right>
+				</anchored>
+				<empty>&#171; New Note &#187;</empty>
+			</string_campaignrecordname>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="notelist">
+		<frame>scrollboxfortabs</frame>
+		<placement>
+			<size>
+				<width>275</width>
+				<height>350</height>
+			</size>
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum>
+				<width>200</width>
+				<height>300</height>
+			</minimum>
+		</sizelimits>
+		<softclose />
+		<nodelete />
+		<sheetdata>
+			<banner_campaign>
+				<icon>title_notes</icon>
+			</banner_campaign>
+
+			<list_campaign_notes name="list">
+				<datasource>.</datasource>
+				<class>notesmall</class>
+			</list_campaign_notes>
+			<scrollbar_campaign>
+				<target>list</target>
+			</scrollbar_campaign>
+
+			<button_new>
+				<class>note</class>
+			</button_new>
+			
+			<resize_scrollboxfortabs />
+			<close_scrollbox />
+		</sheetdata>
+	</windowclass>
+</root>

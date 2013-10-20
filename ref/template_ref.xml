@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="referenceformattedtextfield">
+		<formattedtextfield>
+			<font>
+				<normal>reference-r</normal>
+				<bold>reference-b</bold>
+				<italic>reference-i</italic>
+				<bolditalic>reference-bi</bolditalic>
+				<title>reference-h</title>
+			</font>
+			<linkicon>
+				<link>button_openwindow</link>
+				<emptylink>button_emptytarget</emptylink>
+			</linkicon>
+			<selectioncolor>#FFD296</selectioncolor>
+		</formattedtextfield>
+	</template>
+	
+	<!-- SPLIT PANE TEMPLATES -->
+	<template name="list_refsections">
+		<windowlist>
+			<skipempty />
+			<bounds>30,50,240,-70</bounds>
+			<frame>
+				<name>sheetgroup</name>
+				<offset>10,10,20,10</offset>
+			</frame>
+		</windowlist>
+	</template>
+	<template name="scrollbar_refsections">
+		<scrollbar>
+			<bounds>265,60,20,-80</bounds>
+			<target>sectionlist</target>
+		</scrollbar>
+	</template>
+	<template name="filter_refsections">
+		<filter2>
+			<bounds>100,-53,180,16</bounds>
+		</filter2>
+	</template>
+	<template name="button_filter_refsections">
+		<button_filter>
+			<bounds>80,-55,21,27</bounds>
+		</button_filter>			
+	</template>
+	<template name="button_expandsections">
+		<button_expand>
+			<bounds>25,-53,20,20</bounds>
+		</button_expand>
+	</template>
+	<template name="button_collapsesections">
+		<button_collapse>
+			<bounds>50,-53,20,20</bounds>
+		</button_collapse>
+	</template>
+	<template name="list_refpages">
+		<windowlist>
+			<skipempty />
+			<bounds>295,50,-42,-70</bounds>
+			<frame>
+				<name>sheetgroup</name>
+				<offset>10,10,20,10</offset>
+			</frame>
+		</windowlist>
+	</template>
+	<template name="scrollbar_refpages">
+		<scrollbar>
+			<bounds>-47,60,20,-80</bounds>
+			<target>pagelist</target>
+		</scrollbar>
+	</template>
+	<template name="filter_refpages">
+		<filter>
+			<bounds>315,-53,-65,16</bounds>
+		</filter>
+	</template>
+	<template name="button_filter_refpages">
+		<button_filter>
+			<bounds>295,-55,21,27</bounds>
+		</button_filter>			
+	</template>
+
+	<!-- LIBRARY WINDOW TEMPLATES -->
+	<template name="thumbnail_librarymodule">
+		<genericcontrol>
+			<script>
+				function onHover(oncontrol)
+					window.name.onHover(oncontrol);
+				end
+				
+				function onClickDown(button, x, y)
+					return true;
+				end
+
+				function onClickRelease(button, x, y)
+					return window.name.activate();
+				end
+			</script>
+		</genericcontrol>
+	</template>
+	<template name="string_librarymodule">
+		<string_linked_static>
+			<font>sheetlabel</font>
+			<script>
+				function activate()
+					local pagesource = window.getDatabaseNode().getChild("entries");
+					window.windowlist.window.pagelist.setDatabaseNode(pagesource);
+				end
+				
+				function onInit()
+					onValueChanged();
+				end
+				
+				function onValueChanged()
+					window.thumbnail.setIcon("module_" .. getValue());
+				end
+			</script>
+		</string_linked_static>
+	</template>
+	<template name="string_librarypage">
+		<string_linked_static>
+			<font>sheettext</font>
+			<linktarget>librarylink</linktarget>
+		</string_linked_static>
+	</template>
+	
+	<!-- REFERENCE LIST TEMPLATES -->
+	<template name="string_reftable">
+		<stringfield>
+			<anchored>
+				<left>
+					<parent>reftableanchor</parent>
+					<anchor>right</anchor>
+					<relation>relative</relation>
+				</left>
+				<top>
+					<parent>reftableanchor</parent>
+					<anchor>top</anchor>
+				</top>
+				<size>
+					<width>60</width>
+					<height>16</height>
+				</size>
+			</anchored>
+			<font>reference-r</font>
+		</stringfield>
+	</template>
+	<template name="number_reftable">
+		<numberfield>
+			<anchored>
+				<left>
+					<parent>reftableanchor</parent>
+					<anchor>right</anchor>
+					<relation>relative</relation>
+				</left>
+				<top>
+					<parent>reftableanchor</parent>
+					<anchor>top</anchor>
+				</top>
+				<size>
+					<width>50</width>
+					<height>16</height>
+				</size>
+			</anchored>
+			<font>reference-r</font>
+			<hideonvalue>0</hideonvalue>
+		</numberfield>
+	</template>
+	<template name="label_reftable">
+		<stringcontrol>
+			<anchored>
+				<left>
+					<parent>headeranchor</parent>
+					<anchor>right</anchor>
+					<relation>relative</relation>
+				</left>
+				<top>
+					<parent>headeranchor</parent>
+					<anchor>top</anchor>
+				</top>
+				<size>
+					<width>60</width>
+				</size>
+			</anchored>
+			<font>reftable-header</font>
+			<multilinespacing>15</multilinespacing>
+		</stringcontrol>
+	</template>
+	<template name="string_groupdesc">
+		<stringfield>
+			<anchored mergerule="replace">
+				<top>
+					<parent>topanchor</parent>
+					<anchor>bottom</anchor>
+					<relation>relative</relation>
+					<offset>5</offset>
+				</top>
+				<left>
+					<anchor>left</anchor>
+					<offset>1</offset>
+				</left>
+			</anchored>
+			<font>reftable-group</font>
+			<script>
+				local aLinkedControls = {};
+				
+				function onInit()
+					if targets then
+						for sWord in string.gmatch(targets[1], "(%w+)") do
+							table.insert(aLinkedControls, sWord);
+						end
+					else
+						table.insert(aLinkedControls, "list");
+					end
+				end
+				
+				function onClickDown(button, x, y)
+					return true;
+				end
+
+				function onClickRelease(button, x, y)
+					for k, v in ipairs(aLinkedControls) do
+						window[v].setVisible(not window[v].isVisible());
+					end
+					return true;
+				end
+			</script>
+			<static />
+		</stringfield>
+	</template>
+	<template name="string_groupsubdesc">
+		<stringfield>
+			<anchored>
+				<top>
+					<parent>description</parent>
+					<anchor>top</anchor>
+				</top>
+				<left>
+					<parent>description</parent>
+					<anchor>right</anchor>
+					<offset>20</offset>
+				</left>
+			</anchored>
+			<font>reftable-subgroup</font>
+			<static />
+			<script>
+				function onClickDown(button, x, y)
+					return true;
+				end
+
+				function onClickRelease(button, x, y)
+					window.list.setVisible(not window.list.isVisible());
+					return true;
+				end
+			</script>
+		</stringfield>
+	</template>
+	<template name="string_groupdetail">
+		<stringfield>
+			<anchored>
+				<top>
+					<parent>topanchor</parent>
+					<anchor>bottom</anchor>
+					<relation>relative</relation>
+				</top>
+				<left>
+					<anchor>left</anchor>
+					<offset>15</offset>
+				</left>
+			</anchored>
+			<font>reference-i</font>
+			<multilinespacing>15</multilinespacing>
+			<static />
+		</stringfield>
+	</template>
+	<template name="list_reftablegroup">
+		<windowlist>
+			<anchored>
+				<top />
+				<left />
+				<right />
+			</anchored>
+			<datasource>.groups</datasource>
+		</windowlist>
+	</template>
+	<template name="list_reftablegroupitems">
+		<windowlist>
+			<anchored mergerule="replace">
+				<top>
+					<parent>topanchor</parent>
+					<anchor>bottom</anchor>
+					<relation>relative</relation>
+					<offset>2</offset>
+				</top>
+				<left />
+				<right />
+			</anchored>
+			<noscroll />
+			<child><backcolor>1A40301E</backcolor></child>
+			<child></child>
+			<script file="ref/scripts/ref_list.lua" />
+		</windowlist>
+	</template>
+	<template name="ft_reftablefooter">
+		<referenceformattedtextfield>
+			<anchored>
+				<top>
+					<parent>list</parent>
+					<anchor>bottom</anchor>
+					<relation>relative</relation>
+				</top>
+				<left>
+					<anchor>left</anchor>
+					<offset>25</offset>
+				</left>
+				<right>
+					<anchor>right</anchor>
+					<offset>-25</offset>
+				</right>
+			</anchored>
+			<invisible />
+			<script>
+				function onInit()
+					if not isEmpty() then
+						setVisible(true);
+					end
+				end
+			</script>
+		</referenceformattedtextfield>
+	</template>
+	<template name="filter_reftable">
+		<filter2>
+			<target>grouplist,list</target>
+			<script>
+				function onValueChanged()
+					super.onValueChanged();
+					
+					for _,winGroup in pairs(window.grouplist.getWindows()) do
+						if winGroup.myfooter then
+							if not winGroup.myfooter.isEmpty() then
+								winGroup.myfooter.setVisible(getValue() == "");
+							end
+						end
+					end
+				end
+			</script>
+		</filter2>
+	</template>
+	
+	<!-- REFERENCE LIST AUXILIARY TEMPLATES -->
+	<template name="label_reftype">
+		<stringcontrol>
+			<anchored>
+				<top>
+					<parent>columnanchor</parent>
+					<anchor>bottom</anchor>
+					<relation>relative</relation>
+					<offset>5</offset>
+				</top>
+				<left>
+					<anchor>left</anchor>
+				</left>
+				<size>
+					<height>20</height>
+				</size>
+			</anchored>
+			<font>reference-b-large</font>
+			<static />
+		</stringcontrol>
+	</template>
+	<template name="label_refdesc">
+		<stringcontrol>
+			<anchored>
+				<top>
+					<parent>columnanchor</parent>
+					<anchor>bottom</anchor>
+					<relation>relative</relation>
+					<offset>5</offset>
+				</top>
+				<left>
+					<anchor>left</anchor>
+				</left>
+				<right>
+					<anchor>right</anchor>
+				</right>
+			</anchored>
+			<font>sheetlabelsmallbold</font>
+			<static mergerule="replace">Description</static>
+		</stringcontrol>
+	</template>
+	<template name="ft_refdesc">
+		<referenceformattedtextfield>
+			<anchored>
+				<top>
+					<parent>columnanchor</parent>
+					<anchor>bottom</anchor>
+					<relation>relative</relation>
+				</top>
+				<left>
+					<anchor>left</anchor>
+				</left>
+				<right>
+					<anchor>right</anchor>
+				</right>
+			</anchored>
+			<script>
+				function onInit()
+					if isEmpty() then
+						setVisible(false);
+						if label then
+							window[label[1]].setVisible(false);
+						end
+						if separator then
+							window[separator[1]].setVisible(false);
+						end
+					end
+				end
+			</script>
+		</referenceformattedtextfield>
+	</template>
+
+	<!-- CONTENT STAT TEMPLATES -->
+	<template name="sub_refcontent">
+		<subwindow>
+			<anchored>
+				<top>
+					<parent>name</parent>
+					<offset>20</offset>
+					<anchor>bottom</anchor>
+				</top>
+				<left><offset>20</offset></left>
+				<right><offset>-20</offset></right>
+				<bottom><offset>-10</offset></bottom>
+			</anchored>
+			<activate />
+		</subwindow>
+	</template>
+	<template name="scrollbar_refcontent">
+		<scrollbar>
+			<anchored>
+				<to>content</to>
+				<position>right</position>
+				<offset>-5,-5</offset>
+			</anchored>
+			<target>content</target>
+		</scrollbar>
+	</template>
+</root>

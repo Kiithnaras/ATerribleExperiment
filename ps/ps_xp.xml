@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="ps_xp_partyentry">
+		<sizelimits>
+			<minimum>
+				<height>40</height>
+			</minimum>
+		</sizelimits>
+		<frame>modifier</frame>
+		<sheetdata>
+			<hlink name="link">
+				<script>
+					function onValueChanged()
+						window.portrait.update();
+					end
+				</script>
+			</hlink>
+			
+			<spacer>
+				<height>60</height>
+			</spacer>
+			<portrait_base>
+				<bounds>10,10,40,40</bounds>
+			</portrait_base>
+			<portrait name="portrait">
+				<bounds>10,10,40,40</bounds>
+			</portrait>
+
+			<string_psname name="name">
+				<anchored>
+					<left><offset>55</offset></left>
+					<top><offset>10</offset></top>
+					<size>
+						<width>80</width>
+						<height>20</height>
+					</size>
+				</anchored>
+				<empty>&#171; Unnamed &#187;</empty>
+			</string_psname>
+			<label>
+				<bounds>140,10,20,15</bounds>
+				<static>XP:</static>
+			</label>	
+			<number_ps name="exp">
+				<bounds>165,12,50,15</bounds>
+			</number_ps>
+			<label>
+				<bounds>215,10,10,15</bounds>
+				<center />
+				<static> / </static>
+			</label>	
+			<number_ps name="expneeded">
+				<bounds>225,12,50,15</bounds>
+			</number_ps>
+
+			<string_ps name="class">
+				<anchored>
+					<left><offset>55</offset></left>
+					<top><offset>33</offset></top>
+					<size>
+						<width>145</width>
+						<height>20</height>
+					</size>
+				</anchored>
+				<empty>&#171; No Class &#187;</empty>
+			</string_ps>
+			<label>
+				<bounds>205,33,35,15</bounds>
+				<static>Level:</static>
+			</label>	
+			<number_ps name="level">
+				<bounds>245,35,30,15</bounds>
+			</number_ps>			
+		</sheetdata>
+	</windowclass>		
+	<windowclass name="ps_xp_encounterentry">
+		<sizelimits>
+			<minimum>
+				<height>10</height>
+			</minimum>
+		</sizelimits>
+		<script file="ps/scripts/ps_xp_encentry.lua" />
+		<sheetdata>
+			<link_field name="shortcut">
+				<bounds>5,0,20,20</bounds>
+				<readonly />
+			</link_field>
+			<string_ps_xpitem name="name">
+				<anchored>
+					<left><offset>30</offset></left>
+					<size><width>200</width></size>
+				</anchored>
+				<readonly />
+			</string_ps_xpitem>
+			<number_ps_questitem name="level">
+				<bounds>240,4,20,14</bounds>
+				<readonly />
+			</number_ps_questitem>
+			<number_ps_questitem name="xp">
+				<bounds>265,4,80,14</bounds>
+				<readonly />
+			</number_ps_questitem>
+			<button_checkbox name="xpawarded">
+				<bounds>360,2,20,20</bounds>
+			</button_checkbox>
+		</sheetdata>
+	</windowclass>
+	<windowclass name="ps_xp_questentry">
+		<sizelimits>
+			<minimum>
+				<height>10</height>
+			</minimum>
+		</sizelimits>
+		<script file="ps/scripts/ps_xp_questentry.lua" />
+		<sheetdata>
+			<link_control name="shortcut">
+				<bounds>5,0,20,20</bounds>
+				<class>quest</class>
+			</link_control>
+			<string_ps_xpitem name="name">
+				<anchored>
+					<left><offset>30</offset></left>
+					<size><width>150</width></size>
+				</anchored>
+			</string_ps_xpitem>
+			<button_stringcycler name="type">
+				<anchored>
+					<left><offset>185</offset></left>
+					<top><offset>4</offset></top>
+					<size>
+						<height>15</height>
+						<width>50</width>
+					</size>
+				</anchored>
+				<stateframe>
+					<keyedit>
+						<name>sheetfocus</name>
+						<offset>7,7,7,5</offset>
+					</keyedit>
+					<hover>
+						<name>sheetfocus</name>
+						<offset>7,7,7,5</offset>
+						<hidereadonly />
+					</hover>
+					<drophilight>
+						<name>sheetfocus</name>
+						<offset>7,7,7,5</offset>
+						<hidereadonly />
+					</drophilight>
+				</stateframe>
+				<font>sheetlabelminibold</font>
+				<parameters>
+					<defaultlabel>Minor</defaultlabel>
+					<labels>Major</labels>
+					<values>Major</values>
+				</parameters>
+			</button_stringcycler>
+			<number_ps_questitem name="level">
+				<bounds>240,4,20,14</bounds>
+			</number_ps_questitem>
+			<number_ps_questitem name="xp">
+				<bounds>265,4,55,14</bounds>
+			</number_ps_questitem>
+			<button_checkbox name="xpawarded">
+				<bounds>335,2,20,20</bounds>
+			</button_checkbox>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="ps_xp">
+		<placement>
+			<size>
+				<width>700</width>
+				<height>360</height>
+			</size>
+		</placement>
+		<script file="ps/scripts/ps_xp.lua" />
+		<sheetdata>
+			<frame_ps name="sheetframe" />
+			<label_ps_sheet>
+				<static>XP Tracker</static>
+			</label_ps_sheet>
+			
+			<!-- Party -->
+			<header_psorder>
+				<anchored>
+					<left />
+					<right />
+				</anchored>
+				<center />
+				<static>Party</static>
+			</header_psorder>
+			<list_ps name="partylist">
+				<anchored>
+					<top><offset>43</offset></top>
+					<bottom><offset>-345</offset></bottom>
+				</anchored>
+				<class>ps_xp_partyentry</class>
+				<columns>
+					<width>285</width>
+					<fillwidth />
+				</columns>
+				<empty>
+					<font>reference-i</font>
+					<text>Drop PCs on main tab to add party members.</text>
+				</empty>
+			</list_ps>
+			<scrollbar_ps />
+		
+			<!-- Encounters -->	
+			<header_psxp2>
+				<anchored>
+					<right><offset>-390</offset></right>
+				</anchored>
+				<static>Encounters</static>
+			</header_psxp2>
+			<header_psxp>
+				<anchored>
+					<left><offset>40</offset></left>
+					<size><width>230</width></size>
+				</anchored>
+				<static>Name</static>
+			</header_psxp>
+			<header_psxp>
+				<anchored>
+					<left><offset>245</offset></left>
+					<size><width>30</width></size>
+				</anchored>
+				<static>Level</static>
+				<center />
+			</header_psxp>
+			<header_psxp>
+				<anchored>
+					<left><offset>275</offset></left>
+					<size><width>80</width></size>
+				</anchored>
+				<static>XP</static>
+				<center />
+			</header_psxp>
+			<header_psxp>
+				<anchored>
+					<left><offset>355</offset></left>
+					<size><width>50</width></size>
+				</anchored>
+				<static>Awarded</static>
+				<center />
+			</header_psxp>
+			
+			<list_ps_xp_encounter name="encounters">
+				<class>ps_xp_encounterentry</class>
+				<empty>
+					<font>reference-i</font>
+					<text>Drop completed encounter links here.</text>
+				</empty>
+				<script file="ps/scripts/ps_xp_enclist.lua" />
+			</list_ps_xp_encounter>
+			<scrollbar_ps>
+				<anchored><to>encounters</to></anchored>
+				<target>encounters</target>
+			</scrollbar_ps>
+
+			<filter name="encfilter">
+				<bounds>55,-50,-420,20</bounds>
+				<target>encounters</target>
+				<trigger>encfiltertrigger</trigger>
+			</filter>
+			<button_filter name="encfiltertrigger">
+				<bounds>20,-65,21,41</bounds>
+				<target>encfilter</target>
+			</button_filter>
+
+			<!-- Quests -->
+			<header_psxp2>
+				<anchored>
+					<left>
+						<anchor>right</anchor>
+						<offset>-385</offset>
+					</left>
+				</anchored>
+				<static>Quests</static>
+			</header_psxp2>
+			<header_psxp>
+				<anchored>
+					<left>	
+						<anchor>right</anchor>
+						<offset>-355</offset>
+					</left>
+					<size><width>150</width></size>
+				</anchored>
+				<static>Name</static>
+			</header_psxp>
+			<header_psxp>
+				<anchored>
+					<left>	
+						<anchor>right</anchor>
+						<offset>-200</offset>
+					</left>
+					<size><width>50</width></size>
+				</anchored>
+				<static>Type</static>
+				<center />
+			</header_psxp>
+			<header_psxp>
+				<anchored>
+					<left>	
+						<anchor>right</anchor>
+						<offset>-150</offset>
+					</left>
+					<size><width>30</width></size>
+				</anchored>
+				<static>Level</static>
+				<center />
+			</header_psxp>
+			<header_psxp>
+				<anchored>
+					<left>	
+						<anchor>right</anchor>
+						<offset>-120</offset>
+					</left>
+					<size><width>55</width></size>
+				</anchored>
+				<static>XP</static>
+				<center />
+			</header_psxp>
+			<header_psxp>
+				<anchored>
+					<left>	
+						<anchor>right</anchor>
+						<offset>-65</offset>
+					</left>
+					<size><width>50</width></size>
+				</anchored>
+				<static>Awarded</static>
+				<center />
+			</header_psxp>
+			
+			<list_ps_xp_quest name="quests">
+				<class>ps_xp_questentry</class>
+				<empty>
+					<font>reference-i</font>
+					<text>Click button below to add a new quest entry.</text>
+				</empty>
+				<script file="ps/scripts/ps_xp_questlist.lua" />
+			</list_ps_xp_quest>
+			<scrollbar_ps>
+				<anchored><to>quests</to></anchored>
+				<target>quests</target>
+			</scrollbar_ps>
+
+			<filter name="questfilter">
+				<bounds>-370,-50,-70,20</bounds>
+				<target>quests</target>
+				<trigger>questfiltertrigger</trigger>
+			</filter>
+			<button_filter name="questfiltertrigger">
+				<bounds>-400,-65,21,41</bounds>
+				<target>questfilter</target>
+			</button_filter>
+			<button_add name="button_xpquestadd">
+				<bounds>-65,-60,30,30</bounds>
+				<gmvisibleonly />
+				<script>
+					function onButtonPress()
+						local w = window.quests.createWindow();
+						w.name.setFocus();
+					end
+				</script>
+			</button_add>
+		</sheetdata>
+	</windowclass>
+</root>
