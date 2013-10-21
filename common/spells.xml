@@ -623,7 +623,7 @@
 					</size>
 				</anchored>
 				<default>1</default>
-				<min>1</min>
+				<min>0</min>
 				<hideonvalue value="0" />
 				<tooltip>
 					<text>Multiple of CL or statistic to apply</text>
