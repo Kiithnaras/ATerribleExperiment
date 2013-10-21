@@ -51,7 +51,7 @@
 						end
 						return 0;
 					elseif sourcename == "state" then
-						if OptionsManager.isOption("SYSTEM", "pf") then
+						if OptionsManager.isOption("SYSTEM", "blap") then
 							local nodeWin = window.getDatabaseNode();
 							if DB.getValue(nodeWin, "state", 0) == 1 then
 								local nRanks = DB.getValue(nodeWin, "ranks", 0);
