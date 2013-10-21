@@ -24,8 +24,6 @@ end
 function onAttackChanged()
 	attack1.onSourceUpdate();
 	attack2.onSourceUpdate();
-	attack3.onSourceUpdate();
-	attack4.onSourceUpdate();
 end
 
 function onDamageChanged()
@@ -53,8 +51,6 @@ function toggleDetail()
 	attackstat.setVisible(status);
 	label_atkplus.setVisible(status);
 	bonus.setVisible(status);
-	label_atkplus2.setVisible(status);
-	attackmodframe.setVisible(status);
 	label_critrange.setVisible(status);
 	critatkrange.setVisible(status);
 

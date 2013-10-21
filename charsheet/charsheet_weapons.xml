@@ -55,7 +55,7 @@
 			<genericcontrol name="damageframe">
 				<anchored>
 					<position>insidetopright</position>
-					<offset>45,0</offset>
+					<offset>122,0</offset>
 					<size>
 						<width>105</width>
 						<height>30</height>
@@ -85,83 +85,16 @@
 				</anchored>
 			</number_charweapondamagetotal>
 			
-			<genericcontrol name="attackframe">
+			<number_charweaponattacktotal name="attack1">
 				<anchored>
 					<position>insidetopright</position>
-					<offset>150,0</offset>
+					<offset>250,0</offset>
 					<size>
-						<width>137</width>
+						<width>27</width>
 						<height>30</height>
 					</size>
 				</anchored>
-				<frame>
-					<name>slottedmodifier</name>
-				</frame>
-			</genericcontrol>
-
-			<number_charweaponattacktotal name="attack1">
-				<anchored>
-					<to>attackframe</to>
-					<position>insidetopleft</position>
-					<offset>6,5</offset>
-					<size>
-						<width>27</width>
-					</size>
-				</anchored>
 				<modifier>0</modifier>
-				<name>Attack 1</name>
-				<source>
-					<name>attack1modifier</name>
-					<op>+</op>
-				</source>
-			</number_charweaponattacktotal>
-			<number_charweaponattacktotal name="attack2">
-				<anchored>
-					<to>attack1</to>
-					<position>right</position>
-					<offset>5,0</offset>
-					<size>
-						<width>27</width>
-					</size>
-				</anchored>
-				<modifier>-5</modifier>
-				<name>Attack 2</name>
-				<source>
-					<name>attack2modifier</name>
-					<op>+</op>
-				</source>
-			</number_charweaponattacktotal>
-			<number_charweaponattacktotal name="attack3">
-				<anchored>
-					<to>attack2</to>
-					<position>right</position>
-					<offset>5,0</offset>
-					<size>
-						<width>27</width>
-					</size>
-				</anchored>
-				<modifier>-10</modifier>
-				<name>Attack 3</name>
-				<source>
-					<name>attack3modifier</name>
-					<op>+</op>
-				</source>
-			</number_charweaponattacktotal>
-			<number_charweaponattacktotal name="attack4">
-				<anchored>
-					<to>attack3</to>
-					<position>right</position>
-					<offset>5,0</offset>
-					<size>
-						<width>27</width>
-					</size>
-				</anchored>
-				<modifier>-15</modifier>
-				<name>Attack 4</name>
-				<source>
-					<name>attack4modifier</name>
-					<op>+</op>
-				</source>
 			</number_charweaponattacktotal>
 
 			<genericcontrol name="attackicons">
@@ -243,30 +176,6 @@
 				</anchored>
 				<hideonvalue>0</hideonvalue>
 			</number_charweapon_sm>
-			<label_sm name="label_atkplus2">
-				<anchored>
-					<to>label_atkplus</to>
-					<position>right</position>
-					<offset>37</offset>
-					<size>
-						<width>8</width>
-					</size>
-				</anchored>
-				<static>+</static>
-			</label_sm>
-			<genericcontrol name="attackmodframe">
-				<anchored>
-					<to>attackframe</to>
-					<position>below</position>
-					<offset>0,-3</offset>
-					<size>
-						<height>25</height>
-					</size>
-				</anchored>
-				<frame>
-					<name>slottedmodifier</name>
-				</frame>
-			</genericcontrol>
 			
 			<label_sm name="label_critrange">
 				<anchored>
@@ -277,14 +186,14 @@
 					<left>
 						<parent>damageframe</parent>
 						<anchor>left</anchor>
-						<offset>5</offset>
+						<offset>-36</offset>
 					</left>
 					<size>
-						<width>65</width>
+						<width>55</width>
 						<height>15</height>
 					</size>
 				</anchored>
-				<static>Crit Rng:</static>
+				<static>Crit Range:</static>
 			</label_sm>
 			<number_charweapon_sm name="critatkrange">
 				<anchored>
@@ -450,19 +359,20 @@
 			<label_sm name="label_critmult">
 				<anchored>
 					<top>
-						<parent>label_dmgdetail</parent>
+						<parent>label_atkdetail</parent>
 						<anchor>top</anchor>
 					</top>
 					<left>
 						<parent>label_critrange</parent>
 						<anchor>left</anchor>
+						<offset>95,0</offset>
 					</left>
 					<size>
 						<width>65</width>
 						<height>15</height>
 					</size>
 				</anchored>
-				<static>Crit Mult:</static>
+				<static>Crit Multiple:</static>
 			</label_sm>
 			<number_charweapon_sm name="critdmgmult">
 				<anchored>
@@ -569,7 +479,7 @@
 					</top>
 					<left>
 						<anchor>left</anchor>
-						<offset>250</offset>
+						<offset>220</offset>
 					</left>
 					<size>
 						<width>50</width>

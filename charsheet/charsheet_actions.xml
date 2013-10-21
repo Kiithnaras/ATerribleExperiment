@@ -139,7 +139,7 @@
 				<anchored>
 					<to>label_weapon</to>
 					<position>belowright</position>
-					<offset>65,17</offset>
+					<offset>44,17</offset>
 				</anchored>
 				<static>Avg Dmg?</static>
 			</label_sm>

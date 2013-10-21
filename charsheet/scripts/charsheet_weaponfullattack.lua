@@ -48,8 +48,6 @@ function updateAttackFields()
 	if not isReadOnly() then
 		window.attack1.setVisible(c >= 1);
 		window.attack2.setVisible(c >= 2);
-		window.attack3.setVisible(c >= 3);
-		window.attack4.setVisible(c >= 4);
 	end
 end
 
