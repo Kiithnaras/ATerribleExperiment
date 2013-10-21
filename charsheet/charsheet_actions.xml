@@ -93,6 +93,8 @@
 				</frame>
 				<disabled />
 			</genericcontrol>
+			
+			<!--Weapon Entry Layout setup-->
 
 			<label_sm>
 				<anchored>
@@ -143,6 +145,8 @@
 				</anchored>
 				<static>Avg Dmg?</static>
 			</label_sm>
+			
+			<!--Automated Weapon/Spell Name-based data linking?-->
 			
 			<list_charweapon name="weaponlist">
 				<anchored>
