@@ -168,12 +168,6 @@
 				<offsetx>7</offsetx>
 				<offsety>6</offsety>
 			</icons>
-			<attackfields>
-				<attack1>attack1</attack1>
-				<attack2>attack2</attack2>
-				<attack3>attack3</attack3>
-				<attack4>attack4</attack4>
-			</attackfields>
 			<namefield>name</namefield>
 			<default>1</default>
 			<min>1</min>

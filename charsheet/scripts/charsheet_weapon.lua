@@ -55,10 +55,6 @@ function toggleDetail()
 	bonus.setVisible(status);
 	label_atkplus2.setVisible(status);
 	attackmodframe.setVisible(status);
-	attack1modifier.setVisible(status);
-	attack2modifier.setVisible(status);
-	attack3modifier.setVisible(status);
-	attack4modifier.setVisible(status);
 	label_critrange.setVisible(status);
 	critatkrange.setVisible(status);
 
