@@ -13,7 +13,7 @@ function getRoll(rActor, sAbilityStat, nTargetDC, bSecretRoll, bAddName)
 	local rRoll = {};
 	
 	-- SETUP
-	rRoll.aDice = { "3d6" };
+	rRoll.aDice = { "d6","d6","d6" };
 	rRoll.nMod = ActorManager.getAbilityBonus(rActor, sAbilityStat);
 	
 	-- BUILD THE OUTPUT
