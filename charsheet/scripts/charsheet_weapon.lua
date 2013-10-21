@@ -20,10 +20,9 @@ function onMenuSelection(selection, subselection)
 		end
 	end
 end
-
+--Data linking?
 function onAttackChanged()
 	attack1.onSourceUpdate();
-	attack2.onSourceUpdate();
 end
 
 function onDamageChanged()
@@ -33,7 +32,7 @@ end
 function onTypeChanged()
 	toggleDetail();
 end
-
+--Weapon Detail toggle
 function setSpacerState()
 	if activatedetail.getValue() then
 		spacer.setVisible(true);
@@ -41,7 +40,7 @@ function setSpacerState()
 		spacer.setVisible(false);
 	end
 end
-
+--Toggled weapon detail subfield script
 function toggleDetail()
 	local bRanged = (type.getIndex() == 1);
 	local bBow = (bRanged and (damagerangedstatadj.getStringValue() == "bow"));

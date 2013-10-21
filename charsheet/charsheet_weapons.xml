@@ -85,14 +85,24 @@
 				</anchored>
 			</number_charweapondamagetotal>
 			
-			<number_charweaponattacktotal name="attack1">
+			<genericcontrol name="attackbox">
 				<anchored>
 					<position>insidetopright</position>
 					<offset>250,0</offset>
 					<size>
-						<width>27</width>
+						<width>40</width>
 						<height>30</height>
 					</size>
+				</anchored>
+				<frame>
+					<name>bonus</name>
+				</frame>
+			</genericcontrol>
+			<number_charweaponattacktotal name="attack1">
+				<anchored>
+					<to>attackbox</to>
+					<position>over</position>
+					<offset>10,0</offset>
 				</anchored>
 				<modifier>0</modifier>
 			</number_charweaponattacktotal>
