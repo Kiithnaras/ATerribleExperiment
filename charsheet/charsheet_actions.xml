@@ -115,25 +115,33 @@
 				<anchored>
 					<to>label_weapon</to>
 					<position>belowright</position>
-					<offset>290,17</offset>
+					<offset>277,17</offset>
 				</anchored>
-				<static>#atk</static>
+				<static>Atk Mod</static>
 			</label_sm>
 			<label_sm>
 				<anchored>
 					<to>label_weapon</to>
 					<position>belowright</position>
-					<offset>195,17</offset>
+					<offset>225,17</offset>
 				</anchored>
-				<static>Attacks</static>
+				<static>Dmg Mult</static>
 			</label_sm>
 			<label_sm>
 				<anchored>
 					<to>label_weapon</to>
 					<position>belowright</position>
-					<offset>70,17</offset>
+					<offset>155,17</offset>
 				</anchored>
 				<static>Damage</static>
+			</label_sm>
+			<label_sm>
+				<anchored>
+					<to>label_weapon</to>
+					<position>belowright</position>
+					<offset>65,17</offset>
+				</anchored>
+				<static>Avg Dmg?</static>
 			</label_sm>
 			
 			<list_charweapon name="weaponlist">
