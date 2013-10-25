@@ -88,7 +88,7 @@
 			<genericcontrol name="attackbox">
 				<anchored>
 					<position>insidetopright</position>
-					<offset>250,0</offset>
+					<offset>285,0</offset>
 					<size>
 						<width>40</width>
 						<height>30</height>
@@ -106,26 +106,6 @@
 				</anchored>
 				<modifier>0</modifier>
 			</number_charweaponattacktotal>
-
-			<genericcontrol name="attackicons">
-				<anchored>
-					<position>insidetopright</position>
-					<offset>285,0</offset>
-					<size>
-						<width>40</width>
-						<height>30</height>
-					</size>
-				</anchored>
-				<frame>
-					<name>bonus</name>
-				</frame>
-			</genericcontrol>
-			<number_charweaponfullattack name="attacks">
-				<anchored>
-					<to>attackicons</to>
-					<position>over</position>
-				</anchored>
-			</number_charweaponfullattack>
 
 			<!-- ATTACK DETAILS -->
 			<label_sm name="label_atkdetail">
