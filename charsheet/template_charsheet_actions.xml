@@ -77,6 +77,21 @@
 		</windowlist>
 	</template>
 	
+	<template name="number_weapondamagemult">
+		<basicnumber>
+			<anchored>
+				<position>belowleft</position>
+				<offset>0,0</offset>
+				<size>
+					<width>32</width>
+					<height>20</height>
+				</size>
+			</anchored>
+			<default>1</default>
+			<min>1</min>
+		</basicnumber>
+	</template>
+	
 	<template name="state_charweapontype">
 		<button_iconcycler>
 			<anchored>

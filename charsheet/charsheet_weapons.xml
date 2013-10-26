@@ -88,7 +88,7 @@
 			<genericcontrol name="attackbox">
 				<anchored>
 					<position>insidetopright</position>
-					<offset>285,0</offset>
+					<offset>283,0</offset>
 					<size>
 						<width>40</width>
 						<height>30</height>
@@ -106,6 +106,13 @@
 				</anchored>
 				<modifier>0</modifier>
 			</number_charweaponattacktotal>
+			
+			<number_weapondamagemult name="weapondamagemult">
+				<anchored>
+					<position>insidetopright</position>
+					<offset>240,5</offset>
+				</anchored>
+			</number_weapondamagemult>
 
 			<!-- ATTACK DETAILS -->
 			<label_sm name="label_atkdetail">
@@ -403,13 +410,13 @@
 					<to>damageadjanchor</to>
 					<position>insidetopleft</position>
 					<size>
-						<width>110</width>
+						<width>75</width>
 						<height>15</height>
 					</size>
 				</anchored>
 				<parameters>
-					<defaultlabel>Melee One-Handed</defaultlabel>
-					<labels>Melee Two-Handed|Melee Off-Hand</labels>
+					<defaultlabel>Standard</defaultlabel>
+					<labels>Heavy|Light</labels>
 					<values>2h|oh</values>
 				</parameters>
 				<script>
@@ -423,13 +430,13 @@
 					<to>damageadjanchor</to>
 					<position>insidetopleft</position>
 					<size>
-						<width>110</width>
+						<width>75</width>
 						<height>15</height>
 					</size>
 				</anchored>
 				<parameters>
-					<defaultlabel>Ranged No Stat</defaultlabel>
-					<labels>Ranged Bow|Ranged Sling|Ranged Thrown|Ranged Thrown OH</labels>
+					<defaultlabel>No Stat</defaultlabel>
+					<labels>Bow|Sling|Thrown|Thrown OH</labels>
 					<values>bow|sling|thrown|thrownoh</values>
 				</parameters>
 				<script>
@@ -443,7 +450,7 @@
 				<anchored>
 					<to>damageadjanchor</to>
 					<position>insidetopleft</position>
-					<offset>115, -5</offset>
+					<offset>80, -5</offset>
 					<size>
 						<width>35</width>
 						<height>25</height>
@@ -469,7 +476,7 @@
 					</top>
 					<left>
 						<anchor>left</anchor>
-						<offset>220</offset>
+						<offset>210</offset>
 					</left>
 					<size>
 						<width>50</width>
