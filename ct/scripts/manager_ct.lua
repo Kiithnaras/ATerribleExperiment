@@ -541,12 +541,12 @@ function parseAttackLine(rActor, sLine)
 				end
 
 				-- Determine critical information
-				rAttack.crit = 20;
-				nCritStart, nCritEnd, sCritThreshold = string.find(sDamage, "/(%d+)%-20");
+				rAttack.crit = 18;
+				nCritStart, nCritEnd, sCritThreshold = string.find(sDamage, "/(%d+)%-18");
 				if sCritThreshold then
-					rAttack.crit = tonumber(sCritThreshold) or 20;
-					if rAttack.crit < 2 or rAttack.crit > 20 then
-						rAttack.crit = 20;
+					rAttack.crit = tonumber(sCritThreshold) or 18;
+					if rAttack.crit < 4 or rAttack.crit > 18 then
+						rAttack.crit = 18;
 					end
 				end
 				
@@ -584,7 +584,7 @@ function parseAttackLine(rActor, sLine)
 						for nAttrib = 2, #aDamageAttrib do
 							sCrit, sDamageTypes = string.match(aDamageAttrib[nAttrib], "^x(%d)([%w%s,]*)");
 							if not sCrit then
-								sDamageTypes = string.match(aDamageAttrib[nAttrib], "^%d+%-20%s?([%w%s,]*)");
+								sDamageTypes = string.match(aDamageAttrib[nAttrib], "^%d+%-18%s?([%w%s,]*)");
 							end
 							
 							if sDamageTypes then
@@ -781,7 +781,7 @@ function rollEntryInit(nodeEntry)
 	
 	-- For PCs, we always roll unique initiative
 	if DB.getValue(nodeEntry, "type", "") == "pc" then
-		local nInitResult = math.random(20) + nInit;
+		local nInitResult = math.random(6) + math.random(6) +math.random(6) + nInit;
 		DB.setValue(nodeEntry, "initresult", "number", nInitResult);
 		return;
 	end
@@ -789,7 +789,7 @@ function rollEntryInit(nodeEntry)
 	-- For NPCs, if NPC init option is not group, then roll unique initiative
 	local sOptINIT = OptionsManager.getOption("INIT");
 	if sOptINIT ~= "group" then
-		local nInitResult = math.random(20) + nInit;
+		local nInitResult = math.random(6) + math.random(6) +math.random(6) + nInit;
 		DB.setValue(nodeEntry, "initresult", "number", nInitResult);
 		return;
 	end
@@ -799,7 +799,7 @@ function rollEntryInit(nodeEntry)
 	-- Get the entry's database node name and creature name
 	local sStripName = stripCreatureNumber(DB.getValue(nodeEntry, "name", ""));
 	if sStripName == "" then
-		local nInitResult = math.random(20) + nInit;
+		local nInitResult = math.random(6) + math.random(6) + math.random(6) + nInit;
 		DB.setValue(nodeEntry, "initresult", "number", nInitResult);
 		return;
 	end
@@ -822,7 +822,7 @@ function rollEntryInit(nodeEntry)
 	if nLastInit then
 		DB.setValue(nodeEntry, "initresult", "number", nLastInit);
 	else
-		local nInitResult = math.random(20) + nInit;
+		local nInitResult = math.random(6) + math.random(6) +math.random(6) + nInit;
 		DB.setValue(nodeEntry, "initresult", "number", nInitResult);
 	end
 end
@@ -1380,10 +1380,10 @@ function addNpc(nodeNPC, sName)
 		if nLastInit then
 			DB.setValue(nodeEntry, "initresult", "number", nLastInit);
 		else
-			DB.setValue(nodeEntry, "initresult", "number", math.random(20) + nInitBonus);
+			DB.setValue(nodeEntry, "initresult", "number", math.random(6) + math.random(6) +math.random(6) + nInitBonus);
 		end
 	elseif sOptINIT == "on" then
-		DB.setValue(nodeEntry, "initresult", "number", math.random(20) + nInitBonus);
+		DB.setValue(nodeEntry, "initresult", "number", math.random(6) + math.random(6) +math.random(6) + nInitBonus);
 	end
 
 	return nodeEntry;
