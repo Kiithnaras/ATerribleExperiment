@@ -144,6 +144,7 @@
 	<icon name="indicator_attack_miss" file="graphics/icons/indicator_attack_miss.png" />
 	<icon name="indicator_attack_hit" file="graphics/icons/indicator_attack_hit.png" />
 	<icon name="indicator_attack_crit" file="graphics/icons/indicator_attack_crit.png" />
+	<icon name="indicator_attack_glance" file="graphics/icons/indicator_attack_glance.png" />
 	<icon name="indicator_cast_small" file="graphics/icons/indicator_cast_small.png" />
 	<icon name="indicator_damage" file="graphics/icons/indicator_damage.png" />
 	<icon name="indicator_damage_small" file="graphics/icons/indicator_damage_small.png" />

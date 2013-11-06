@@ -500,11 +500,11 @@ function onAttack(rSource, rTarget, rRoll)
 				table.insert(rAction.aMessages, "[HIT]");
 			end
 		else
-			rAction.sResult = "miss";
+			rAction.sResult = "glance";
 			if rRoll.sType == "critconfirm" then
 				table.insert(rAction.aMessages, "[CRIT NOT CONFIRMED]");
 			else
-				table.insert(rAction.aMessages, "[MISS]");
+				table.insert(rAction.aMessages, "[GLANCING]");
 			end
 		end
 	elseif rRoll.sType == "critconfirm" then
@@ -609,7 +609,10 @@ end
 
 function onMissChance(rSource, rTarget, rRoll)
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
-
+	--Pulling action result message to differentiate hit vs glance
+	--<stuff> related to drawing Attack roll message string - attempts have resulted in pulling onMissChance's messages. Not skilled at drawing messages/values across functions.
+	--ex: local sGlance = string.match(rMessage.text, "%[GLANCING%]");
+	
 	local nTotal = ActionsManager.total(rRoll);
 	local nMissChance = tonumber(string.match(rMessage.text, "%[MISS CHANCE (%d+)%%%]")) or 0;
 	if nTotal <= nMissChance then
@@ -619,6 +622,15 @@ function onMissChance(rSource, rTarget, rRoll)
 		else
 			rMessage.icon = "indicator_attack";
 		end
+	--Differentiation of Glance vs Hit result
+	--elseif <ex: sGlance ~= nil> then
+		--rMessage.text = rMessage.text .. " [GLANCING]";
+		--if rTarget then
+			--rMessage.icon = "indicator_attack_glance";
+		--else
+			--rMessage.icon = "indicator_attack";
+		--end
+	--Normal Hit vs Miss Chance
 	else
 		rMessage.text = rMessage.text .. " [HIT]";
 		if rTarget then
@@ -659,6 +671,8 @@ function applyAttack(rSource, rTarget, sAttackType, sDesc, nTotal, sResults)
 		msgLong.icon = "indicator_attack_miss";
 	elseif string.match(sResults, "CRITICAL THREAT%]") then
 		msgLong.icon = "indicator_attack_hit";
+	elseif string.match(sResults, "GLANCING%]") then
+		msgLong.icon = "indicator_attack_glance";
 	else
 		msgLong.icon = "indicator_attack";
 	end
