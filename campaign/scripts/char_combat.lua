@@ -28,31 +28,24 @@ function onInit()
 end
 
 function onSystemChanged()
-	local bPFMode = DataCommon.isPFRPG();
 	
-	line_cmd.setVisible(bPFMode);
+	line_cmd.setVisible(true);
 	
-	cmd.setVisible(bPFMode);
-	label_cmd.setVisible(bPFMode);
-	cmdacarmor.setVisible(bPFMode);
-	cmdacshield.setVisible(bPFMode);
-	cmdacstatmod.setVisible(bPFMode);
-	cmdacsize.setVisible(bPFMode);
-	cmdacnatural.setVisible(bPFMode);
-	cmdacdeflection.setVisible(bPFMode);
-	cmdacdodge.setVisible(bPFMode);
-	cmdmisc.setVisible(bPFMode);
+	cmd.setVisible(true);
+	label_cmd.setVisible(true);
+	cmdacarmor.setVisible(true);
+	cmdacshield.setVisible(true);
+	cmdacstatmod.setVisible(true);
+	cmdacsize.setVisible(true);
+	cmdacnatural.setVisible(true);
+	cmdacdeflection.setVisible(true);
+	cmdacdodge.setVisible(true);
+	cmdmisc.setVisible(true);
 	
-	cmdstat.setVisible(bPFMode);
-	cmdstatmod.setVisible(bPFMode);
-	cmdbase.setVisible(bPFMode);
-	cmdbasemod.setVisible(bPFMode);
-	
-	if bPFMode then
-		acframe.setStaticBounds(15,0,480,210);
-		label_grapple.setValue(Interface.getString("cmb"));
-	else
-		acframe.setStaticBounds(15,0,480,140);
-		label_grapple.setValue(Interface.getString("grapple"));
-	end
+	cmdstat.setVisible(true);
+	cmdstatmod.setVisible(true);
+	cmdbase.setVisible(true);
+	cmdbasemod.setVisible(true);
+	acframe.setStaticBounds(15,0,480,210);
+	label_grapple.setValue(Interface.getString("cmb"));
 end
