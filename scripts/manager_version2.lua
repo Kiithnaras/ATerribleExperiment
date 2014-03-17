@@ -326,7 +326,7 @@ function convertCharacters()
 				if nDash then
 					sCritRng = string.sub(sCritRng, 1, nDash - 1);
 				end
-				local nCritThreshold = tonumber(sCritRng) or 20;
+				local nCritThreshold = tonumber(sCritRng) or 18;
 				
 				DB.setValue(nodeWeapon, "critatkrange", "number", nCritThreshold);
 				

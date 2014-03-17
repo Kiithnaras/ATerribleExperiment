@@ -634,7 +634,7 @@ function getSpellRoll(rActor, nodeAction, sSubRoll)
 			
 			local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
 			rAction.modifier = DB.getValue(nodeActor, "attackbonus.base", 0) + DB.getValue(nodeAction, "atkmod", 0);
-			rAction.crit = 20;
+			rAction.crit = 18;
 			
 			if rAction.range == "R" then
 				rAction.stat = DB.getValue(nodeActor, "attackbonus.ranged.ability", "");

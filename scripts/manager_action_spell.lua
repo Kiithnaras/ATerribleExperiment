@@ -105,7 +105,7 @@ end
 function getCLCRoll(rActor, rAction)
 	local rRoll = {};
 	rRoll.sType = "clc";
-	rRoll.aDice = { "d20" };
+	rRoll.aDice = { "d6","d6","d6" };
 	rRoll.nMod = rAction.clc or 0;
 	
 	rRoll.sDesc = "[CL CHECK";
@@ -152,7 +152,7 @@ end
 function performSaveRoll(draginfo, rActor, sSave, sSaveDC, bSecretRoll, rSource, bRemoveOnMiss)
 	local rRoll = {};
 	rRoll.sType = "save";
-	rRoll.aDice = { "d20" };
+	rRoll.aDice = { "d6","d6","d6" };
 	rRoll.nMod = 0;
 	
 	-- Look up actor specific information
@@ -360,7 +360,7 @@ function onCastCLC(rSource, rTarget, rRoll)
 		local nSR = ActorManager2.getSpellDefense(rTarget);
 		if nSR > 0 then
 			if not string.match(rRoll.sDesc, "%[SR NOT ALLOWED%]") then
-				local rRoll = { sType = "clc", sDesc = rRoll.sDesc, aDice = {"d20"}, nMod = rRoll.nMod };
+				local rRoll = { sType = "clc", sDesc = rRoll.sDesc, aDice = {"d6","d6","d6"}, nMod = rRoll.nMod };
 				ActionsManager.roll(rSource, rTarget, rRoll);
 				return true;
 			end

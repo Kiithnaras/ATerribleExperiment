@@ -11,7 +11,7 @@ end
 function getRoll(rActor, sAbilityStat, nTargetDC, bSecretRoll)
 	local rRoll = {};
 	rRoll.sType = "ability";
-	rRoll.aDice = { "d20" };
+	rRoll.aDice = { "d6","d6","d6" };
 	rRoll.nMod = ActorManager2.getAbilityBonus(rActor, sAbilityStat);
 	
 	rRoll.sDesc = "[ABILITY]";

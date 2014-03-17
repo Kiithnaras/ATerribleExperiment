@@ -24,7 +24,7 @@ end
 function getRoll(rActor, sSkillName, nSkillMod, sSkillStat, nTargetDC, bSecretRoll, sExtra)
 	local rRoll = {};
 	rRoll.sType = "skill";
-	rRoll.aDice = { "d20" };
+	rRoll.aDice = { "d6","d6","d6" };
 	rRoll.nMod = nSkillMod or 0;
 	rRoll.sDesc = "[SKILL] " .. sSkillName;
 	if sExtra then

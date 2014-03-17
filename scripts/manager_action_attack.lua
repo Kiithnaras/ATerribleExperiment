@@ -97,7 +97,7 @@ function getRoll(rActor, rAction)
 	else
 		rRoll.sType = "attack";
 	end
-	rRoll.aDice = { "d20" };
+	rRoll.aDice = { "d6","d6","d6" };
 	rRoll.nMod = rAction.modifier or 0;
 	
 	if rAction.cm then
@@ -128,7 +128,7 @@ function getRoll(rActor, rAction)
 	end
 	
 	-- Add other modifiers
-	if rAction.crit and rAction.crit < 20 then
+	if rAction.crit and rAction.crit < 18 then
 		rRoll.sDesc = rRoll.sDesc .. " [CRIT " .. rAction.crit .. "]";
 	end
 	if rAction.touch then
@@ -147,7 +147,7 @@ end
 function getGrappleRoll(rActor, rAction)
 	local rRoll = {};
 	rRoll.sType = "grapple";
-	rRoll.aDice = { "d20" };
+	rRoll.aDice = { "d6","d6","d6" };
 	rRoll.nMod = rAction.modifier or 0;
 	
 	if DataCommon.isPFRPG() then
@@ -417,21 +417,21 @@ function onAttack(rSource, rTarget, rRoll)
 	end
 
 	-- Get the crit threshold
-	rAction.nCrit = 20;	
+	rAction.nCrit = 18;	
 	local sAltCritRange = string.match(rRoll.sDesc, "%[CRIT (%d+)%]");
 	if sAltCritRange then
-		rAction.nCrit = tonumber(sAltCritRange) or 20;
-		if (rAction.nCrit <= 1) or (rAction.nCrit > 20) then
-			rAction.nCrit = 20;
+		rAction.nCrit = tonumber(sAltCritRange) or 18;
+		if (rAction.nCrit <= 3) or (rAction.nCrit > 18) then
+			rAction.nCrit = 18;
 		end
 	end
 	
 	rAction.nFirstDie = 0;
 	if #(rRoll.aDice) > 0 then
-		rAction.nFirstDie = rRoll.aDice[1].result or 0;
+		rAction.nFirstDie = (rRoll.aDice[1].result + rRoll.aDice[2].result + rRoll.aDice[3].result) or 0;
 	end
 	rAction.bCritThreat = false;
-	if rAction.nFirstDie >= 20 then
+	if rAction.nFirstDie >= 18 then
 		rAction.bSpecial = true;
 		if rRoll.sType == "critconfirm" then
 			rAction.sResult = "crit";
@@ -449,7 +449,7 @@ function onAttack(rSource, rTarget, rRoll)
 			rAction.sResult = "hit";
 			table.insert(rAction.aMessages, "[AUTOMATIC HIT]");
 		end
-	elseif rAction.nFirstDie == 1 then
+	elseif rAction.nFirstDie == 3 then
 		if rRoll.sType == "critconfirm" then
 			table.insert(rAction.aMessages, "[CRIT NOT CONFIRMED]");
 			rAction.sResult = "miss";
@@ -508,7 +508,7 @@ function onAttack(rSource, rTarget, rRoll)
 		end
 	else
 		if rAction.bCritThreat then
-			local rCritConfirmRoll = { sType = "critconfirm", aDice = {"d20"} };
+			local rCritConfirmRoll = { sType = "critconfirm", aDice = {"d6","d6","d6"} };
 			
 			local nCCMod = EffectManager.getEffectsBonus(rSource, {"CC"}, true);
 			if nCCMod ~= 0 then
