@@ -4,49 +4,34 @@
 --
 
 function onInit()
-	ActionsManager.registerActionIcon("ability", "action_roll");
 	ActionsManager.registerModHandler("ability", modRoll);
 	ActionsManager.registerResultHandler("ability", onRoll);
 end
 
-function getRoll(rActor, sAbilityStat, nTargetDC, bSecretRoll, bAddName)
+function getRoll(rActor, sAbilityStat, nTargetDC, bSecretRoll)
 	local rRoll = {};
+	rRoll.sType = "ability";
+	rRoll.aDice = { "d20" };
+	rRoll.nMod = ActorManager2.getAbilityBonus(rActor, sAbilityStat);
 	
-	-- SETUP
-	rRoll.aDice = { "d6","d6","d6" };
-	rRoll.nMod = ActorManager.getAbilityBonus(rActor, sAbilityStat);
-	
-	-- BUILD THE OUTPUT
 	rRoll.sDesc = "[ABILITY]";
 	rRoll.sDesc = rRoll.sDesc .. " " .. StringManager.capitalize(sAbilityStat);
 	rRoll.sDesc = rRoll.sDesc .. " check";
 
-	if bAddName then
-		rRoll.sDesc = "[ADDNAME] " .. rRoll.sDesc;
-	end
-	if bSecretRoll then
-		rRoll.sDesc = "[GM] " .. rRoll.sDesc;
-	end
+	rRoll.bSecret = bSecretRoll;
 
-	local rCustom = {};
-	if nTargetDC then
-		table.insert(rCustom, { nMod = nTargetDC } );
-	end
+	rRoll.nTarget = nTargetDC;
 	
-	return rRoll, rCustom;
+	return rRoll;
 end
 
-function performRoll(draginfo, rActor, sAbilityStat, nTargetDC, bSecretRoll, bAddName)
-	local rRoll, rCustom = getRoll(rActor, sAbilityStat, nTargetDC, bSecretRoll, bAddName);
+function performRoll(draginfo, rActor, sAbilityStat, nTargetDC, bSecretRoll)
+	local rRoll = getRoll(rActor, sAbilityStat, nTargetDC, bSecretRoll);
 	
-	ActionsManager.performSingleRollAction(draginfo, rActor, "ability", rRoll, rCustom);
+	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
 function modRoll(rSource, rTarget, rRoll)
-	if rTarget and rTarget.nOrder then
-		return;
-	end
-	
 	local aAddDesc = {};
 	local aAddDice = {};
 	local nAddMod = 0;
@@ -66,32 +51,32 @@ function modRoll(rSource, rTarget, rRoll)
 
 		-- GET ACTION MODIFIERS
 		local nEffectCount;
-		aAddDice, nAddMod, nEffectCount = EffectsManager.getEffectsBonus(rSource, {"ABIL"}, false, {sAbility});
+		aAddDice, nAddMod, nEffectCount = EffectManager.getEffectsBonus(rSource, {"ABIL"}, false, {sAbility});
 		if (nEffectCount > 0) then
 			bEffects = true;
 		end
 		
 		-- GET CONDITION MODIFIERS
-		if EffectsManager.hasEffectCondition(rSource, "Frightened") or 
-				EffectsManager.hasEffectCondition(rSource, "Panicked") or
-				EffectsManager.hasEffectCondition(rSource, "Shaken") then
+		if EffectManager.hasEffectCondition(rSource, "Frightened") or 
+				EffectManager.hasEffectCondition(rSource, "Panicked") or
+				EffectManager.hasEffectCondition(rSource, "Shaken") then
 			nAddMod = nAddMod - 2;
 			bEffects = true;
 		end
-		if EffectsManager.hasEffectCondition(rSource, "Sickened") then
+		if EffectManager.hasEffectCondition(rSource, "Sickened") then
 			nAddMod = nAddMod - 2;
 			bEffects = true;
 		end
 
 		-- GET STAT MODIFIERS
-		local nBonusStat, nBonusEffects = ActorManager.getAbilityEffectsBonus(rSource, sAbility);
+		local nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, sAbility);
 		if nBonusEffects > 0 then
 			bEffects = true;
 			nAddMod = nAddMod + nBonusStat;
 		end
 		
 		-- HANDLE NEGATIVE LEVELS
-		local nNegLevelMod, nNegLevelCount = EffectsManager.getEffectsBonus(rSource, {"NLVL"}, true);
+		local nNegLevelMod, nNegLevelCount = EffectManager.getEffectsBonus(rSource, {"NLVL"}, true);
 		if nNegLevelCount > 0 then
 			nAddMod = nAddMod - nNegLevelMod;
 			bEffects = true;
@@ -102,9 +87,9 @@ function modRoll(rSource, rTarget, rRoll)
 			local sEffects = "";
 			local sMod = StringManager.convertDiceToString(aAddDice, nAddMod, true);
 			if sMod ~= "" then
-				sEffects = "[EFFECTS " .. sMod .. "]";
+				sEffects = "[" .. Interface.getString("effects_tag") .. " " .. sMod .. "]";
 			else
-				sEffects = "[EFFECTS]";
+				sEffects = "[" .. Interface.getString("effects_tag") .. "]";
 			end
 			table.insert(aAddDesc, sEffects);
 		end
@@ -119,21 +104,21 @@ function modRoll(rSource, rTarget, rRoll)
 	rRoll.nMod = rRoll.nMod + nAddMod;
 end
 
-function onRoll(rSource, rTarget, rRoll, rCustom)
+function onRoll(rSource, rTarget, rRoll)
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 
-	if rCustom and rCustom[1] and rCustom[1].nMod then
+	if rRoll.nTarget then
 		local nTotal = ActionsManager.total(rRoll);
+		local nTargetDC = tonumber(rRoll.nTarget) or 0;
 		
-		rMessage.text = rMessage.text .. " (vs. DC " .. rCustom[1].nMod .. ")";
-		if nTotal >= rCustom[1].nMod then
+		rMessage.text = rMessage.text .. " (vs. DC " .. nTargetDC .. ")";
+		if nTotal >= nTargetDC then
 			rMessage.text = rMessage.text .. " [SUCCESS]";
 		else
 			rMessage.text = rMessage.text .. " [FAILURE]";
 		end
 	end
 	
-	local nTotal = ActionsManager.total(rRoll);
 	Comm.deliverChatMessage(rMessage);
 end
 

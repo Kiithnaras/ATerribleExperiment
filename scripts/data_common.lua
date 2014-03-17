@@ -3,6 +3,12 @@
 -- attribution and copyright information.
 --
 
+launchmsg = "3.5E v3.0.3 ruleset for Fantasy Grounds.\rCopyright 2013 Smiteworks USA, LLC.";
+
+function isPFRPG()
+	return false;
+end
+
 -- Abilities (database names)
 abilities = {
 	"strength",
@@ -42,60 +48,6 @@ save_stol = {
 	["FORT"] = "fortitude",
 	["REF"] = "reflex",
 	["WILL"] = "will"
-};
-
--- Ruleset action types
-actions = {
-	"table",
-	"attack",
-	"dice",
-	"grapple",
-	"fullattack",
-	"damage",
-	"heal",
-	"effect",
-	"spellcast",
-	"cast",
-	"castattack",
-	"castclc",
-	"castsave",
-	"clc",
-	"spellsave",
-	"spdamage",
-	"skill",
-	"init",
-	"save",
-	"ability",
-	"concentration", -- PF SPECIFIC
-	"critconfirm",	-- TRIGGERED ROLLS
-	"misschance",
-	"stabilization"
-};
-
-targetactions = {
-	"attack",
-	"grapple",
-	"fullattack",
-	"damage",
-	"spdamage",
-	"heal",
-	"effect",
-	"spellcast",
-	"clc",
-	"spellsave"
-};
-
-moddropactions = {
-	"attack",
-	"grapple",
-	"fullattack",
-	"damage",
-	"spdamage",
-	"heal",
-	"skill",
-	"init",
-	"save",
-	"ability"
 };
 
 -- Conditions supported in effect conditionals and for token widgets
@@ -421,13 +373,22 @@ naturaldmgtypes = {
 }
 
 -- Skill properties
-skilldata = {
-	["Acrobatics"] = {
-			stat = "dexterity",
-			armorcheckmultiplier = 1
+sensesdata = {
+	["Listen"] = {
+			stat = "wisdom"
 		},
+	["Spot"] = {
+			stat = "wisdom"
+		},
+}
+
+skilldata = {
 	["Appraise"] = {
 			stat = "intelligence"
+		},
+	["Balance"] = {
+			stat = "dexterity",
+			armorcheckmultiplier = 1
 		},
 	["Bluff"] = {
 			stat = "charisma"
@@ -436,9 +397,16 @@ skilldata = {
 			stat = "strength",
 			armorcheckmultiplier = 1
 		},
+	["Concentration"] = {
+			stat = "constitution"
+		},
 	["Craft"] = {
 			sublabeling = true,
 			stat = "intelligence"
+		},
+	["Decipher Script"] = {
+			stat = "intelligence",
+			trainedonly = 1
 		},
 	["Diplomacy"] = {
 			stat = "charisma"
@@ -454,9 +422,8 @@ skilldata = {
 			stat = "dexterity",
 			armorcheckmultiplier = 1
 		},
-	["Fly"] = {
-			stat = "dexterity",
-			armorcheckmultiplier = 2
+	["Forgery"] = {
+			stat = "intelligence"
 		},
 	["Gather Information"] = {
 			stat = "charisma"
@@ -467,6 +434,10 @@ skilldata = {
 		},
 	["Heal"] = {
 			stat = "wisdom"
+		},
+	["Hide"] = {
+			stat = "dexterity",
+			armorcheckmultiplier = 1
 		},
 	["Intimidate"] = {
 			stat = "charisma"
@@ -480,12 +451,16 @@ skilldata = {
 			stat = "intelligence",
 			trainedonly = 1
 		},
-	["Linguistics"] = {
-			stat = "intelligence",
-			trainedonly = 1
+	["Listen"] = {
+			stat = "wisdom"
 		},
-	["Notice"] = {
-			stat = "wisdom",
+	["Move Silently"] = {
+			stat = "dexterity",
+			armorcheckmultiplier = 1
+		},
+	["Open Lock"] = {
+			stat = "dexterity",
+			trainedonly = 1
 		},
 	["Perform"] = {
 			sublabeling = true,
@@ -516,9 +491,8 @@ skilldata = {
 			stat = "intelligence",
 			trainedonly = 1
 		},
-	["Stealth"] = {
-			stat = "dexterity",
-			armorcheckmultiplier = 1
+	["Spot"] = {
+			stat = "wisdom"
 		},
 	["Survival"] = {
 			stat = "wisdom"
@@ -527,129 +501,22 @@ skilldata = {
 			stat = "strength",
 			armorcheckmultiplier = 2
 		},
-	["Use Magic Device"] = {
-			stat = "charisma",
-			trainedonly = 1
-		},
-}
-
-PF_skilldata = {
-	["Acrobatics"] = {
-			stat = "dexterity",
-			armorcheckmultiplier = 1
-		},
-	["Appraise"] = {
-			stat = "intelligence"
-		},
-	["Bluff"] = {
-			stat = "charisma"
-		},
-	["Climb"] = {
-			stat = "strength",
-			armorcheckmultiplier = 1
-		},
-	["Craft"] = {
-			sublabeling = true,
-			stat = "intelligence"
-		},
-	["Concentration"] = {
-			stat = "constitution"
-		},
-	["Diplomacy"] = {
-			stat = "charisma"
-		},
-	["Disable Device"] = {
+	["Tumble"] = {
 			stat = "dexterity",
 			armorcheckmultiplier = 1,
 			trainedonly = 1
 		},
-	["Disguise"] = {
-			stat = "charisma"
-		},
-	["Escape Artist"] = {
-			stat = "dexterity",
-			armorcheckmultiplier = 1
-		},
-	["Fly"] = {
-			stat = "dexterity",
-			armorcheckmultiplier = 2
-		},
-	["Gather Information"] = {
-			stat = "charisma"
-		},
-	["Handle Animal"] = {
-			stat = "charisma",
-			trainedonly = 1
-		},
-	["Heal"] = {
-			stat = "wisdom"
-		},
-	["Intimidate"] = {
-			stat = "charisma"
-		},
-	["Jump"] = {
-			stat = "strength",
-			armorcheckmultiplier = 1
-		},
-	["Knowledge"] = {
-			sublabeling = true,
-			stat = "intelligence",
-			trainedonly = 1
-		},
-	["Linguistics"] = {
-			stat = "intelligence",
-			trainedonly = 1
-		},
-	["Notice"] = {
-			stat = "wisdom"
-		},	
-	["Perform"] = {
-			sublabeling = true,
-			stat = "charisma",
-			trainedonly = 1
-		},
-	["Profession"] = {
-			sublabeling = true,
-			stat = "wisdom",
-			trainedonly = 1
-		},
-	["Ride"] = {
-			stat = "dexterity",
-			armorcheckmultiplier = 1
-		},
-	["Search"] = {
-			stat = "intelligence"
-		},
-	["Sense Motive"] = {
-			stat = "wisdom"
-		},
-	["Sleight of Hand"] = {
-			stat = "dexterity",
-			armorcheckmultiplier = 1
-		},
-	["Spellcraft"] = {
-			stat = "intelligence",
-			trainedonly = 1
-		},
-	["Stealth"] = {
-			stat = "dexterity",
-			armorcheckmultiplier = 1
-		},
-	["Survival"] = {
-			stat = "wisdom"
-		},
-	["Swim"] = {
-			stat = "strength",
-			armorcheckmultiplier = 2
-		},
 	["Use Magic Device"] = {
 			stat = "charisma",
 			trainedonly = 1
+		},
+	["Use Rope"] = {
+			stat = "dexterity"
 		}
 }
 
 -- Coin labels
-cointypes = { "PP", "GP", "SP", "CP" };
+currency = { "PP", "GP", "SP", "CP" };
 
 -- Party sheet drop down list data
 psabilitydata = {
@@ -686,27 +553,5 @@ psskilldata = {
 	"Move Silently",
 	"Search",
 	"Spot",
-	"Survival"
-};
-
-PF_psskilldata = {
-	"Acrobatics",
-	"Bluff",
-	"Climb",
-	"Diplomacy",
-	"Gather Information",
-	"Heal",
-	"Intimidate",
-	"Jump",
-	"Knowledge (Arcana)",
-	"Knowledge (Dungeoneering)",
-	"Knowledge (Local)",
-	"Knowledge (Nature)",
-	"Knowledge (Planes)",
-	"Knowledge (Religion)",
-	"Notice",
-	"Search",
-	"Sense Motive",
-	"Stealth",
 	"Survival"
 };

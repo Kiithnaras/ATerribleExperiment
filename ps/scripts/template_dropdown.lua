@@ -78,9 +78,9 @@ function showList()
 		
 		-- Create the list control
 		ctrlList = window.createControl("dropdownlist", sList);
+		ctrlList.setAnchor("left", sTarget, "left", "absolute", 0);
 		ctrlList.setAnchor("right", sName, "right", "absolute", 0);
-		ctrlList.setAnchor("bottom", sName, "top", "absolute", 0);
-		ctrlList.setAnchoredWidth(w);
+		ctrlList.setAnchor("bottom", sName, "top", "absolute", -5);
 		
 		-- Set the fonts and frames used for normal/selected items
 		local sFont = fonts[1].normal[1] or "";
@@ -113,7 +113,7 @@ function showList()
 		
 		-- Create list scroll bar
 		ctrlScroll = window.createControl("dropdownscrollbar", "ddscroll");
-		ctrlScroll.setAnchor("right", sList, "right");
+		ctrlScroll.setAnchor("left", sList, "right", "absolute", -10);
 		ctrlScroll.setAnchor("top", sList, "top");
 		ctrlScroll.setAnchor("bottom", sList, "bottom");
 		ctrlScroll.setTarget(sList);
@@ -145,9 +145,9 @@ end
 
 function refresh(bActiveParam)
 	if bActive or bActiveParam then
-		setIcon("indicator_dropdown_active");
+		setIcon("dropdown_active");
 	else
-		setIcon("indicator_dropdown");
+		setIcon("dropdown");
 	end
 end
 

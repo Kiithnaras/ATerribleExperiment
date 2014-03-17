@@ -3,51 +3,30 @@
 -- attribution and copyright information.
 --
 
-function onDrop(x, y, dragdata)
-	if User.isHost() and dragdata.isType("shortcut") then
-		local sClass = dragdata.getShortcutData();
+function onListChanged()
+	update();
+end
+
+function update()
+	local bEditMode = (window.enc_iedit.getValue() == 1);
+	window.idelete_header_enc.setVisible(bEditMode);
+	for _,w in ipairs(getWindows()) do
+		w.idelete.setVisible(bEditMode);
+	end
+end
+
+function onDrop(x, y, draginfo)
+	if User.isHost() and draginfo.isType("shortcut") then
+		local sClass = draginfo.getShortcutData();
 		if sClass == "battle" then
-			local nodeSource = dragdata.getDatabaseNode();	
-			addEncounterEntry(nodeSource);
+			PartyManager2.addEncounter(draginfo.getDatabaseNode());
 		end
 		return true;
 	end
 end
 
-function addEncounterEntry(nodeSource)
-	if not nodeSource then
-		return;
-	end
-		
-	local w = createWindow();
-	w.shortcut.setValue("battle", nodeSource.getNodeName());
-	w.name.setValue(DB.getValue(nodeSource, "name", ""));
-	w.level.setValue(DB.getValue(nodeSource, "level", 0));
-	w.xp.setValue(DB.getValue(nodeSource, "exp", 0));
-end
-
 function deleteAll()
 	for k, v in pairs(getWindows()) do
 		v.getDatabaseNode().delete();
-	end
-end
-
-function awardXPtoParty(w)
-	local nXP = 0;
-	if w then
-		if not w.xpawarded.getState() then
-			nXP = w.xp.getValue();
-			w.xpawarded.setState(true);
-		end
-	else
-		for k,v in pairs(getWindows()) do
-			if v.xpawarded.getState() == false then
-				nXP = nXP + v.xp.getValue();
-				v.xpawarded.setState(true);
-			end
-		end
-	end
-	if nXP ~= 0 then
-		window.awardXP(nXP);
 	end
 end

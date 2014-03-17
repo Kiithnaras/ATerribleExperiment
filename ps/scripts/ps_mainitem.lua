@@ -5,59 +5,15 @@
 
 function onInit()
 	onSystemChanged();
-	onXPChanged();
-	onHPChanged();
+	onHealthChanged();
 end
 
 function onSystemChanged()
-	local bPFMode = OptionsManager.isOption("SYSTEM", "pf");
+	local bPFMode = DataCommon.isPFRPG();
 	cmd.setVisible(bPFMode);
 end
 
-function onXPChanged()
-	local nExp = exp.getValue();
-	local nExpNeeded = expneeded.getValue();
-	
-	local sToolText = "";
-	local nPercentNextLevel = 0;
-	if TableManager and TableManager.findTable("Character Advancement") then
-		local nLevel = level.getValue();
-		if nLevel < 1 then
-			nLevel = 1;
-		end
-		
-		local nRelXPTotal = 0;
-		local nRelXPNextLevel = 0;
-		local lookupCurrLevelXPTotal = TableManager.lookup("Character Advancement", nLevel, "Total XP");
-		local lookupNexttLevelXPTotal = TableManager.lookup("Character Advancement", nLevel + 1, "Total XP");	
-		if lookupCurrLevelXPTotal and lookupNexttLevelXPTotal then
-			lookupCurrLevelXPTotal = string.gsub(lookupCurrLevelXPTotal, ",", "");
-			lookupNexttLevelXPTotal = string.gsub(lookupNexttLevelXPTotal, ",", "");
-			
-			nRelXPTotal = nExp - tonumber(lookupCurrLevelXPTotal);
-			nRelXPNextLevel = tonumber(lookupNexttLevelXPTotal) - tonumber(lookupCurrLevelXPTotal);
-		end
-
-		sToolText = "Relative XP: ";
-		nExp = nRelXPTotal;
-		nExpNeeded = nRelXPNextLevel;
-	else
-		sToolText = "XP: ";
-	end
-	
-	xpbar.setMax(nExpNeeded);
-	xpbar.setValue(nExp);
-	sToolText = sToolText .. tostring(nExp) .. " / " .. tostring(nExpNeeded);
-	xpbar.updateText(sToolText);
-	
-	if (nExpNeeded > 0) and ((nExp / nExpNeeded) >= .75) then
-		xpbar.updateBackColor("990000");
-	else
-		xpbar.updateBackColor("0F0B0B");
-	end
-end
-
-function onHPChanged()
+function onHealthChanged()
 	local nHP = math.max(hptotal.getValue(), 0);
 	local nTempHP = math.max(hptemp.getValue(), 0);
 

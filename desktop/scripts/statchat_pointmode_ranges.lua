@@ -5,26 +5,14 @@
 
 rangedata = {};
 
-function hasNonzeroCosts()
-	for to, cost in pairs(rangedata) do
-		if cost ~= 0 then
-			return true;
-		end
-	end
-	
-	return false;
-end
-
-function onListRearranged(listchanged)
-	if listchanged then
-		update();
-	end
+function onListChanged()
+	update();
 end
 
 function update()
 	applySort(true);
 	
-	for k,w in ipairs(getWindows()) do
+	for _,w in ipairs(getWindows()) do
 		local prev = getPrevWindow(w);
 		
 		if prev then
@@ -43,7 +31,7 @@ function update()
 	end
 
 	rangedata = {};
-	for k,w in ipairs(getWindows()) do
+	for _,w in ipairs(getWindows()) do
 		rangedata[w.to.getValue()] = w.cost.getValue();
 	end
 	
@@ -84,7 +72,7 @@ function load()
 		
 		if loadtable then
 			for to, cost in pairs(loadtable) do
-				local wnd = NodeManager.createWindow(self);
+				local wnd = createWindow();
 				if wnd then
 					wnd.to.setValue(to)
 					wnd.cost.setValue(cost);
@@ -109,7 +97,7 @@ function onInit()
 	load();
 	
 	if not getNextWindow(nil) then
-		NodeManager.createWindow(self);
+		createWindow();
 	end
 	
 	update();

@@ -5,23 +5,23 @@
 
 function onInit()
 	if User.isHost() then
-		registerMenuItem("Initiative", "turn", 7);
-		registerMenuItem("Roll All Initiatives", "shuffle", 7, 8);
-		registerMenuItem("Roll NPC Initiatives", "mask", 7, 7);
-		registerMenuItem("Roll PC Initiatives", "portrait", 7, 6);
-		registerMenuItem("Clear All Initiatives", "pointer_circle", 7, 4);
+		registerMenuItem(Interface.getString("menu_init"), "turn", 7);
+		registerMenuItem(Interface.getString("menu_initall"), "shuffle", 7, 8);
+		registerMenuItem(Interface.getString("menu_initnpc"), "mask", 7, 7);
+		registerMenuItem(Interface.getString("menu_initpc"), "portrait", 7, 6);
+		registerMenuItem(Interface.getString("menu_initclear"), "pointer_circle", 7, 4);
 
-		registerMenuItem("Rest", "lockvisibilityon", 8);
-		registerMenuItem("Short Rest", "pointer_cone", 8, 8);
-		registerMenuItem("Overnight Rest", "pointer_circle", 8, 6);
+		registerMenuItem(Interface.getString("menu_rest"), "lockvisibilityon", 8);
+		registerMenuItem(Interface.getString("menu_restshort"), "pointer_cone", 8, 8);
+		registerMenuItem(Interface.getString("menu_restovernight"), "pointer_circle", 8, 6);
 
-		registerMenuItem("Delete From Tracker", "delete", 3);
-		registerMenuItem("Delete All Non-Friendly", "delete", 3, 1);
-		registerMenuItem("Delete Only Foes", "delete", 3, 3);
+		registerMenuItem(Interface.getString("ct_menu_itemdelete"), "delete", 3);
+		registerMenuItem(Interface.getString("ct_menu_itemdeletenonfriendly"), "delete", 3, 1);
+		registerMenuItem(Interface.getString("ct_menu_itemdeletefoe"), "delete", 3, 3);
 
-		registerMenuItem("Effects", "hand", 5);
-		registerMenuItem("Clear All Effects", "pointer_circle", 5, 7);
-		registerMenuItem("Clear Expiring Effects", "pointer_cone", 5, 5);
+		registerMenuItem(Interface.getString("ct_menu_effectdelete"), "hand", 5);
+		registerMenuItem(Interface.getString("ct_menu_effectdeleteall"), "pointer_circle", 5, 7);
+		registerMenuItem(Interface.getString("ct_menu_effectdeleteexpiring"), "pointer_cone", 5, 5);
 	end
 end
 
@@ -40,29 +40,29 @@ function onMenuSelection(selection, subselection, subsubselection)
 	if User.isHost() then
 		if selection == 7 then
 			if subselection == 4 then
-				CTManager.resetInit();
+				CombatManager.resetInit();
 			elseif subselection == 8 then
-				CTManager.rollInit();
+				CombatManager2.rollInit();
 			elseif subselection == 7 then
-				CTManager.rollInit("npc");
+				CombatManager2.rollInit("npc");
 			elseif subselection == 6 then
-				CTManager.rollInit("pc");
+				CombatManager2.rollInit("pc");
 			end
 		end
 		if selection == 8 then
 			if subselection == 8 then
-				ChatManager.Message("Party taking short rest", true);
-				CTManager.rest(true);
+				ChatManager.Message(Interface.getString("ct_message_rest"), true);
+				CombatManager2.rest(true);
 			elseif subselection == 6 then
-				ChatManager.Message("Party taking overnight rest", true);
-				CTManager.rest();
+				ChatManager.Message(Interface.getString("ct_message_restovernight"), true);
+				CombatManager2.rest();
 			end
 		end
 		if selection == 5 then
 			if subselection == 7 then
-				CTManager.resetEffects();
+				CombatManager2.resetEffects();
 			elseif subselection == 5 then
-				CTManager.clearExpiringEffects();
+				CombatManager2.clearExpiringEffects();
 			end
 		end
 		if selection == 3 then

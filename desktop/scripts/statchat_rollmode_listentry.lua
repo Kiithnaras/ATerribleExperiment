@@ -4,7 +4,6 @@
 --
 
 dieslots = {};
-isrolled = false;
 
 function setDice(n)
 	if n < 0 then
@@ -31,41 +30,35 @@ function onInit()
 end
 
 function isRolled()
-	return isrolled;
+	return (rolled.getValue() == 1);
 end
 
-function setRolled(state)
-	isrolled = state;
-	rolled.setState(isrolled);
-	
-	windowlist.applySort();
-end
+function onRolledChanged()
+	if rolled.getValue() == 0 then
+		for _,v in ipairs(dieslots) do
+			v.setValue(0);
+		end
 
-function reset()
-	for k, v in ipairs(dieslots) do
-		v.setValue(0);
+		updateTotal();
 	end
-
-	setRolled(false);
-	updateTotal();
 end
 
-function applyRoll(dielist)
-	local results = {};
-
-	-- Insert results and sort
-	for k, v in ipairs(dielist) do
-		table.insert(results, v.result);
+function applyRoll(aDice)
+	-- Sort results
+	local aSorted = {};
+	for _,v in ipairs(aDice) do
+		table.insert(aSorted, v.result);
 	end
-	table.sort(results, function(a,b) return a > b end);
+	table.sort(aSorted, function(a,b) return a > b end);
 
-	for k, v in ipairs(results) do
+	-- Insert into dieslots
+	for k,v in ipairs(aSorted) do
 		if k <= #dieslots then
 			dieslots[k].setValue(v);
 		end
 	end
 	
-	setRolled(true);
+	rolled.setValue(1);
 	
 	updateTotal();
 end

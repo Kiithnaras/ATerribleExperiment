@@ -17,32 +17,9 @@
 --
 
 function onInit()
-	ActionsManager.registerActionIcon("effect", "action_effect");
-	ActionsManager.registerTargetingHandler("effect", onTargeting);
-	ActionsManager.registerModHandler("effect", modEffect);
-	ActionsManager.registerResultHandler("effect", onEffect);
-	
 	Interface.onHotkeyDrop = onHotkeyDrop;
-end
 
-function onTargeting(rSource, rRolls)
-	if not rRolls then
-		return { {} };
-	end
-	
-	return { getEffectTargets(rSource, rRolls[1]) };
-end
-
-function getEffectTargets(rSource, rRoll)
-	if not rRoll then
-		return {};
-	end
-	
-	if string.match(rRoll.sDesc, "%[SELF%]") then
-		return { rSource };
-	end
-	
-	return TargetingManager.getFullTargets(rSource);
+	ActionsManager.registerResultHandler("effect", onEffect);
 end
 
 function onHotkeyDrop(draginfo)
@@ -58,47 +35,47 @@ end
 function getRoll(draginfo, rActor, rAction)
 	local rRoll = encodeEffect(rAction);
 	if rRoll.sDesc == "" then
-		return nil, nil;
+		return nil;
 	end
 	
-	local rCustom = nil;
 	if draginfo and Input.isShiftPressed() then
 		local aTargetNodes = {};
-		local aTargets = getEffectTargets(rActor, rRoll);
+		local aTargets;
+		if rRoll.bSelfTarget then
+			aTargets = { rActor };
+		else
+			aTargets = TargetingManager.getFullTargets(rActor);
+		end
 		for _,v in ipairs(aTargets) do
-			if v.sCTNode ~= "" then
-				table.insert(aTargetNodes, v.sCTNode);
+			local sCTNode = ActorManager.getCTNodeName(v);
+			if sCTNode ~= "" then
+				table.insert(aTargetNodes, sCTNode);
 			end
 		end
 		
 		if #aTargetNodes > 0 then
-			rCustom = { { sDesc = table.concat(aTargetNodes, "|") } };
+			rRoll.aTargets = table.concat(aTargetNodes, "|");
 		end
 	end
 
-	return rRoll, rCustom;
+	return rRoll;
 end
 
 function performRoll(draginfo, rActor, rAction)
-	local rRoll, rCustom = getRoll(draginfo, rActor, rAction);
+	local rRoll = getRoll(draginfo, rActor, rAction);
 	if not rRoll then
 		return false;
 	end
 	
-	ActionsManager.performSingleRollAction(draginfo, rActor, "effect", rRoll, rCustom);
+	ActionsManager.performAction(draginfo, rActor, rRoll);
 	return true;
 end
 
-function modEffect(rSource, rTarget, rRoll)
-	-- Tell action manager to skip modifier stack
-	return true;
-end
-
-function onEffect(rSource, rTarget, rRoll, rCustom)
+function onEffect(rSource, rTarget, rRoll)
 	-- Decode effect from roll
 	local rEffect = decodeEffect(rRoll);
 	if not rEffect then
-		ChatManager.SystemMessage("[ERROR] Unable to decode effect details.");
+		ChatManager.SystemMessage(Interface.getString("ct_error_effectdecodefail"));
 		return;
 	end
 	
@@ -112,58 +89,74 @@ function onEffect(rSource, rTarget, rRoll, rCustom)
 
 		-- Report effect to chat window
 		local rMessage = ActionsManager.createActionMessage(nil, rRoll);
+		rMessage.icon = "roll_effect";
 		Comm.deliverChatMessage(rMessage);
 		
 		return;
 	end
 	
 	-- If target not in combat tracker, then we're done
-	if not rTarget.nodeCT then
-		ChatManager.SystemMessage("[ERROR] Effect dropped on target which is not listed in the combat tracker.");
+	local sTargetCT = ActorManager.getCTNodeName(rTarget);
+	if sTargetCT == "" then
+		ChatManager.SystemMessage(Interface.getString("ct_error_effectdroptargetnotinct"));
 		return;
 	end
 
 	-- If effect is not a CT effect drag, then figure out source and init
-	if rEffect.nInit == 0 then
-		-- If effect originated from PC, then use PC as source
-		if rEffect.sSource == "" then
-			if rSource and rSource.sType == "pc" and rSource.nodeCT then
-				rEffect.sSource = rSource.sCTNode;
-				rEffect.nInit = DB.getValue(rSource.nodeCT, "initresult", 0);
-			end
+	if rEffect.nInit == 0 and rEffect.sSource == "" then
+		local sSourceCT = "";
+		
+		if ActorManager.getType(rSource) == "pc" then
+			sSourceCT = ActorManager.getCTNodeName(rSource);
 		end
-	
-		-- If no source defined, then use active identity (client) or active CT entry (host).
-		if rEffect.sSource == "" then
+		
+		if sSourceCT == "" then
 			local nodeTempCT = nil;
 			if User.isHost() then
-				nodeTempCT = CTManager.getActiveCT();
+				nodeTempCT = CombatManager.getActiveCT();
 			else
-				nodeTempCT = CTManager.getCTFromNode("charsheet." .. User.getCurrentIdentity());
+				nodeTempCT = CombatManager.getCTFromNode("charsheet." .. User.getCurrentIdentity());
 			end
 			if nodeTempCT then
-				rEffect.sSource = nodeTempCT.getNodeName();
-				rEffect.nInit = DB.getValue(nodeTempCT, "initresult", 0);
+				sSourceCT = nodeTempCT.getNodeName();
 			end
+		end
+		
+		if sSourceCT ~= "" then
+			rEffect.sSource = sSourceCT;
+			rEffect.nInit = DB.getValue(sSourceCT .. ".initresult", 0);
 		end
 	end
 	
 	-- If source is same as target, then don't specify a source
-	if rEffect.sSource == rTarget.sCTNode then
+	if rEffect.sSource == sTargetCT then
 		rEffect.sSource = "";
+	end
+	
+	-- If target is NPC and source is not PC, then effect should be GM only
+	local sTargetType = ActorManager.getType(rTarget);
+	if sTargetType == "npc" then
+		if rSource then
+			local sSourceType = ActorManager.getType(rSource);
+			if sSourceType ~= "pc" then
+				rEffect.nGMOnly = 1;
+			end
+		else
+			rEffect.nGMOnly = 1;
+		end
 	end
 	
 	-- Resolve
 	-- If shift-dragging, then apply to the source actor targets, then target the effect to the drop target
-	if rCustom and rCustom[1] and rCustom[1].sDesc then
-		local aTargets = StringManager.split(rCustom[1].sDesc, "|");
+	if rRoll.aTargets then
+		local aTargets = StringManager.split(rRoll.aTargets, "|");
 		for _,v in ipairs(aTargets) do
-			EffectsManager.notifyApply(rEffect, v, rTarget.sCTNode);
+			EffectManager.notifyApply(rEffect, v, sTargetCT);
 		end
 	
 	-- Otherwise, just apply effect to target normally
 	else
-		EffectsManager.notifyApply(rEffect, rTarget.sCTNode);
+		EffectManager.notifyApply(rEffect, sTargetCT);
 	end
 end
 
@@ -180,7 +173,6 @@ function decodeEffectFromDrag(draginfo)
 	local bEffectDrag = false;
 	if sDragType == "effect" then
 		bEffectDrag = true;
-		draginfo.setSlot(2);
 		sDragDesc = draginfo.getStringData();
 	elseif sDragType == "number" then
 		if string.match(sDragDesc, "%[EFFECT") then
@@ -190,7 +182,7 @@ function decodeEffectFromDrag(draginfo)
 	end
 	
 	if bEffectDrag then
-		rEffect = decodeEffectFromText(sDragDesc);
+		rEffect = decodeEffectFromText(sDragDesc, draginfo.getSecret());
 		if rEffect then
 			rEffect.nDuration = draginfo.getNumberData();
 		end
@@ -201,15 +193,22 @@ end
 
 function encodeEffect(rAction)
 	local rRoll = {};
+	rRoll.sType = "effect";
 	rRoll.sDesc = encodeEffectAsText(rAction);
 	rRoll.aDice = rAction.aDice or {};
 	rRoll.nMod = rAction.nDuration or 0;
+	if rAction.nGMOnly then
+		rRoll.bSecret = (rAction.nGMOnly ~= 0);
+	end
+	if rAction.sTargeting and rAction.sTargeting == "self" then
+		rRoll.bSelfTarget = true;
+	end
 	
 	return rRoll;
 end
 
 function decodeEffect(rRoll)
-	local rEffect = decodeEffectFromText(rRoll.sDesc);
+	local rEffect = decodeEffectFromText(rRoll.sDesc, rRoll.bSecret);
 	if rEffect then
 		rEffect.aDice = rRoll.aDice;
 		rEffect.nMod = rRoll.nMod;
@@ -223,10 +222,6 @@ function encodeEffectAsText(rEffect)
 	local aMessage = {};
 	
 	if rEffect then
-		if rEffect.nGMOnly == 1 then
-			table.insert(aMessage, "[GM]");
-		end
-
 		table.insert(aMessage, "[EFFECT] " .. rEffect.sName);
 
 		if rEffect.nInit and rEffect.nInit ~= 0 then
@@ -264,14 +259,14 @@ function encodeEffectAsText(rEffect)
 	return table.concat(aMessage, " ");
 end
 
-function decodeEffectFromText(sEffect)
+function decodeEffectFromText(sEffect, bSecret)
 	local rEffect = nil;
 
 	local sEffectName = string.match(sEffect, "%[EFFECT%] ([^[]+)");
 	if sEffectName then
 		rEffect = {};
 		
-		if string.match(sEffect, "%[GM%]") then
+		if bSecret then
 			rEffect.nGMOnly = 1;
 		else
 			rEffect.nGMOnly = 0;

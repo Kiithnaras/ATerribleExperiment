@@ -4,34 +4,39 @@
 --
 
 function onInit()
-	OptionsManager.registerCallback("SYSTEM", onSystemChanged);
+	OptionsManager.registerCallback("REVL", update);
+
+	if not User.isHost() then
+		list.setAnchor("bottom", "sheetframe", "bottom", "absolute", -20);
+	end
+
 	onSystemChanged();
 end
 
 function onClose()
-	OptionsManager.unregisterCallback("SYSTEM", onSystemChanged);
+	OptionsManager.unregisterCallback("REVL", update);
+end
+
+function update()
+	hiderollresults.setVisible(OptionsManager.isOption("REVL", "on"));
 end
 
 function onSystemChanged()
-	local bPFMode = OptionsManager.isOption("SYSTEM", "pf");
+	local bPFMode = DataCommon.isPFRPG();
 	
 	spotlabel.setVisible(not bPFMode);
 	listenlabel.setVisible(not bPFMode);
-	searchlabel.setVisible(bPFMode or not bPFMode);
-	noticelabel.setVisible(bPFMode);
+	searchlabel.setVisible(not bPFMode);
+	perceptionlabel.setVisible(bPFMode);
 	smlabel.setVisible(bPFMode);
 	
 	gatherinfolabel.setVisible(not bPFMode);
 	
 	acrobaticslabel.setVisible(bPFMode);
 	heallabel.setVisible(bPFMode);
-	jumplabel.setVisible(bPFMode or not bPFMode);
+	jumplabel.setVisible(not bPFMode);
 	
 	hidelabel.setVisible(not bPFMode);
 	movesilentlabel.setVisible(not bPFMode);
 	stealthlabel.setVisible(bPFMode);
-	
-	for _,w in pairs(partylist.getWindows()) do
-		w.onSystemChanged(bPFMode);
-	end
 end

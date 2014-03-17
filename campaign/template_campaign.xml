@@ -6,263 +6,126 @@
 -->
 
 <root>
-	<template name="banner_campaign">
+	<template name="frame_record_lower">
 		<genericcontrol>
-			<bounds>16,21,30,177</bounds>
+			<bounds>9,-50,-11,-15</bounds>
+			<frame name="groupbox" />
+			<disabled />
 		</genericcontrol>
 	</template>
-
-	<template name="list_campaign">
-		<windowlist>
-			<bounds>50,25,-30,-34</bounds>
-			<footer>footer_narrow</footer>
-			<allowcreate />
-			<allowdelete />
-			<useallmodules />
-			<sortby><control>name</control></sortby>
-			<filter><control>filter</control></filter>
-			<filteron><control>name</control></filteron>
-		</windowlist>
-	</template>
-	<template name="list_campaign_tabbed">
-		<windowlist>
-			<bounds>50,25,-45,-34</bounds>
-			<footer>footer_narrow</footer>
-			<allowcreate />
-			<allowdelete />
-			<useallmodules />
-			<sortby><control>name</control></sortby>
-			<filter><control>filter</control></filter>
-			<filteron><control>name</control></filteron>
-		</windowlist>
-	</template>
-	<template name="list_campaign_notes">
-		<windowlist>
-			<bounds>50,25,-30,-34</bounds>
-			<footer>footer_narrow</footer>
-			<allowcreate />
-			<allowdelete />
-			<sortby><control>name</control></sortby>
-		</windowlist>
-	</template>
-	
-	<template name="scrollbar_campaign">
-		<scrollbar>
-			<bounds>-35,40,20,-70</bounds>
-		</scrollbar>
-	</template>
-	<template name="scrollbar_campaign_tabbed">
-		<scrollbar>
-			<bounds>-50,40,20,-70</bounds>
-		</scrollbar>
-	</template>
-
-	<template name="button_new">
-		<buttoncontrol>
-			<bounds mergerule="replace">-55,-57,34,25</bounds>
-			<icon>
-				<normal>button_newwindow</normal>
-				<pressed>button_newwindowdown</pressed>
-			</icon>
-			<script file="campaign/scripts/campaign_button_new.lua" />
-		</buttoncontrol>
-	</template>
-
-	<template name="categories">
-		<categoryselectioncontrol>
-			<anchored>
-				<top>
-					<anchor>bottom</anchor>
-					<offset>-39</offset>
-				</top>
-				<left>
-					<offset>24</offset>
-				</left>
-				<bottom>
-					<offset>-1</offset>
-				</bottom>
+	<template name="radio_record_npctype">
+		<buttongroup_radio>
+			<anchored to="controlframe" height="20">
+				<top offset="8" />
+				<left anchor="center" offset="-150" />
 			</anchored>
-			<gmvisibleonly />
-		</categoryselectioncontrol>
-	</template>
-
-	<template name="filter_campaign">
-		<filter>
-			<bounds>70,-70,-60,20</bounds>
-		</filter>
-	</template>
-	<template name="filtertrigger_campaign">
-		<button_filter>
-			<bounds>35,-85,21,41</bounds>
-		</button_filter>
-	</template>
-
-	<template name="icon_access">
-		<genericcontrol>
-			<bounds>-16,3,14,14</bounds>
-			<invisible />
+			<parameters>
+				<optionwidth>100</optionwidth>
+				<labelsres>npc_label_typecreature|npc_label_typetrap|npc_label_typevehicle</labelsres>
+				<values>Creature|Trap|Vehicle</values>
+			</parameters>
+			<gmeditonly />
 			<script>
-				function onClickDown(button, x, y)
+				function onValueChanged()
+					window.TypeChanged();
+				end
+			</script>
+		</buttongroup_radio>
+	</template>
+
+	<template name="number_npc_init">
+		<number_column>
+			<displaysign />
+			<script>
+				function action(draginfo)
+					local rActor = ActorManager.getActor("npc", window.getDatabaseNode());
+					ActionInit.performRoll(draginfo, rActor);
+
 					return true;
 				end
 				
-				function onClickRelease(button, x, y)
-					window.unshare();
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+
+				function onDoubleClick(x,y)
+					return action();
 				end
 			</script>
-		</genericcontrol>
+		</number_column>
 	</template>
-	<template name="icon_modified">
-		<genericcontrol>
-			<anchored>
-				<to>access</to>
-				<position>left</position>
-				<offset>2,2</offset>
-				<size>
-					<width>12</width>
-				</size>
-			</anchored>
-			<invisible />
-		</genericcontrol>
+	<template name="number_npc_save">
+		<basicnumber>
+			<displaysign />
+			<nodrop />
+			<script>
+				function action(draginfo)
+					local rActor = ActorManager.getActor("npc", window.getDatabaseNode());
+					ActionSpell.performSaveRoll(draginfo, rActor, self.target[1]);
+					
+					return true;
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+					
+				function onDoubleClick(x, y)
+					return action();
+				end
+			</script>
+		</basicnumber>
 	</template>
-
-	<template name="string_campaignrecordname">
-		<string_linked>
-			<anchored>
-				<top><offset>1</offset></top>
-				<left mergerule="replace">
-					<parent>open</parent>
-					<anchor>right</anchor>
-					<offset>5</offset>
-				</left>
-				<right mergerule="replace">
-					<parent>modified</parent>
-					<anchor>left</anchor>
-					<offset>-5</offset>
-				</right>
-				<size>
-					<height>20</height>
-				</size>
-			</anchored>
-			<selectioncolor>#90ffffff</selectioncolor>
-			<font>sheettext</font>
-			<linktarget>open</linktarget>
-		</string_linked>
-	</template>
-
-	<template name="link_campaign">
-		<link_control>
-			<bounds>13,8,20,20</bounds>
-		</link_control>
-	</template>
-	<template name="link_campaign2">
-		<link_control>
-			<bounds>18,28,20,20</bounds>
-		</link_control>
-	</template>
-	<template name="link_campaign3">
-		<link_control>
-			<bounds>43,8,20,20</bounds>
-		</link_control>
+	<template name="number_npc_ability">
+		<basicnumber>
+			<default>10</default>
+			<hideonvalue>0</hideonvalue>
+			<nodrop />
+			<script>
+				function action(draginfo)
+					local rActor = ActorManager.getActor("npc", window.getDatabaseNode());
+					ActionAbility.performRoll(draginfo, rActor, self.target[1]);
+					
+					return true;
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+					
+				function onDoubleClick(x, y)
+					return action();
+				end
+			</script>
+		</basicnumber>
 	</template>
 
-	<template name="string_campaign_details_name">
-		<stringfield>
-			<bounds>45,10,-20,20</bounds>
-			<nodrag />
-		</stringfield>
-	</template>
-	<template name="string_campaign_encounter_name">
-		<stringfield>
-			<bounds>50,30,-30,20</bounds>
-			<font>sheettext</font>
-			<nodrag />
-		</stringfield>
-	</template>
-	<template name="string_campaign_item_name">
-		<stringfield>
-			<bounds>50,30,-30,20</bounds>
-			<font>sheettext</font>
-			<nodrag />
-		</stringfield>
-	</template>
-	<template name="string_campaign_parcel_name">
-		<stringfield>
-			<bounds>50,30,-30,20</bounds>
-			<font>sheettext</font>
-			<nodrag />
-		</stringfield>
-	</template>
-	<template name="string_campaign_table_name">
-		<stringfield>
-			<bounds>50,30,-30,20</bounds>
-			<font>sheettext</font>
-			<nodrag />
-		</stringfield>
+	<template name="cycler_ability">
+		<button_stringcycler>
+			<frame mergerule="replace" name="fielddark" offset="7,5,7,5" />
+			<stateframe mergerule="replace">
+				<hover name="fieldfocus" offset="7,5,7,5" />
+			</stateframe>
+			<parameters>
+				<defaultlabelres mergerule="replace">base</defaultlabelres>
+				<labelsres mergerule="replace">str|dex|con|int|wis|cha</labelsres>
+				<values mergerule="replace">strength|dexterity|constitution|intelligence|wisdom|charisma</values>
+			</parameters>
+		</button_stringcycler>
 	</template>
 
-	<template name="scrollbar_details">
-		<scrollbar>
-			<anchored>
-				<to>contentframe</to>
-				<top><offset>5</offset></top>
-				<bottom><offset>-5</offset></bottom>
-				<left>
-					<anchor>right</anchor>
-					<offset>-5</offset>
-				</left>
-				<size>
-					<width>20</width>
-				</size>
-			</anchored>
-		</scrollbar>
-	</template>
-	<template name="subwindow_details">
-		<subwindow>
-			<anchored>
-				<to>contentframe</to>
-				<top />
-				<left />
-				<right />
-				<bottom />
-			</anchored>
-		</subwindow>
-	</template>
-	<template name="ft_campaigndesc">
-		<formattedtextfield>
-			<font>
-				<normal>reference-r</normal>
-				<bold>reference-b</bold>
-				<italic>reference-i</italic>
-				<bolditalic>reference-bi</bolditalic>
-				<title>reference-b-large</title>
-			</font>
-			<linkicon>
-				<link>button_openwindow</link>
-				<emptylink>button_emptytarget</emptylink>
-			</linkicon>
-			<selectioncolor>#FFD296</selectioncolor>
-			<footer>footer_narrow</footer>
-			<empty>Click to enter description</empty>
-		</formattedtextfield>
-	</template>
-
-	<template name="list_viewers">
-		<genericcontrol>
-			<anchored>
-				<left>
-					<anchor>left</anchor>
-					<offset>21</offset>
-				</left>
-				<bottom>
-					<anchor>bottom</anchor>
-					<offset>-27</offset>
-				</bottom>
-			</anchored>
-			<invalididentityicon>miniportrait_base</invalididentityicon>
-			<portraitset>miniportrait</portraitset>
-			<portraitspacing>21</portraitspacing>
-			<script file="common/scripts/list_viewers.lua" />
-		</genericcontrol>
+	<template name="button_toggledetail">
+		<buttoncontrol>
+			<anchored width="20" height="20" />
+			<state icon="details" />
+			<state icon="details_down" />
+			<script>
+				function onValueChanged()
+					if window.toggleDetail then
+						window.toggleDetail();
+					end
+				end
+			</script>
+		</buttoncontrol>
 	</template>
 </root>

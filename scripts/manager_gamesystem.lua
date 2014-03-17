@@ -3,44 +3,84 @@
 -- attribution and copyright information.
 --
 
-function getSkill(sLabel)
-	if not sLabel then
-		return nil;
-	end
-	
-	if OptionsManager.isOption("SYSTEM", "pf") then
-		return DataCommon.PF_skilldata[sLabel];
-	end
+-- Ruleset action types
+actions = {
+	["dice"] = { bUseModStack = true },
+	["table"] = { },
+	["effect"] = { sIcon = "action_effect", sTargeting = "all" },
+	["attack"] = { sIcon = "action_attack", sTargeting = "each", bUseModStack = true },
+	["grapple"] = { sIcon = "action_attack", sTargeting = "each", bUseModStack = true },
+	["damage"] = { sIcon = "action_damage", sTargeting = "each", bUseModStack = true },
+	["heal"] = { sIcon = "action_heal", sTargeting = "all", bUseModStack = true },
+	["cast"] = { sTargeting = "each" },
+	["castclc"] = { sTargeting = "each" },
+	["castsave"] = { sTargeting = "each" },
+	["clc"] = { sTargeting = "each", bUseModStack = true },
+	["spellsave"] = { sTargeting = "each" },
+	["spdamage"] = { sIcon = "action_damage", sTargeting = "all", bUseModStack = true },
+	["skill"] = { bUseModStack = true },
+	["init"] = { bUseModStack = true },
+	["save"] = { bUseModStack = true },
+	["ability"] = { bUseModStack = true },
+	-- PF SPECIFIC
+	["concentration"] = { bUseModStack = true },
+	-- TRIGGERED
+	["critconfirm"] = { },
+	["misschance"] = { },
+	["stabilization"] = { },
+};
 
-	return DataCommon.skilldata[sLabel];
+targetactions = {
+	"attack",
+	"grapple",
+	"damage",
+	"spdamage",
+	"heal",
+	"effect",
+	"cast",
+	"clc",
+	"spellsave"
+};
+
+currencies = { "PP", "GP", "SP", "CP" };
+
+function getCharSelectDetailHost(nodeChar)
+	local sValue = "";
+	local nLevel = DB.getValue(nodeChar, "level", 0);
+	if nLevel > 0 then
+		sValue = "Level " .. nLevel;
+	end
+	return sValue;
 end
 
-function getSkillList()
-	if OptionsManager.isOption("SYSTEM", "pf") then
-		return DataCommon.PF_skilldata;
-	end
-
-	return DataCommon.skilldata;
+function requestCharSelectDetailClient()
+	return "name,#level";
 end
 
-function getPSSkillList()
-	if OptionsManager.isOption("SYSTEM", "pf") then
-		return DataCommon.PF_psskilldata;
-	end
+function receiveCharSelectDetailClient(vDetails)
+	return vDetails[1], "Level " .. vDetails[2];
+end
 
-	return DataCommon.psskilldata;
+function getCharSelectDetailLocal(nodeLocal)
+	local vDetails = {};
+	table.insert(vDetails, DB.getValue(nodeLocal, "name", ""));
+	table.insert(vDetails, DB.getValue(nodeLocal, "level", 0));
+	return receiveCharSelectDetailClient(vDetails);
+end
+
+function getDistanceUnitsPerGrid()
+	return 5;
 end
 
 function getDeathThreshold(rActor)
 	local nDying = 10;
 
-	if OptionsManager.isOption("SYSTEM", "pf") then
-		local nStat = ActorManager.getAbilityScore(rActor, "constitution");
-		local nStatDmg = ActorManager.getAbilityDamage(rActor, "constitution");
+	if DataCommon.isPFRPG() then
+		local nStat = ActorManager2.getAbilityScore(rActor, "constitution");
 		if nStat < 0 then
 			nDying = 10;
 		else
-			nDying = nStat - nStatDmg;
+			nDying = nStat - ActorManager2.getAbilityDamage(rActor, "constitution");
 			if nDying < 1 then
 				nDying = 1;
 			end
@@ -53,19 +93,21 @@ end
 function getStabilizationRoll(rActor)
 	local rRoll = { sType = "stabilization", sDesc = "[STABILIZATION]" };
 	
-	if OptionsManager.isOption("SYSTEM", "pf") then
+	if DataCommon.isPFRPG() then
 		rRoll.aDice = { "d20" };
-		rRoll.nMod = ActorManager.getAbilityBonus(rActor, "constitution");
+		rRoll.nMod = ActorManager2.getAbilityBonus(rActor, "constitution");
 		
+		local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
 		local nHP = 0;
 		local nWounds = 0;
-		if rActor.sType == "ct" then
-			nHP = DB.getValue(rActor.nodeCT, "hp", 0);
-			nWounds = DB.getValue(rActor.nodeCT, "wounds", 0);
-		elseif rActor.sType == "pc" then
-			nHP = DB.getValue(rActor.nodeCreature, "hp.total", 0);
-			nWounds = DB.getValue(rActor.nodeCreature, "hp.wounds", 0);
+		if sType == "pc" then
+			nHP = DB.getValue(nodeActor, "hp.total", 0);
+			nWounds = DB.getValue(nodeActor, "hp.wounds", 0);
+		else
+			nHP = DB.getValue(nodeActor, "hp", 0);
+			nWounds = DB.getValue(nodeActor, "wounds", 0);
 		end
+			
 		if nHP > 0 and nWounds > nHP then
 			rRoll.sDesc = string.format("%s [at %+d]", rRoll.sDesc, (nHP - nWounds));
 			rRoll.nMod = rRoll.nMod + (nHP - nWounds);
@@ -80,7 +122,7 @@ function getStabilizationRoll(rActor)
 end
 
 function modStabilization(rSource, rTarget, rRoll)
-	if OptionsManager.isOption("SYSTEM", "pf") then
+	if DataCommon.isPFRPG() then
 		ActionAbility.modRoll(rSource, rTarget, rRoll);
 	end
 end
@@ -90,7 +132,7 @@ function getStabilizationResult(rRoll)
 	
 	local nTotal = ActionsManager.total(rRoll);
 
-	if OptionsManager.isOption("SYSTEM", "pf") then
+	if DataCommon.isPFRPG() then
 		local nFirstDie = 0;
 		if #(rRoll.aDice) > 0 then
 			nFirstDie = rRoll.aDice[1].result or 0;
@@ -109,7 +151,7 @@ function getStabilizationResult(rRoll)
 end
 
 function performConcentrationCheck(draginfo, rActor, nodeSpellClass)
-	if OptionsManager.isOption("SYSTEM", "Blob") then
+	if DataCommon.isPFRPG() then
 		local rRoll = { sType = "concentration", sDesc = "[CONCENTRATION]", aDice = { "d20" } };
 	
 		local sAbility = DB.getValue(nodeSpellClass, "dc.ability", "");
@@ -119,7 +161,7 @@ function performConcentrationCheck(draginfo, rActor, nodeSpellClass)
 		end
 
 		local nCL = DB.getValue(nodeSpellClass, "cl", 0);
-		rRoll.nMod = nCL + ActorManager.getAbilityBonus(rActor, sAbility);
+		rRoll.nMod = nCL + ActorManager2.getAbilityBonus(rActor, sAbility);
 		
 		local nCCMisc = DB.getValue(nodeSpellClass, "cc.misc", 0);
 		if nCCMisc ~= 0 then
@@ -127,14 +169,16 @@ function performConcentrationCheck(draginfo, rActor, nodeSpellClass)
 			rRoll.sDesc = string.format("%s (Spell Class %+d)", rRoll.sDesc, nCCMisc);
 		end
 		
-		ActionsManager.performSingleRollAction(draginfo, rActor, "concentration", rRoll);
+		ActionsManager.performAction(draginfo, rActor, rRoll);
 	else
 		local sSkill = "Concentration";
 		local nValue = 0;
-		if rActor.sType == "pc" then
+
+		local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
+		if sType == "pc" then
 			nValue = CharManager.getSkillValue(rActor, sSkill);
 		else
-			local sSkills = DB.getValue(rActor.nodeCreature, "skills", "");
+			local sSkills = DB.getValue(nodeActor, "skills", "");
 			local aSkillClauses = StringManager.split(sSkills, ",;\r", true);
 			for i = 1, #aSkillClauses do
 				local nStarts, nEnds, sLabel, sSign, sMod = string.find(aSkillClauses[i], "([%w%s\(\)]*[%w\(\)]+)%s*([%+%-–]?)(%d*)");
@@ -155,6 +199,6 @@ function performConcentrationCheck(draginfo, rActor, nodeSpellClass)
 			sExtra = string.format("(Spell Class %+d)", nCCMisc);
 		end
 		
-		ActionSkill.performRoll(draginfo, rActor, sSkill, nValue, nil, nil, false, false, sExtra);
+		ActionSkill.performRoll(draginfo, rActor, sSkill, nValue, nil, nil, false, sExtra);
 	end
 end

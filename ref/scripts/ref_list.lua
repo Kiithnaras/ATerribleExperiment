@@ -3,6 +3,14 @@
 -- attribution and copyright information.
 --
 
+local sFilter = "filter";
+
+function onInit()
+	if altfilter then
+		sFilter = altfilter[1];
+	end
+end
+
 function onFilter(w)
 	local f = getFilter(w);
 	if f == "" then
@@ -63,10 +71,9 @@ function getFilter(w)
 			vTop = vTop.parentcontrol.window;
 		end
 	end
-	if not vTop.filter then
+	if not vTop[sFilter] then
 		return "";
 	end
 
-	return string.lower(vTop.filter.getValue());
+	return string.lower(vTop[sFilter].getValue());
 end
-

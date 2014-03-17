@@ -3,21 +3,34 @@
 -- attribution and copyright information.
 --
 
+local sLink = nil;
+
 function onInit()
 	onRefChanged();
 end
 
-function onRefChanged()
-	local nodeTarget = DB.findNode(noderef.getValue());
-	if nodeTarget then
-		local nodeName = nodeTarget.getChild("name");
-		if nodeName then
-			nodeName.onUpdate = onNameUpdated;
-			onNameUpdated(nodeName);
-		end
+function onClose()
+	removeLink();
+end
+
+function removeLink()
+	if sLink then
+		DB.removeHandler(sLink .. ".name", "onUpdate", onNameUpdated);
+		sLink = nil;
 	end
 end
 
-function onNameUpdated(nodeName)
+function onRefChanged()
+	removeLink();
+	
+	local sTarget = noderef.getValue();
+	if sTarget ~= "" then
+		sLink = sTarget;
+		DB.addHandler(sLink .. ".name", "onUpdate", onNameUpdated);
+		onNameUpdated();
+	end
+end
+
+function onNameUpdated()
 	windowlist.window.onTargetsChanged();
 end

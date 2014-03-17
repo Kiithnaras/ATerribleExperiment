@@ -4,41 +4,25 @@
 --
 
 function onInit()
-	-- Update the wound and status displays
-	onActiveChanged();
 	onFactionChanged();
-	onTypeChanged();
-	onWoundsChanged();
+	onHealthChanged();
 	
-	-- Track the effects list
-	local node = getDatabaseNode();
-	local node_list_effects = node.createChild("effects");
-	if node_list_effects then
-		node_list_effects.onChildUpdate = onEffectsChanged;
-		node_list_effects.onChildAdded = onEffectsChanged;
-	elseif node then
-		node.onChildAdded = onCTEntryChildAdded;
-	end
+	DB.addHandler(getDatabaseNode().getNodeName() .. ".effects", "onChildUpdate", onEffectsChanged);
 	onEffectsChanged();
 end
 
-function onCTEntryChildAdded(source, child)
-	if child.getName() == "effects" then
-		source.onChildAdded = function () end;
-		
-		child.onChildUpdate = onEffectsChanged;
-		child.onChildAdded = onEffectsChanged;
-	end
+function onClose()
+	DB.removeHandler(getDatabaseNode().getNodeName() .. ".effects", "onChildUpdate", onEffectsChanged);
 end
 
 function updateDisplay()
 	if active.getValue() == 1 then
-		name.setFont("ct_active");
+		name.setFont("sheetlabel");
 
 		active_spacer_top.setVisible(true);
 		active_spacer_bottom.setVisible(true);
 		
-		local sFaction = friendfoe.getValue();
+		local sFaction = friendfoe.getStringValue();
 		if sFaction == "friend" then
 			setFrame("ctentrybox_friend_active");
 		elseif sFaction == "neutral" then
@@ -51,12 +35,12 @@ function updateDisplay()
 		
 		windowlist.scrollToWindow(self);
 	else
-		name.setFont("ct_name");
+		name.setFont("sheettext");
 
 		active_spacer_top.setVisible(false);
 		active_spacer_bottom.setVisible(false);
 		
-		local sFaction = friendfoe.getValue();
+		local sFaction = friendfoe.getStringValue();
 		if sFaction == "friend" then
 			setFrame("ctentrybox_friend");
 		elseif sFaction == "neutral" then
@@ -70,31 +54,20 @@ function updateDisplay()
 end
 
 function onActiveChanged()
-	-- Update the active icon
-	active_icon.setVisible(active.getValue() ~= 0);
-	
-	-- Update the display
 	updateDisplay();
 end
 
 function onFactionChanged()
-	-- Update the faction icon
-	friendfoe_icon.updateIcon(friendfoe.getValue());
-	
-	-- Update what fields are visible for health display
 	updateHealthDisplay();
-	
-	-- Update the display
 	updateDisplay();
 end
 
 function onTypeChanged()
-	-- Update what fields are visible for health display
 	updateHealthDisplay();
 end
 
-function onWoundsChanged()
-	local sColor = ActorManager.getWoundColor("ct", getDatabaseNode());
+function onHealthChanged()
+	local sColor = ActorManager2.getWoundColor("ct", getDatabaseNode());
 	
 	wounds.setColor(sColor);
 	nonlethal.setColor(sColor);
@@ -102,10 +75,7 @@ function onWoundsChanged()
 end
 
 function onEffectsChanged()
-	-- Rebuild the effects list
-	local affectedby = EffectsManager.getEffectsString(getDatabaseNode());
-	
-	-- Update the effects line in the client combat tracker
+	local affectedby = EffectManager.getEffectsString(getDatabaseNode());
 	if affectedby == "" then
 		effects_label.setVisible(false);
 		effects_str.setVisible(false);
@@ -123,7 +93,7 @@ function updateHealthDisplay()
 	if sOption == "all" then
 		bShowHealth = true;
 	elseif sOption == "pc" then
-		if friendfoe.getValue() == "friend" then
+		if friendfoe.getStringValue() == "friend" then
 			bShowHealth = true;
 		end
 	end

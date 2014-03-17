@@ -5,7 +5,7 @@
 
 function action(draginfo)
 	local aParty = {};
-	for _,v in pairs(window.partylist.getWindows()) do
+	for _,v in pairs(window.list.getWindows()) do
 		local rActor = ActorManager.getActor("pc", v.link.getTargetDatabaseNode());
 		if rActor then
 			table.insert(aParty, rActor);
@@ -15,17 +15,17 @@ function action(draginfo)
 		aParty = nil;
 	end
 	
-	local sSave = window.saveselected.getValue():lower();
+	local sSave = DB.getValue("partysheet.saveselected", ""):lower();
 	
-	local nTargetDC = window.savedc.getValue();
+	local nTargetDC = DB.getValue("partysheet.savedc", 0);
 	if nTargetDC == 0 then
 		nTargetDC = nil;
 	end
 	
-	local bSecretRoll = window.hiderollresults.getState();
+	local bSecretRoll = (window.hiderollresults.getValue() == 1);
 	
 	for _,v in pairs(aParty) do
-		ActionSpell.performSaveRoll(nil, v, sSave, nTargetDC, bSecretRoll, true)
+		ActionSpell.performSaveRoll(nil, v, sSave, nTargetDC, bSecretRoll)
 	end
 
 	return true;

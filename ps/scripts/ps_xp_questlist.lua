@@ -3,6 +3,26 @@
 -- attribution and copyright information.
 --
 
+function onListChanged()
+	update();
+end
+
+function update()
+	local bEditMode = (window.quests_iedit.getValue() == 1);
+	window.idelete_header_quest.setVisible(bEditMode);
+	for _,w in ipairs(getWindows()) do
+		w.idelete.setVisible(bEditMode);
+	end
+end
+
+function addEntry(bFocus)
+	local w = createWindow();
+	if w and bFocus then
+		w.name.setFocus();
+	end
+	return w;
+end
+
 function onDrop(x, y, dragdata)
 	if User.isHost() and dragdata.isType("shortcut") then
 		local sClass = dragdata.getShortcutData();
@@ -29,25 +49,5 @@ end
 function deleteAll()
 	for _,v in pairs(getWindows()) do
 		v.getDatabaseNode().delete();
-	end
-end
-
-function awardXPtoParty(w)
-	local nXP = 0;
-	if w then
-		if not w.xpawarded.getState() then
-			nXP = w.xp.getValue();
-			w.xpawarded.setState(true);
-		end
-	else
-		for k,v in pairs(getWindows()) do
-			if v.xpawarded.getState() == false then
-				nXP = nXP + v.xp.getValue();
-				v.xpawarded.setState(true);
-			end
-		end
-	end
-	if nXP ~= 0 then
-		window.awardXP(nXP);
 	end
 end

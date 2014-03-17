@@ -3,82 +3,50 @@
 -- attribution and copyright information.
 --
 
-targetingon = false;
-activeon = false;
-defensiveon = false;
-spacingon = false;
-effectson = false;
+local effectson = false;
 
 function onInit()
-	onTypeChanged();
-	
 	-- Set the displays to what should be shown
-	setTargetingVisible(false);
-	setActiveVisible(false);
-	setDefensiveVisible(false);
-	setSpacingVisible(false);
-	setEffectsVisible(false);
+	setActiveVisible();
+	setDefensiveVisible();
+	setSpacingVisible();
+	setEffectsVisible();
 
 	-- Acquire token reference, if any
 	linkToken();
 	
 	-- Set up the PC links
-	if type.getValue() == "pc" then
-		linkPCFields();
-	end
+	onLinkChanged();
 	
 	-- Update the displays
 	onFactionChanged();
-	onWoundsChanged();
+	onHealthChanged();
 	
 	-- Register the deletion menu item for the host
-	registerMenuItem("Delete Item", "delete", 6);
-	registerMenuItem("Confirm Delete", "delete", 6, 7);
+	registerMenuItem(Interface.getString("list_menu_deleteitem"), "delete", 6);
+	registerMenuItem(Interface.getString("list_menu_deleteconfirm"), "delete", 6, 7);
 
 	-- Track the effects list
-	local nodeEffects = effects.getDatabaseNode();
-	if nodeEffects then
-		nodeEffects.onChildUpdate = onEffectsChanged;
-		nodeEffects.onChildAdded = onEffectsChanged;
-		onEffectsChanged();
-	end
+	DB.addHandler(getDatabaseNode().getNodeName() .. ".effects", "onChildUpdate", onEffectsChanged);
+	onEffectsChanged();
 	
-	-- Track the targets list
-	local nodeTargets = targets.getDatabaseNode();
-	if nodeTargets then
-		nodeTargets.onChildUpdate = onTargetsChanged;
-		nodeTargets.onChildAdded = onTargetsChanged;
-		onTargetsChanged();
+	local bPFMode = DataCommon.isPFRPG();
+	if bPFMode then
+		label_grapple.setValue(Interface.getString("cmb"));
+	else
+		label_grapple.setValue(Interface.getString("grp"));
 	end
-
-	OptionsManager.registerCallback("SYSTEM", onSystemChanged);
-	onSystemChanged();
 end
 
 function onClose()
-	OptionsManager.unregisterCallback("SYSTEM", onSystemChanged);
-end
-
-function onSystemChanged()
-	setDefensiveVisible(activatedefensive.getValue());
-	
-	local bPFMode = OptionsManager.isOption("SYSTEM", "pf");
-	if bPFMode then
-		label_grapple.setValue("CMB");
-	else
-		label_grapple.setValue("Grp");
-	end
+	DB.removeHandler(getDatabaseNode().getNodeName() .. ".effects", "onChildUpdate", onEffectsChanged);
 end
 
 function updateDisplay()
 	local sFaction = friendfoe.getStringValue();
 
-	if type.getValue() ~= "pc" then
-		name.setLine(true, 0);
-	end
-
 	if DB.getValue(getDatabaseNode(), "active", 0) == 1 then
-		name.setFont("ct_active");
+		name.setFont("sheetlabel");
 		
 		active_spacer_top.setVisible(true);
 		active_spacer_bottom.setVisible(true);
@@ -93,7 +61,7 @@ function updateDisplay()
 			setFrame("ctentrybox_active");
 		end
 	else
-		name.setFont("ct_name");
+		name.setFont("sheettext");
 		
 		active_spacer_top.setVisible(false);
 		active_spacer_bottom.setVisible(false);
@@ -113,7 +81,7 @@ end
 function linkToken()
 	local imageinstance = token.populateFromImageNode(tokenrefnode.getValue(), tokenrefid.getValue());
 	if imageinstance then
-		CTManager.linkToken(getDatabaseNode(), imageinstance);
+		TokenManager.linkToken(getDatabaseNode(), imageinstance);
 	end
 end
 
@@ -139,40 +107,42 @@ function delete()
 	
 	-- Move to the next actor, if this CT entry is active
 	if DB.getValue(node, "active", 0) == 1 then
-		CTManager.nextActor();
+		CombatManager.nextActor();
 	end
 
 	-- If this is an NPC with a token on the map, then remove the token also
-	if type.getValue() ~= "pc" then
+	local sClass, sRecord = link.getValue();
+	if sClass ~= "charsheet" then
 		token.deleteReference();
 	end
 
 	-- Delete the database node and close the window
 	node.delete();
 
-	-- Update list information (global subsection toggles, targeting)
+	-- Update list information (global subsection toggles)
 	windowlist.onVisibilityToggle();
 	windowlist.onEntrySectionToggle();
-	windowlist.deleteTarget(sNode);
-	TargetingManager.rebuildClientTargeting();
 end
 
-function onTypeChanged()
+function onLinkChanged()
 	-- If a PC, then set up the links to the char sheet
-	if type.getValue() == "pc" then
+	local sClass, sRecord = link.getValue();
+	if sClass == "charsheet" then
 		linkPCFields();
+		name.setLine(false);
 	end
 end
 
-function onWoundsChanged()
-	local sColor, nPercentWounded, nPercentNonlethal, sStatus = ActorManager.getWoundColor("ct", getDatabaseNode());
+function onHealthChanged()
+	local sColor, nPercentWounded, nPercentNonlethal, sStatus = ActorManager2.getWoundColor("ct", getDatabaseNode());
 	
 	wounds.setColor(sColor);
 	nonlethal.setColor(sColor);
 	status.setValue(sStatus);
 	
-	if type.getValue() ~= "pc" then
-		qdelete.setVisible((nPercentNonlethal > 1));
+	local sClass,_ = link.getValue();
+	if sClass ~= "charsheet" then
+		idelete.setVisible((nPercentNonlethal > 1));
 	end
 end
 
@@ -182,9 +152,9 @@ function onFactionChanged()
 
 	-- If not a friend, then show visibility toggle
 	if friendfoe.getStringValue() == "friend" then
-		show_npc.setVisible(false);
+		tokenvis.setVisible(false);
 	else
-		show_npc.setVisible(true);
+		tokenvis.setVisible(true);
 	end
 end
 
@@ -194,11 +164,9 @@ function onVisibilityChanged()
 end
 
 function onEffectsChanged()
-	-- SET THE EFFECTS CONTROL STRING
-	local affectedby = EffectsManager.getEffectsString(getDatabaseNode());
+	local affectedby = EffectManager.getEffectsString(getDatabaseNode());
 	effects_str.setValue(affectedby);
 	
-	-- UPDATE VISIBILITY
 	if affectedby == "" or effectson then
 		effects_label.setVisible(false);
 		effects_str.setVisible(false);
@@ -206,49 +174,10 @@ function onEffectsChanged()
 		effects_label.setVisible(true);
 		effects_str.setVisible(true);
 	end
-	setSpacerState();
 end
 
-function onTargetsChanged()
-	-- VALIDATE (SINCE THIS FUNCTION CAN BE CALLED BEFORE FULLY INSTANTIATED)
-	if not targets_str then
-		return;
-	end
-	
-	-- GET TARGET NAMES
-	local aTargetNames = {};
-	for keyTarget, winTarget in pairs(targets.getWindows()) do
-		local sTargetName = DB.getValue(DB.findNode(winTarget.noderef.getValue()), "name", "");
-		if sTargetName == "" then
-			sTargetName = "<Target>";
-		end
-		table.insert(aTargetNames, sTargetName);
-	end
-
-	-- SET THE TARGETS CONTROL STRING
-	targets_str.setValue(table.concat(aTargetNames, ", "));
-	
-	-- UPDATE VISIBILITY
-	if #aTargetNames == 0 or targetingon then
-		targets_label.setVisible(false);
-		targets_str.setVisible(false);
-	else
-		targets_label.setVisible(true);
-		targets_str.setVisible(true);
-	end
-	setSpacerState();
-end
-
-function setSpacerState()
-	if effects_label.isVisible() then
-		if targets_label.isVisible() then
-			spacer2.setAnchoredHeight(2);
-		else
-			spacer2.setAnchoredHeight(6);
-		end
-	else
-		spacer2.setAnchoredHeight(0);
-	end
+function onActiveChanged()
+	setActiveVisible();
 end
 
 function linkPCFields()
@@ -282,35 +211,16 @@ end
 -- SECTION VISIBILITY FUNCTIONS
 --
 
-function setTargetingVisible(v)
-	if activatetargeting.getValue() then
+function setActiveVisible()
+	local v = false;
+	if activateactive.getValue() == 1 then
 		v = true;
 	end
-	if type.getValue() ~= "pc" and active.getState() then
-		v = true;
-	end
-	
-	targetingon = v;
-	targetingicon.setVisible(v);
-	
-	targeting_add_button.setVisible(v);
-	targeting_clear_button.setVisible(v);
-	targets.setVisible(v);
-	
-	frame_targeting.setVisible(v);
-	
-	onTargetsChanged();
-end
-
-function setActiveVisible(v)
-	if activateactive.getValue() then
-		v = true;
-	end
-	if type.getValue() ~= "pc" and active.getState() then
+	local sClass, sRecord = link.getValue();
+	if sClass ~= "charsheet" and active.getValue() == 1 then
 		v = true;
 	end
 	
-	activeon = v;
 	activeicon.setVisible(v);
 
 	attacks.setVisible(v);
@@ -319,6 +229,7 @@ function setActiveVisible(v)
 	end
 	atklabel.setVisible(v);
 	immediate.setVisible(v);
+	immediatelabel.setVisible(v);
 	init.setVisible(v);
 	initlabel.setVisible(v);
 	grapple.setVisible(v);
@@ -329,14 +240,14 @@ function setActiveVisible(v)
 	frame_active.setVisible(v);
 end
 
-function setDefensiveVisible(v)
-	if activatedefensive.getValue() then
+function setDefensiveVisible()
+	local v = false;
+	if activatedefensive.getValue() == 1 then
 		v = true;
 	end
 	
-	local bPFMode = OptionsManager.isOption("SYSTEM", "pf");
+	local bPFMode = DataCommon.isPFRPG();
 	
-	defensiveon = v;
 	defensiveicon.setVisible(v);
 
 	ac_final.setVisible(v);
@@ -364,12 +275,12 @@ function setDefensiveVisible(v)
 	frame_defensive.setVisible(v);
 end
 	
-function setSpacingVisible(v)
-	if activatespacing.getValue() then
+function setSpacingVisible()
+	local v = false;
+	if activatespacing.getValue() == 1 then
 		v = true;
 	end
 
-	spacingon = v;
 	spacingicon.setVisible(v);
 	
 	space.setVisible(v);
@@ -380,8 +291,9 @@ function setSpacingVisible(v)
 	frame_spacing.setVisible(v);
 end
 
-function setEffectsVisible(v)
-	if activateeffects.getValue() then
+function setEffectsVisible()
+	local v = false;
+	if activateeffects.getValue() == 1 then
 		v = true;
 	end
 	
@@ -389,20 +301,9 @@ function setEffectsVisible(v)
 	effecticon.setVisible(v);
 	
 	effects.setVisible(v);
+	effects_iadd.setVisible(v);
 
 	frame_effects.setVisible(v);
 
 	onEffectsChanged();
-end
-
--- Client Visibility
-
-function isClientVisible()
-	if friendfoe.getStringValue() == "friend" then
-		return true;
-	end
-	if show_npc.getState() then
-		return true;
-	end
-	return false;
 end

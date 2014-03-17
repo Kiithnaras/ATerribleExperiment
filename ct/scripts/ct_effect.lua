@@ -4,15 +4,15 @@
 --
 
 function onInit()
-	registerMenuItem("Remove Effect", "deletepointer", 3);
-	registerMenuItem("Confirm Remove", "delete", 3, 3);
+	registerMenuItem(Interface.getString("ct_tooltip_effectdelete"), "deletepointer", 3);
+	registerMenuItem(Interface.getString("list_menu_deleteconfirm"), "delete", 3, 3);
 
-	local nodeTargetList = getDatabaseNode().createChild("targets");
-	if nodeTargetList then
-		nodeTargetList.onChildUpdate = onTargetsChanged;
-		nodeTargetList.onChildAdded = onTargetsChanged;
-	end
+	DB.addHandler(getDatabaseNode().getNodeName() .. ".targets", "onChildUpdate", onTargetsChanged);
 	onTargetsChanged();
+end
+
+function onClose()
+	DB.removeHandler(getDatabaseNode().getNodeName() .. ".targets", "onChildUpdate", onTargetsChanged);
 end
 
 function onMenuSelection(selection, subselection)
@@ -24,13 +24,12 @@ end
 function onTargetsChanged()
 	if target_name then
 		local aTargets = {};
-		for keyTarget, winTarget in pairs(targets.getWindows()) do
-			local nodeTarget = DB.findNode(winTarget.noderef.getValue());
-			local sTarget = DB.getValue(nodeTarget, "name", "");
+		for _,w in pairs(targets.getWindows()) do
+			local sTarget = DB.getValue(w.noderef.getValue() .. ".name", "");
 			table.insert(aTargets, sTarget);
 		end
 		if #aTargets > 0 then
-			target_name.setValue("Targets: " .. table.concat(aTargets, ", "));
+			target_name.setValue(Interface.getString("ct_label_effecttargets") .. " " .. table.concat(aTargets, ", "));
 			target_name.setVisible(true);
 		else
 			target_name.setValue("");
@@ -40,14 +39,7 @@ function onTargetsChanged()
 end
 
 function onDragStart(button, x, y, draginfo)
-	local rEffect = {};
-	rEffect.sName = label.getValue();
-	rEffect.nDuration = duration.getValue();
-	rEffect.nInit = init.getValue();
-	rEffect.sSource = source_name.getValue();
-	rEffect.nGMOnly = isgmonly.getIndex();
-	rEffect.sApply = apply.getStringValue();
-
+	local rEffect = EffectManager.getEffect(getDatabaseNode());
 	return ActionEffect.performRoll(draginfo, nil, rEffect);
 end
 

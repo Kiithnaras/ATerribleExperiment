@@ -22,53 +22,34 @@ function setRows(n)
 	
 	-- Otherwise, need to create some
 	for i = 1, n - #windows do
-		NodeManager.createWindow(self);
+		createWindow();
 	end
 end
 
 function setDice(n)
-	for k, w in ipairs(getWindows()) do
+	for _,w in ipairs(getWindows()) do
 		w.setDice(n);
 		w.updateTotal();
 	end
 end
 
-function applyRoll(dielist)
-	for k, w in ipairs(getWindows()) do
+function applyRoll(aDice)
+	for _,w in ipairs(getWindows()) do
 		if not w.isRolled() then
-			w.applyRoll(dielist);
+			w.applyRoll(aDice);
 			return;
 		end
 	end
 end
 
 function updateTotals()
-	for k, w in ipairs(getWindows()) do
+	for _,w in ipairs(getWindows()) do
 		w.updateTotal();
 	end
 end
 
 function updateModifiers()
-	for k, w in ipairs(getWindows()) do
+	for _,w in ipairs(getWindows()) do
 		w.modifier.setValue(window.modifier.getValue());
-	end
-end
-
-function sortTotals()
-	sortbytotals = true;
-	applySort(true);
-	sortbytotals = false;
-end
-
-function onSortCompare(w1, w2)
-	if not w1.isRolled() then
-		return true;
-	end
-	if not w2.isRolled() then
-		return false;
-	end
-	
-	if sortbytotals then
-		return w1.total.getValue() < w2.total.getValue();
 	end
 end

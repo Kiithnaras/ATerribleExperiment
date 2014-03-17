@@ -10,16 +10,8 @@ function onInit()
 	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_APPLYATK, handleApplyAttack);
 	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_APPLYHRFC, handleApplyHRFC);
 
-	ActionsManager.registerActionIcon("attack", "action_attack");
-	ActionsManager.registerActionIcon("fullattack", "action_attack");
-	ActionsManager.registerActionIcon("grapple", "action_attack");
-	
-	ActionsManager.registerMultiHandler("fullattack", translateFullAttack);
-	
 	ActionsManager.registerTargetingHandler("attack", onTargeting);
-	ActionsManager.registerTargetingHandler("grapple", onTargeting);
-	ActionsManager.registerTargetingHandler("fullattack", onTargeting);
-	
+
 	ActionsManager.registerModHandler("attack", modAttack);
 	ActionsManager.registerModHandler("grapple", modAttack);
 	
@@ -30,18 +22,14 @@ function onInit()
 end
 
 function handleApplyAttack(msgOOB)
-	local rSource = ActorManager.getActor("ct", msgOOB.sSourceCTNode);
-	
-	local rTarget = ActorManager.getActor("ct", msgOOB.sTargetCTNode);
-	if not rTarget then
-		rTarget = ActorManager.getActor(msgOOB.sTargetType, msgOOB.sTargetCreatureNode);
-	end
+	local rSource = ActorManager.getActor(msgOOB.sSourceType, msgOOB.sSourceNode);
+	local rTarget = ActorManager.getActor(msgOOB.sTargetType, msgOOB.sTargetNode);
 	
 	local nTotal = tonumber(msgOOB.nTotal) or 0;
-	applyAttack(rSource, rTarget, msgOOB.sAttackType, msgOOB.sDesc, nTotal, msgOOB.sResults);
+	applyAttack(rSource, rTarget, (tonumber(msgOOB.nSecret) == 1), msgOOB.sAttackType, msgOOB.sDesc, nTotal, msgOOB.sResults);
 end
 
-function notifyApplyAttack(rSource, rTarget, sAttackType, sDesc, nTotal, sResults)
+function notifyApplyAttack(rSource, rTarget, bSecret, sAttackType, sDesc, nTotal, sResults)
 	if not rTarget then
 		return;
 	end
@@ -49,16 +37,23 @@ function notifyApplyAttack(rSource, rTarget, sAttackType, sDesc, nTotal, sResult
 	local msgOOB = {};
 	msgOOB.type = OOB_MSGTYPE_APPLYATK;
 	
+	if bSecret then
+		msgOOB.nSecret = 1;
+	else
+		msgOOB.nSecret = 0;
+	end
 	msgOOB.sAttackType = sAttackType;
 	msgOOB.nTotal = nTotal;
 	msgOOB.sDesc = sDesc;
 	msgOOB.sResults = sResults;
-	msgOOB.sTargetType = rTarget.sType;
-	msgOOB.sTargetCreatureNode = rTarget.sCreatureNode;
-	msgOOB.sTargetCTNode = rTarget.sCTNode;
-	if rSource then
-		msgOOB.sSourceCTNode = rSource.sCTNode;
-	end
+
+	local sSourceType, sSourceNode = ActorManager.getTypeAndNodeName(rSource);
+	msgOOB.sSourceType = sSourceType;
+	msgOOB.sSourceNode = sSourceNode;
+
+	local sTargetType, sTargetNode = ActorManager.getTypeAndNodeName(rTarget);
+	msgOOB.sTargetType = sTargetType;
+	msgOOB.sTargetNode = sTargetNode;
 
 	Comm.deliverOOBMessage(msgOOB, "");
 end
@@ -76,38 +71,35 @@ function notifyApplyHRFC(sTable)
 	Comm.deliverOOBMessage(msgOOB, "");
 end
 
-function translateFullAttack(nSlot)
-	return "attack";
-end
-
-function onTargeting(rSource, rRolls)
-	local aTargets = TargetingManager.getFullTargets(rSource);
-	
-	if #aTargets <= 1 then
-		return { aTargets };
-	end
-	
-	for kRoll, vRoll in ipairs(rRolls) do
-		if not string.match(vRoll.sDesc, "%[FULL%]") then
-			vRoll.sDesc = vRoll.sDesc .. " [MULTI]";
+function onTargeting(rSource, aTargeting, rRolls)
+	if OptionsManager.isOption("RMMT", "multi") then
+		local aTargets = {};
+		for _,vTargetGroup in ipairs(aTargeting) do
+			for _,vTarget in ipairs(vTargetGroup) do
+				table.insert(aTargets, vTarget);
+			end
+		end
+		if #aTargets > 1 then
+			for _,vRoll in ipairs(rRolls) do
+				if not string.match(vRoll.sDesc, "%[FULL%]") then
+					vRoll.bRemoveOnMiss = "true";
+				end
+			end
 		end
 	end
-	
-	local aTargeting = {};
-	for _,vTarget in ipairs(aTargets) do
-		table.insert(aTargeting, { vTarget });
-	end
-	
 	return aTargeting;
 end
 
 function getRoll(rActor, rAction)
-	-- Build basic roll
 	local rRoll = {};
-	rRoll.aDice = { "d6","d6","d6" };
+	if rAction.cm then
+		rRoll.sType = "grapple";
+	else
+		rRoll.sType = "attack";
+	end
+	rRoll.aDice = { "d20" };
 	rRoll.nMod = rAction.modifier or 0;
 	
-	-- Build the description label
 	if rAction.cm then
 		rRoll.sDesc = "[CMB";
 		if rAction.order and rAction.order > 1 then
@@ -136,7 +128,7 @@ function getRoll(rActor, rAction)
 	end
 	
 	-- Add other modifiers
-	if rAction.crit and rAction.crit < 18 then
+	if rAction.crit and rAction.crit < 20 then
 		rRoll.sDesc = rRoll.sDesc .. " [CRIT " .. rAction.crit .. "]";
 	end
 	if rAction.touch then
@@ -149,22 +141,16 @@ end
 function performRoll(draginfo, rActor, rAction)
 	local rRoll = getRoll(rActor, rAction);
 	
-	if rAction.cm then
-		ActionsManager.performSingleRollAction(draginfo, rActor, "grapple", rRoll);
-	else
-		ActionsManager.performSingleRollAction(draginfo, rActor, "attack", rRoll);
-	end
+	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
 function getGrappleRoll(rActor, rAction)
 	local rRoll = {};
-	
-	-- Build basic roll
-	rRoll.aDice = { "d6","d6","d6" };
+	rRoll.sType = "grapple";
+	rRoll.aDice = { "d20" };
 	rRoll.nMod = rAction.modifier or 0;
 	
-	-- Build description label
-	if OptionsManager.isOption("SYSTEM", "pf") then
+	if DataCommon.isPFRPG() then
 		rRoll.sDesc = "[CMB]";
 	else
 		rRoll.sDesc = "[GRAPPLE]";
@@ -189,14 +175,10 @@ end
 function performGrappleRoll(draginfo, rActor, rAction)
 	local rRoll = getGrappleRoll(rActor, rAction);
 	
-	ActionsManager.performSingleRollAction(draginfo, rActor, "grapple", rRoll);
+	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
 function modAttack(rSource, rTarget, rRoll)
-	if rTarget and rTarget.nOrder then
-		return;
-	end
-	
 	clearCritState(rSource);
 	
 	local aAddDesc = {};
@@ -243,7 +225,7 @@ function modAttack(rSource, rTarget, rRoll)
 	if rSource then
 		-- Determine attack type
 		local sAttackType = nil;
-		if rRoll.sType == "attack" or rRoll.sType == "castattack" then
+		if rRoll.sType == "attack" then
 			sAttackType = string.match(rRoll.sDesc, "%[ATTACK.*%((%w+)%)%]");
 			if not sAttackType then
 				sAttackType = "M";
@@ -280,12 +262,12 @@ function modAttack(rSource, rTarget, rRoll)
 		-- Get attack effect modifiers
 		local bEffects = false;
 		local nEffectCount;
-		aAddDice, nAddMod, nEffectCount = EffectsManager.getEffectsBonus(rSource, {"ATK"}, false, aAttackFilter);
+		aAddDice, nAddMod, nEffectCount = EffectManager.getEffectsBonus(rSource, {"ATK"}, false, aAttackFilter);
 		if (nEffectCount > 0) then
 			bEffects = true;
 		end
 		if rRoll.sType == "grapple" then
-			local aPFDice, nPFMod, nPFCount = EffectsManager.getEffectsBonus(rSource, {"CMB"}, false, aAttackFilter);
+			local aPFDice, nPFMod, nPFCount = EffectManager.getEffectsBonus(rSource, {"CMB"}, false, aAttackFilter);
 			if nPFCount > 0 then
 				bEffects = true;
 				for k, v in ipairs(aPFDice) do
@@ -296,59 +278,59 @@ function modAttack(rSource, rTarget, rRoll)
 		end
 		
 		-- Get condition modifiers
-		if EffectsManager.hasEffect(rSource, "Invisible") then
+		if EffectManager.hasEffect(rSource, "Invisible") then
 			bEffects = true;
 			nAddMod = nAddMod + 2;
 			table.insert(aAddDesc, "[CA]");
-		elseif EffectsManager.hasEffect(rSource, "CA") then
+		elseif EffectManager.hasEffect(rSource, "CA") then
 			bEffects = true;
 			table.insert(aAddDesc, "[CA]");
 		end
-		if EffectsManager.hasEffect(rSource, "Blinded") then
+		if EffectManager.hasEffect(rSource, "Blinded") then
 			bEffects = true;
 			table.insert(aAddDesc, "[BLINDED]");
 		end
-		if OptionsManager.isOption("SYSTEM", "off") then
-			if EffectsManager.hasEffect(rSource, "Incorporeal") and sAttackType == "M" and not string.match(string.lower(rRoll.sDesc), "incorporeal touch") then
+		if not DataCommon.isPFRPG() then
+			if EffectManager.hasEffect(rSource, "Incorporeal") and sAttackType == "M" and not string.match(string.lower(rRoll.sDesc), "incorporeal touch") then
 				bEffects = true;
 				table.insert(aAddDesc, "[INCORPOREAL]");
 			end
 		end
-		if EffectsManager.hasEffectCondition(rSource, "Dazzled") then
+		if EffectManager.hasEffectCondition(rSource, "Dazzled") then
 			bEffects = true;
 			nAddMod = nAddMod - 1;
 		end
-		if EffectsManager.hasEffectCondition(rSource, "Slowed") then
+		if EffectManager.hasEffectCondition(rSource, "Slowed") then
 			bEffects = true;
 			nAddMod = nAddMod - 1;
 		end
-		if EffectsManager.hasEffectCondition(rSource, "Entangled") then
+		if EffectManager.hasEffectCondition(rSource, "Entangled") then
 			bEffects = true;
 			nAddMod = nAddMod - 2;
 		end
-		if (rRoll.sType == "attack" or rRoll.sType == "castattack") and 
-				(EffectsManager.hasEffectCondition(rSource, "Pinned") or
-				EffectsManager.hasEffectCondition(rSource, "Grappled")) then
+		if rRoll.sType == "attack" and 
+				(EffectManager.hasEffectCondition(rSource, "Pinned") or
+				EffectManager.hasEffectCondition(rSource, "Grappled")) then
 			bEffects = true;
 			nAddMod = nAddMod - 2;
 		end
-		if EffectsManager.hasEffectCondition(rSource, "Frightened") or 
-				EffectsManager.hasEffectCondition(rSource, "Panicked") or
-				EffectsManager.hasEffectCondition(rSource, "Shaken") then
+		if EffectManager.hasEffectCondition(rSource, "Frightened") or 
+				EffectManager.hasEffectCondition(rSource, "Panicked") or
+				EffectManager.hasEffectCondition(rSource, "Shaken") then
 			bEffects = true;
 			nAddMod = nAddMod - 2;
 		end
-		if EffectsManager.hasEffectCondition(rSource, "Sickened") then
+		if EffectManager.hasEffectCondition(rSource, "Sickened") then
 			bEffects = true;
 			nAddMod = nAddMod - 2;
 		end
 
 		-- Get other effect modifiers
-		if EffectsManager.hasEffectCondition(rSource, "Squeezing") then
+		if EffectManager.hasEffectCondition(rSource, "Squeezing") then
 			bEffects = true;
 			nAddMod = nAddMod - 4;
 		end
-		if EffectsManager.hasEffectCondition(rSource, "Prone") then
+		if EffectManager.hasEffectCondition(rSource, "Prone") then
 			if sAttackType == "M" then
 				bEffects = true;
 				nAddMod = nAddMod - 4;
@@ -356,14 +338,14 @@ function modAttack(rSource, rTarget, rRoll)
 		end
 		
 		-- Get ability modifiers
-		local nBonusStat, nBonusEffects = ActorManager.getAbilityEffectsBonus(rSource, sActionStat);
+		local nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, sActionStat);
 		if nBonusEffects > 0 then
 			bEffects = true;
 			nAddMod = nAddMod + nBonusStat;
 		end
 		
 		-- Get negative levels
-		local nNegLevelMod, nNegLevelCount = EffectsManager.getEffectsBonus(rSource, {"NLVL"}, true);
+		local nNegLevelMod, nNegLevelCount = EffectManager.getEffectsBonus(rSource, {"NLVL"}, true);
 		if nNegLevelCount > 0 then
 			bEffects = true;
 			nAddMod = nAddMod - nNegLevelMod;
@@ -374,9 +356,9 @@ function modAttack(rSource, rTarget, rRoll)
 			local sEffects = "";
 			local sMod = StringManager.convertDiceToString(aAddDice, nAddMod, true);
 			if sMod ~= "" then
-				sEffects = "[EFFECTS " .. sMod .. "]";
+				sEffects = "[" .. Interface.getString("effects_tag") .. " " .. sMod .. "]";
 			else
-				sEffects = "[EFFECTS]";
+				sEffects = "[" .. Interface.getString("effects_tag") .. "]";
 			end
 			table.insert(aAddDesc, sEffects);
 		end
@@ -404,7 +386,6 @@ function onAttack(rSource, rTarget, rRoll)
 
 	local bIsSourcePC = (rSource and rSource.sType == "pc");
 	local bAllowCC = OptionsManager.isOption("HRCC", "on") or (not bIsSourcePC and OptionsManager.isOption("HRCC", "npc"));
-	local bHideFromPlayer = not bIsSourcePC and OptionsManager.isOption("REVL", "off");
 	
 	if rRoll.sDesc:match("%[CMB") then
 		rRoll.sType = "grapple";
@@ -424,40 +405,38 @@ function onAttack(rSource, rTarget, rRoll)
 		nMissChance = 0;
 		rMessage.text = string.gsub(rMessage.text, " %[AC %d+%]", "");
 	else
-		nDefenseVal, nAtkEffectsBonus, nDefEffectsBonus, nMissChance = ActorManager.getDefenseValue(rSource, rTarget, rRoll);
+		nDefenseVal, nAtkEffectsBonus, nDefEffectsBonus, nMissChance = ActorManager2.getDefenseValue(rSource, rTarget, rRoll);
 		if nAtkEffectsBonus ~= 0 then
-			table.insert(rAction.aMessages, string.format("[EFFECTS %+d]", nAtkEffectsBonus));
+			local sFormat = "[" .. Interface.getString("effects_tag") .. " %+d]"
+			table.insert(rAction.aMessages, string.format(sFormat, nAtkEffectsBonus));
 		end
 		if nDefEffectsBonus ~= 0 then
-			table.insert(rAction.aMessages, string.format("[DEF EFFECTS %+d]", nDefEffectsBonus));
+			local sFormat = "[" .. Interface.getString("effects_def_tag") .. " %+d]"
+			table.insert(rAction.aMessages, string.format(sFormat, nDefEffectsBonus));
 		end
 	end
 
 	-- Get the crit threshold
-	rAction.nCrit = 18;	
+	rAction.nCrit = 20;	
 	local sAltCritRange = string.match(rRoll.sDesc, "%[CRIT (%d+)%]");
 	if sAltCritRange then
-		rAction.nCrit = tonumber(sAltCritRange) or 18;
-		if (rAction.nCrit <= 3) or (rAction.nCrit > 18) then
-			rAction.nCrit = 18;
+		rAction.nCrit = tonumber(sAltCritRange) or 20;
+		if (rAction.nCrit <= 1) or (rAction.nCrit > 20) then
+			rAction.nCrit = 20;
 		end
 	end
 	
 	rAction.nFirstDie = 0;
 	if #(rRoll.aDice) > 0 then
-		rAction.nFirstDie = (rRoll.aDice[1].result + rRoll.aDice[2].result + rRoll.aDice[3].result) or 0;
+		rAction.nFirstDie = rRoll.aDice[1].result or 0;
 	end
 	rAction.bCritThreat = false;
-	if rAction.nFirstDie >= 18 then
+	if rAction.nFirstDie >= 20 then
 		rAction.bSpecial = true;
-		if bHideFromPlayer then
-			ChatManager.Message("[GM] Original attack = " .. rAction.nFirstDie .. "+" .. rRoll.nMod .. "=" .. rAction.nTotal, false);
-			rMessage.diemodifier = 0;
-		end
 		if rRoll.sType == "critconfirm" then
 			rAction.sResult = "crit";
 			table.insert(rAction.aMessages, "[CRITICAL HIT]");
-		elseif rRoll.sType == "attack" or rRoll.sType == "castattack" then
+		elseif rRoll.sType == "attack" then
 			if bAllowCC then
 				rAction.sResult = "hit";
 				rAction.bCritThreat = true;
@@ -470,10 +449,7 @@ function onAttack(rSource, rTarget, rRoll)
 			rAction.sResult = "hit";
 			table.insert(rAction.aMessages, "[AUTOMATIC HIT]");
 		end
-	elseif rAction.nFirstDie == 3 then
-		if bHideFromPlayer then
-			rMessage.diemodifier = 0;
-		end
+	elseif rAction.nFirstDie == 1 then
 		if rRoll.sType == "critconfirm" then
 			table.insert(rAction.aMessages, "[CRIT NOT CONFIRMED]");
 			rAction.sResult = "miss";
@@ -486,7 +462,7 @@ function onAttack(rSource, rTarget, rRoll)
 			if rRoll.sType == "critconfirm" then
 				rAction.sResult = "crit";
 				table.insert(rAction.aMessages, "[CRITICAL HIT]");
-			elseif (rRoll.sType == "attack" or rRoll.sType == "castattack") and rAction.nFirstDie >= rAction.nCrit then
+			elseif rRoll.sType == "attack" and rAction.nFirstDie >= rAction.nCrit then
 				if bAllowCC then
 					rAction.sResult = "hit";
 					rAction.bCritThreat = true;
@@ -500,17 +476,17 @@ function onAttack(rSource, rTarget, rRoll)
 				table.insert(rAction.aMessages, "[HIT]");
 			end
 		else
-			rAction.sResult = "glance";
+			rAction.sResult = "miss";
 			if rRoll.sType == "critconfirm" then
 				table.insert(rAction.aMessages, "[CRIT NOT CONFIRMED]");
 			else
-				table.insert(rAction.aMessages, "[GLANCING]");
+				table.insert(rAction.aMessages, "[MISS]");
 			end
 		end
 	elseif rRoll.sType == "critconfirm" then
 		rAction.sResult = "crit";
 		table.insert(rAction.aMessages, "[CHECK FOR CRITICAL]");
-	elseif (rRoll.sType == "attack" or rRoll.sType == "castattack") and rAction.nFirstDie >= rAction.nCrit then
+	elseif rRoll.sType == "attack" and rAction.nFirstDie >= rAction.nCrit then
 		if bAllowCC then
 			rAction.sResult = "hit";
 			rAction.bCritThreat = true;
@@ -532,9 +508,9 @@ function onAttack(rSource, rTarget, rRoll)
 		end
 	else
 		if rAction.bCritThreat then
-			local rCritConfirmRoll = { sType = "critconfirm", aDice = {"d6","d6","d6"} };
+			local rCritConfirmRoll = { sType = "critconfirm", aDice = {"d20"} };
 			
-			local nCCMod = EffectsManager.getEffectsBonus(rSource, {"CC"}, true);
+			local nCCMod = EffectManager.getEffectsBonus(rSource, {"CC"}, true);
 			if nCCMod ~= 0 then
 				rCritConfirmRoll.sDesc = string.format("%s [CONFIRM %+d]", rRoll.sDesc, nCCMod);
 			else
@@ -555,27 +531,19 @@ function onAttack(rSource, rTarget, rRoll)
 	end
 
 	if rTarget then
-		notifyApplyAttack(rSource, rTarget, rRoll.sType, rRoll.sDesc, rAction.nTotal, table.concat(rAction.aMessages, " "));
+		notifyApplyAttack(rSource, rTarget, rMessage.secret, rRoll.sType, rRoll.sDesc, rAction.nTotal, table.concat(rAction.aMessages, " "));
 		
 		-- REMOVE TARGET ON MISS OPTION
 		if (rAction.sResult == "miss" or rAction.sResult == "fumble") and rRoll.sType ~= "critconfirm" and not string.match(rRoll.sDesc, "%[FULL%]") then
 			local bRemoveTarget = false;
 			if OptionsManager.isOption("RMMT", "on") then
 				bRemoveTarget = true;
-			elseif OptionsManager.isOption("RMMT", "multi") then
-				local sTargetNumber = string.match(rRoll.sDesc, "%[MULTI%]");
-				if sTargetNumber then
-					bRemoveTarget = true;
-				end
+			elseif rRoll.bRemoveOnMiss then
+				bRemoveTarget = true;
 			end
 			
 			if bRemoveTarget then
-				local sTargetType = "client";
-				if User.isHost() then
-					sTargetType = "host";
-				end
-			
-				TargetingManager.removeTarget(sTargetType, rSource.nodeCT, rTarget.sCTNode);
+				TargetingManager.removeTarget(ActorManager.getCTNodeName(rSource), ActorManager.getCTNodeName(rTarget));
 			end
 		end
 	end
@@ -591,7 +559,7 @@ function onAttack(rSource, rTarget, rRoll)
 end
 
 function onGrapple(rSource, rTarget, rRoll)
-	if OptionsManager.isOption("SYSTEM", "pf") then
+	if DataCommon.isPFRPG() then
 		onAttack(rSource, rTarget, rRoll);
 	else
 		local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
@@ -609,30 +577,29 @@ end
 
 function onMissChance(rSource, rTarget, rRoll)
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
-	
+
 	local nTotal = ActionsManager.total(rRoll);
 	local nMissChance = tonumber(string.match(rMessage.text, "%[MISS CHANCE (%d+)%%%]")) or 0;
 	if nTotal <= nMissChance then
 		rMessage.text = rMessage.text .. " [MISS]";
 		if rTarget then
-			rMessage.icon = "indicator_attack_miss";
+			rMessage.icon = "roll_attack_miss";
 		else
-			rMessage.icon = "indicator_attack";
+			rMessage.icon = "roll_attack";
 		end
-	--Normal Hit vs Miss Chance
 	else
 		rMessage.text = rMessage.text .. " [HIT]";
 		if rTarget then
-			rMessage.icon = "indicator_attack_hit";
+			rMessage.icon = "roll_attack_hit";
 		else
-			rMessage.icon = "indicator_attack";
+			rMessage.icon = "roll_attack";
 		end
 	end
 	
 	Comm.deliverChatMessage(rMessage);
 end
 
-function applyAttack(rSource, rTarget, sAttackType, sDesc, nTotal, sResults)
+function applyAttack(rSource, rTarget, bSecret, sAttackType, sDesc, nTotal, sResults)
 	local msgShort = {font = "msgfont"};
 	local msgLong = {font = "msgfont"};
 	
@@ -651,56 +618,58 @@ function applyAttack(rSource, rTarget, sAttackType, sDesc, nTotal, sResults)
 		msgLong.text = msgLong.text .. " " .. sResults;
 	end
 	
-	msgShort.icon = "indicator_attack";
+	msgShort.icon = "roll_attack";
 	if string.match(sResults, "%[CRITICAL HIT%]") then
-		msgLong.icon = "indicator_attack_crit";
+		msgLong.icon = "roll_attack_crit";
 	elseif string.match(sResults, "HIT%]") then
-		msgLong.icon = "indicator_attack_hit";
+		msgLong.icon = "roll_attack_hit";
 	elseif string.match(sResults, "MISS%]") then
-		msgLong.icon = "indicator_attack_miss";
+		msgLong.icon = "roll_attack_miss";
 	elseif string.match(sResults, "CRITICAL THREAT%]") then
-		msgLong.icon = "indicator_attack_hit";
-	elseif string.match(sResults, "GLANCING%]") then
-		msgLong.icon = "indicator_attack_glance";
+		msgLong.icon = "roll_attack_hit";
 	else
-		msgLong.icon = "indicator_attack";
+		msgLong.icon = "roll_attack";
 	end
 		
-	local bGMOnly = string.match(sDesc, "^%[GM%]") or string.match(sDesc, "^%[TOWER%]") ;
-	ActionsManager.messageResult(bGMOnly, rSource, rTarget, msgLong, msgShort);
+	ActionsManager.messageResult(bSecret, rSource, rTarget, msgLong, msgShort);
 end
 
 aCritState = {};
 
 function setCritState(rSource, rTarget)
-	if not (rSource and rSource.nodeCT) or not (rTarget and rTarget.nodeCT) then
+	local sSourceCT = ActorManager.getCTNodeName(rSource);
+	local sTargetCT = ActorManager.getCTNodeName(rTarget);
+	if sSourceCT == "" or sTargetCT == "" then
 		return;
 	end
 	
-	if not aCritState[rSource.sCTNode] then
-		aCritState[rSource.sCTNode] = {};
+	if not aCritState[sSourceCT] then
+		aCritState[sSourceCT] = {};
 	end
-	table.insert(aCritState[rSource.sCTNode], rTarget.sCTNode);
+	table.insert(aCritState[sSourceCT], sTargetCT);
 end
 
 function clearCritState(rSource)
-	if rSource and rSource.nodeCT then
-		aCritState[rSource.sCTNode] = nil;
+	local sSourceCT = ActorManager.getCTNodeName(rSource);
+	if sSourceCT ~= "" then
+		aCritState[sSourceCT] = nil;
 	end
 end
 
 function isCrit(rSource, rTarget)
-	if not (rSource and rSource.nodeCT) or not (rTarget and rTarget.nodeCT) then
+	local sSourceCT = ActorManager.getCTNodeName(rSource);
+	local sTargetCT = ActorManager.getCTNodeName(rTarget);
+	if sSourceCT == "" or sTargetCT == "" then
 		return false;
 	end
 
-	if not aCritState[rSource.sCTNode] then
+	if not aCritState[sSourceCT] then
 		return false;
 	end
 	
-	for k,v in ipairs(aCritState[rSource.sCTNode]) do
-		if v == rTarget.sCTNode then
-			table.remove(aCritState[rSource.sCTNode], k);
+	for k,v in ipairs(aCritState[sSourceCT]) do
+		if v == sTargetCT then
+			table.remove(aCritState[sSourceCT], k);
 			return true;
 		end
 	end

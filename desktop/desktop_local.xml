@@ -6,341 +6,214 @@
 -->
 
 <root>
+	<panel name="chat" modes="local">
+		<class>statchat</class>
+		<bounds>15,90,390,560</bounds>
+	</panel>
+	<panel name="chat_tabs" modes="local">
+		<class>statchat_tabs</class>
+		<bounds>15,75,390,15</bounds>
+	</panel>
+
+	<template name="label_local_entry">
+		<label />
+	</template>
+	<template name="label_local">
+		<label>
+			<color>FFFFFF</color>
+		</label>
+	</template>
+	<template name="tabh_local">
+		<buttoncontrol>
+			<state icon="tabhorizontal" />
+			<script>
+				function onInit()
+					labelwidget = addTextWidget("sheetlabel", Interface.getString(textres[1]));
+					labelwidget.setPosition("center", 0, 1);
+				end
+				
+				function onButtonPress()
+					bringToFront();
+				end
+			</script>
+		</buttoncontrol>
+	</template>
+	<template name="statchatdieslot">
+		<basicnumberc>
+			<anchored to="dieslotanchor" width="40" height="30">
+				<top />
+				<left anchor="right" relation="relative" offset="10" />
+			</anchored>
+			<hideonvalue>0</hideonvalue>
+			<droptypes>
+				<type>statdieslot</type>
+			</droptypes>
+			<script file="desktop/scripts/statchat_dieslot.lua" />
+		</basicnumberc>
+	</template>
+	<template name="statchat_chat_step">
+		<chatwindow>
+			<modeframe mode="chat" name="chatframe_chat" offset="15,5,5,5" />
+			<modeframe mode="story" name="chatframe_story" offset="15,10,15,10" />
+			<linkcolor>0000FF</linkcolor>
+			<linkicon normal="button_link" pressed="button_link_down" />
+			<droptypes>
+				<type>dice</type>
+				<type>number</type>
+				<type>string</type>
+			</droptypes>
+			<script file="desktop/scripts/chat_window.lua" />
+		</chatwindow>
+	</template>
+	
 	<windowclass name="statchat_rollmode_listentry">
-		<sizelimits>
-			<minimum>
-				<height>45</height>
-			</minimum>
-		</sizelimits>
-		<frame>ctentrybox</frame>
 		<script file="desktop/scripts/statchat_rollmode_listentry.lua" />
+		<frame>ctentrybox</frame>
+		<sizelimits>
+			<minimum height="45" />
+		</sizelimits>
 		<sheetdata>
 			<genericcontrol name="dieslotanchor">
-				<bounds>37,4,1,1</bounds>
+				<bounds>30,6,0,0</bounds>
 			</genericcontrol>
 			
-			<numbercontrol name="total">
-				<anchored>
-					<top>
-						<anchor>top</anchor>
-						<offset>4</offset>
-					</top>
-					<right>
-						<anchor>right</anchor>
-						<offset>-10</offset>
-					</right>
-					<size>
-						<width>46</width>
-						<height>34</height>
-					</size>
-				</anchored>
-				<frame>
-					<name>bonus</name>
-					<offset>2,2,2,2</offset>
-				</frame>
-				<font>diemod</font>
+			<basicnumberc name="total">
+				<bounds>-60,6,40,30</bounds>
 				<readonly />
-			</numbercontrol>
+			</basicnumberc>
 
 			<numbercontrol name="modifier">
-				<anchored>
-					<to>total</to>
-					<position>left</position>
-					<offset>4,0</offset>
-					<size>
-						<width>40</width>
-					</size>
-				</anchored>
-				<font>diemod</font>
+				<anchored to="total" position="left" offset="4,0" width="40" />
+				<font>sheetnumber</font>
 				<displaysign />
 				<hideonvalue>0</hideonvalue>
 				<readonly />
 			</numbercontrol>
 
-			<genericcontrol name="rolled">
-				<anchored>
-					<top>
-						<anchor>top</anchor>
-					</top>
-					<bottom>
-						<anchor>bottom</anchor>
-					</bottom>
-					<left>
-						<anchor>left</anchor>
-					</left>
-					<size>
-						<width>33</width>
-					</size>
+			<buttoncontrol name="rolled">
+				<anchored width="33">
+					<left />
+					<top />
+					<bottom />
 				</anchored>
-				<icon>indicator_ctpassive</icon>
-				<activeicon>indicator_statrolled</activeicon>
-				<script file="desktop/scripts/statchat_rollmode_rolled.lua" />
-			</genericcontrol>
+				<state icon="ct_passive" />
+				<state icon="local_statrolled" />
+				<script>
+					function onValueChanged()
+						window.onRolledChanged();
+					end
+				</script>
+			</buttoncontrol>
 		</sheetdata>
 	</windowclass>
 
 	<windowclass name="statchat_pointmode_listentry">
-		<sizelimits>
-			<minimum>
-				<height>45</height>
-			</minimum>
-		</sizelimits>
 		<frame>ctentrybox</frame>
+		<sizelimits>
+			<minimum height="45" />
+		</sizelimits>
 		<sheetdata>
-			<numbercontrol name="score">
-				<anchored>
-					<top>
-						<anchor>top</anchor>
-						<offset>4</offset>
-					</top>
-					<left>
-						<anchor>left</anchor>
-						<offset>100</offset>
-					</left>
-					<size>
-						<width>46</width>
-						<height>34</height>
-					</size>
-				</anchored>
-				<frame>
-					<name>bonus</name>
-					<offset>2,2,2,2</offset>
-				</frame>
-				<font>diemod</font>
+			<basicnumberc name="score">
+				<bounds>100,6,40,30</bounds>
 				<script>
 					function onValueChanged()
 						window.windowlist.updateTotals();
 					end
 				</script>
-			</numbercontrol>
-			<stringcontrol>
-				<anchored>
-					<to>score</to>
-					<position>lefthigh</position>
-					<offset>12,12</offset>
-				</anchored>
-				<font>sheetlabel</font>
-				<static>Score</static>
-			</stringcontrol>
+			</basicnumberc>
+			<label_local_entry>
+				<anchored to="score" position="lefthigh" offset="10,5" />
+				<static textres="local_label_score" />
+			</label_local_entry>
 
-			<numbercontrol name="points">
-				<anchored>
-					<top>
-						<anchor>top</anchor>
-						<offset>4</offset>
-					</top>
-					<right>
-						<anchor>right</anchor>
-						<offset>-10</offset>
-					</right>
-					<size>
-						<width>46</width>
-						<height>34</height>
-					</size>
-				</anchored>
-				<frame>
-					<name>bonus</name>
-					<offset>2,2,2,2</offset>
-				</frame>
-				<font>diemod</font>
+			<basicnumberc name="points">
+				<bounds>-60,6,40,30</bounds>
 				<readonly />
-			</numbercontrol>
-			<stringcontrol>
-				<anchored>
-					<to>points</to>
-					<position>lefthigh</position>
-					<offset>12,12</offset>
-				</anchored>
-				<font>sheetlabel</font>
-				<static>Cost</static>
-			</stringcontrol>
+			</basicnumberc>
+			<label_local_entry>
+				<anchored to="points" position="lefthigh" offset="10,5" />
+				<static textres="local_label_cost" />
+			</label_local_entry>
 		</sheetdata>
 	</windowclass>
 
 	<windowclass name="statchat_pointmode_rangeentry">
 		<sizelimits>
-			<minimum>
-				<height>45</height>
-			</minimum>
+			<minimum height="45" />
 		</sizelimits>
 		<sheetdata>
-			<numbercontrol name="from">
-				<anchored>
-					<top>
-						<anchor>top</anchor>
-						<offset>4</offset>
-					</top>
-					<left>
-						<anchor>left</anchor>
-						<offset>20</offset>
-					</left>
-					<size>
-						<width>46</width>
-						<height>34</height>
-					</size>
-				</anchored>
-				<font>diemod</font>
+			<basicnumberc name="from">
+				<bounds>20,6,40,30</bounds>
 				<readonly />
-			</numbercontrol>
+			</basicnumberc>
 			
-			<stringcontrol name="dash">
-				<anchored>
-					<top>
-						<anchor>top</anchor>
-						<offset>16</offset>
-					</top>
-					<left>
-						<anchor>left</anchor>
-						<offset>73</offset>
-					</left>
-				</anchored>
-				<font>sheetlabel</font>
-				<static>to</static>
-			</stringcontrol>
-			<stringcontrol name="upto">
-				<anchored>
-					<top>
-						<anchor>top</anchor>
-						<offset>16</offset>
-					</top>
-					<left>
-						<anchor>left</anchor>
-						<offset>53</offset>
-					</left>
-				</anchored>
-				<font>sheetlabel</font>
-				<static>Up to</static>
+			<label_local_entry name="dash">
+				<anchored position="insidetopleft" offset="73,11" />
+				<static textres="local_label_to" />
+			</label_local_entry>
+			<label_local_entry name="upto">
+				<anchored position="insidetopleft" offset="53,11" />
+				<static textres="local_label_upto" />
 				<invisible />
-			</stringcontrol>
-
-			<numbercontrol name="to">
-				<anchored>
-					<top>
-						<anchor>top</anchor>
-						<offset>4</offset>
-					</top>
-					<left>
-						<anchor>left</anchor>
-						<offset>100</offset>
-					</left>
-					<size>
-						<width>46</width>
-						<height>34</height>
-					</size>
-				</anchored>
-				<frame>
-					<name>bonus</name>
-					<offset>2,2,2,2</offset>
-				</frame>
-				<stateframe>
-					<keyedit>
-						<name>sheetfocus</name>
-						<offset>2,2,2,2</offset>
-					</keyedit>
-				</stateframe>
-				<font>diemod</font>
+			</label_local_entry>
+			<basicnumberc name="to">
+				<bounds>100,6,40,30</bounds>
 				<script>
 					function onValueChanged()
 						window.windowlist.update();
 					end
 				</script>
-			</numbercontrol>
+			</basicnumberc>
 
-			<numbercontrol name="cost">
-				<anchored>
-					<top>
-						<anchor>top</anchor>
-						<offset>4</offset>
-					</top>
-					<right>
-						<anchor>right</anchor>
-						<offset>-15</offset>
-					</right>
-					<size>
-						<width>46</width>
-						<height>34</height>
-					</size>
-				</anchored>
-				<frame>
-					<name>bonus</name>
-					<offset>2,2,2,2</offset>
-				</frame>
-				<stateframe>
-					<keyedit>
-						<name>sheetfocus</name>
-						<offset>2,2,2,2</offset>
-					</keyedit>
-				</stateframe>
-				<font>diemod</font>
+			<basicnumberc name="cost">
+				<bounds>-65,6,40,30</bounds>
 				<script>
 					function onValueChanged()
 						window.windowlist.update();
 					end
 				</script>
-			</numbercontrol>
-
-			<stringcontrol>
-				<anchored>
-					<to>cost</to>
-					<position>lefthigh</position>
-					<offset>12,12</offset>
-				</anchored>
-				<font>sheetlabel</font>
-				<static>Point cost</static>
-			</stringcontrol>
+			</basicnumberc>
+			<label_local_entry>
+				<anchored to="cost" position="lefthigh" offset="10,5" />
+				<static textres="local_label_pointcost" />
+			</label_local_entry>
 		</sheetdata>
 	</windowclass>
 
 	<windowclass name="statchat_rollmode">
 		<sheetdata>
-			<stringcontrol>
-				<bounds>40,15,80,15</bounds>
-				<font>sheetlabelsmall</font>
-				<color>#ffffffff</color>
-				<static>Dice rolled</static>
-			</stringcontrol>
-			<stringcontrol>
-				<bounds>-66,15,50,15</bounds>
-				<font>sheetlabelsmall</font>
-				<color>#ffffffff</color>
-				<static>Score</static>
-			</stringcontrol>
+			<label_local>
+				<bounds>40,10,80,20</bounds>
+				<static textres="local_label_dicerolled" />
+			</label_local>
+			<label_local>
+				<bounds>-85,10,40,20</bounds>
+				<static textres="local_label_score" />
+				<center />
+			</label_local>
 
-			<!-- Roll mode contents -->
 			<windowlist name="rolls">
-				<bounds>0,31,371,479</bounds>
+				<anchored position="over">
+					<top offset="35" />
+					<right offset="-25" />
+					<bottom offset="-50" />
+				</anchored>
 				<class>statchat_rollmode_listentry</class>
 				<skipempty />
 				<script file="desktop/scripts/statchat_rollmode_rolls.lua" />
 				<noscroll />
+				<sortby>
+					<control desc="true">rolled</control>
+					<control>total</control>
+				</sortby>
 			</windowlist>
 
-			<numbercontrol name="rows">
-				<anchored>
-					<bottom>
-						<anchor>bottom</anchor>
-						<offset>-20</offset>
-					</bottom>
-					<left>
-						<anchor>left</anchor>
-						<offset>47</offset>
-					</left>
-					<size>
-						<width>28</width>
-						<height>24</height>
-					</size>
-				</anchored>
-				<frame>
-					<name>bonus</name>
-					<offset>2,2,2,2</offset>
-				</frame>
-				<stateframe>
-					<keyedit>
-						<name>sheetfocus</name>
-						<offset>2,2,2,2</offset>
-					</keyedit>
-				</stateframe>
-				<font>sheetnumber</font>
+			<label_local name="label_roll">
+				<anchored position="insidebottomleft" offset="25,22" />
+				<static textres="local_label_roll" />
+			</label_local>
+			<basicnumberc name="rows">
+				<anchored to="label_roll" position="righthigh" offset="10,0" width="16" height="20" />
 				<default>6</default>
 				<min>1</min>
 				<max>10</max>
@@ -353,46 +226,13 @@
 						onValueChanged();
 					end
 				</script>
-			</numbercontrol>
-			<stringcontrol>
-				<anchored>
-					<to>rows</to>
-					<position>lefthigh</position>
-					<offset>3,6</offset>
-				</anchored>
-				<font>hotkey</font>
-				<static>Roll</static>
-			</stringcontrol>
-			<stringcontrol>
-				<anchored>
-					<to>rows</to>
-					<position>righthigh</position>
-					<offset>3,6</offset>
-				</anchored>
-				<font>hotkey</font>
-				<static>scores of</static>
-			</stringcontrol>
-
-			<numbercontrol name="dice">
-				<anchored>
-					<to>rows</to>
-					<position>right</position>
-					<offset>50,0</offset>
-					<size>
-						<width>28</width>
-					</size>
-				</anchored>
-				<frame>
-					<name>bonus</name>
-					<offset>2,2,2,2</offset>
-				</frame>
-				<stateframe>
-					<keyedit>
-						<name>sheetfocus</name>
-						<offset>2,2,2,2</offset>
-					</keyedit>
-				</stateframe>
-				<font>sheetnumber</font>
+			</basicnumberc>
+			<label_local name="label_scoresof">
+				<anchored to="rows" position="righthigh" offset="10,0" />
+				<static textres="local_label_scoresof" />
+			</label_local>
+			<basicnumberc name="dice">
+				<anchored to="label_scoresof" position="righthigh" offset="10,0" width="16" height="20" />
 				<default>3</default>
 				<min>1</min>
 				<max>5</max>
@@ -406,37 +246,13 @@
 						onValueChanged();
 					end
 				</script>
-			</numbercontrol>
-			<stringcontrol>
-				<anchored>
-					<to>dice</to>
-					<position>righthigh</position>
-					<offset>3,6</offset>
-				</anchored>
-				<font>hotkey</font>
-				<static>dice, drop</static>
-			</stringcontrol>
-
-			<numbercontrol name="dropdice">
-				<anchored>
-					<to>dice</to>
-					<position>right</position>
-					<offset>54,0</offset>
-					<size>
-						<width>28</width>
-					</size>
-				</anchored>
-				<frame>
-					<name>bonus</name>
-					<offset>2,2,2,2</offset>
-				</frame>
-				<stateframe>
-					<keyedit>
-						<name>sheetfocus</name>
-						<offset>2,2,2,2</offset>
-					</keyedit>
-				</stateframe>
-				<font>sheetnumber</font>
+			</basicnumberc>
+			<label_local name="label_dicedrop">
+				<anchored to="dice" position="righthigh" offset="10,0" />
+				<static textres="local_label_dicedrop" />
+			</label_local>
+			<basicnumberc name="dropdice">
+				<anchored to="label_dicedrop" position="righthigh" offset="10,0" width="16" height="20" />
 				<min>0</min>
 				<script>
 					function onValueChanged()
@@ -454,95 +270,47 @@
 						onValueChanged();
 					end
 				</script>
-			</numbercontrol>
-			<stringcontrol>
-				<anchored>
-					<to>dropdice</to>
-					<position>righthigh</position>
-					<offset>3,6</offset>
-				</anchored>
-				<font>hotkey</font>
-				<static>and modify by</static>
-			</stringcontrol>
-
-			<numbercontrol name="modifier">
-				<anchored>
-					<to>dropdice</to>
-					<position>right</position>
-					<offset>73,0</offset>
-					<size>
-						<width>28</width>
-					</size>
-				</anchored>
-				<frame>
-					<name>bonus</name>
-					<offset>2,2,2,2</offset>
-				</frame>
-				<stateframe>
-					<keyedit>
-						<name>sheetfocus</name>
-						<offset>2,2,2,2</offset>
-					</keyedit>
-				</stateframe>
-				<font>sheetnumber</font>
+			</basicnumberc>
+			<label_local name="label_modifyby">
+				<anchored to="dropdice" position="righthigh" offset="10,0" />
+				<static textres="local_label_modifyby" />
+			</label_local>
+			<basicnumberc name="modifier">
+				<anchored to="label_modifyby" position="righthigh" offset="10,0" width="16" height="20" />
 				<script>
 					function onValueChanged()
 						window.rolls.updateModifiers();
 						window.rolls.updateTotals();
 					end
 				</script>
-			</numbercontrol>
-
-			<buttoncontrol>
-				<anchored>
-					<to>modifier</to>
-					<position>righthigh</position>
-					<offset>3,0</offset>
-					<size>
-						<width>33</width>
-						<height>26</height>
-					</size>
-				</anchored>
-				<icon>
-					<normal>button_ctnextactor</normal>
-					<pressed>button_ctnextactor_down</pressed>
-				</icon>
-				<tooltip>
-					<text>Sort</text>
-				</tooltip>
-				<script>
-					function onButtonPress()
-						window.rolls.sortTotals();
-					end
-				</script>
-			</buttoncontrol>
+			</basicnumberc>
 		</sheetdata>
 	</windowclass>
 
 	<windowclass name="statchat_pointmode">
 		<sheetdata>
+			<label_local name="label_score">
+				<bounds>100,10,40,20</bounds>
+				<static textres="local_label_score" />
+				<center />
+			</label_local>
+			<label_local name="label_cost">
+				<bounds>-80,10,40,20</bounds>
+				<static textres="local_label_cost" />
+				<center />
+			</label_local>
+
 			<windowlist name="scores">
-				<bounds>0,31,371,479</bounds>
+				<bounds>0,35,371,479</bounds>
 				<class>statchat_pointmode_listentry</class>
 				<skipempty />
 				<script file="desktop/scripts/statchat_pointmode_scores.lua" />
 				<noscroll />
 			</windowlist>
-			<stringcontrol name="costwarning">
-				<bounds>1,470,-1,15</bounds>
-				<font>sheetlabelsmall</font>
-				<color>#fff79063</color>
-				<static>Point costs are undefined</static>
-				<center />
-				<invisible />
-			</stringcontrol>
 			
 			<windowlist name="ranges">
 				<bounds>40,60,310,410</bounds>
-				<frame>
-					<name>tooltipbox</name>
-					<offset>10,25,15,15</offset>
-				</frame>
+				<frame name="tooltipbox" offset="10,25,15,15" />
 				<class>statchat_pointmode_rangeentry</class>
 				<skipempty />
 				<allowcreate />
@@ -551,44 +319,19 @@
 				<sortby><control>to</control></sortby>
 				<script file="desktop/scripts/statchat_pointmode_ranges.lua" />
 			</windowlist>
-			<stringcontrol name="rangelabel">
-				<anchored>
-					<to>ranges</to>
-					<position>above</position>
-				</anchored>
-				<font>sheetlabel</font>
-				<static>Point costs</static>
+			<label_local_entry name="rangelabel">
+				<anchored to="ranges" position="above" />
+				<static textres="local_label_pointcosts" />
 				<center />
 				<invisible />
-			</stringcontrol>
+			</label_local_entry>
 
-
-			<numbercontrol name="rows">
-				<anchored>
-					<bottom>
-						<anchor>bottom</anchor>
-						<offset>-20</offset>
-					</bottom>
-					<left>
-						<anchor>left</anchor>
-						<offset>62</offset>
-					</left>
-					<size>
-						<width>28</width>
-						<height>24</height>
-					</size>
-				</anchored>
-				<frame>
-					<name>bonus</name>
-					<offset>2,2,2,2</offset>
-				</frame>
-				<stateframe>
-					<keyedit>
-						<name>sheetfocus</name>
-						<offset>2,2,2,2</offset>
-					</keyedit>
-				</stateframe>
-				<font>sheetnumber</font>
+			<label_local name="label_assign">
+				<anchored position="insidebottomleft" offset="30,22" />
+				<static textres="local_label_assign" />
+			</label_local>
+			<basicnumberc name="rows">
+				<anchored to="label_assign" position="righthigh" offset="10,0" width="16" height="20" />
 				<default>6</default>
 				<min>1</min>
 				<max>10</max>
@@ -601,188 +344,135 @@
 						onValueChanged();
 					end
 				</script>
-			</numbercontrol>
-			<stringcontrol>
-				<anchored>
-					<to>rows</to>
-					<position>lefthigh</position>
-					<offset>3,6</offset>
-				</anchored>
-				<font>hotkey</font>
-				<static>Assign</static>
-			</stringcontrol>
-			<stringcontrol>
-				<anchored>
-					<to>rows</to>
-					<position>righthigh</position>
-					<offset>3,6</offset>
-				</anchored>
-				<font>hotkey</font>
-				<static>scores</static>
-			</stringcontrol>
-
-			<numbercontrol name="total">
-				<anchored>
-					<to>rows</to>
-					<position>right</position>
-					<offset>100,0</offset>
-					<size>
-						<width>34</width>
-					</size>
-				</anchored>
-				<frame>
-					<name>bonus</name>
-					<offset>2,2,2,2</offset>
-				</frame>
-				<font>sheetnumber</font>
+			</basicnumberc>
+			<label_local name="label_scores">
+				<anchored to="rows" position="righthigh" offset="10,0" />
+				<static textres="local_label_scores" />
+			</label_local>
+			<label_local name="label_currently">
+				<anchored to="label_scores" position="righthigh" offset="30,0" />
+				<static textres="local_label_currently" />
+			</label_local>
+			<basicnumberc name="total">
+				<anchored to="label_currently" position="righthigh" offset="10,0" width="16" height="20" />
 				<readonly />
-			</numbercontrol>
-			<stringcontrol>
-				<anchored>
-					<to>total</to>
-					<position>lefthigh</position>
-					<offset>3,6</offset>
-				</anchored>
-				<font>hotkey</font>
-				<static>Currently</static>
-			</stringcontrol>
-			<stringcontrol>
-				<anchored>
-					<to>total</to>
-					<position>righthigh</position>
-					<offset>3,6</offset>
-				</anchored>
-				<font>hotkey</font>
-				<static>points used</static>
-			</stringcontrol>
+			</basicnumberc>
+			<label_local name="label_pointsused">
+				<anchored to="total" position="righthigh" offset="10,0" />
+				<static textres="local_label_pointsused" />
+			</label_local>
 			
-			<button_checkbox>
-				<anchored>
-					<to>total</to>
-					<position>righthigh</position>
-					<offset>113,0</offset>
-					<size>
-						<width>33</width>
-						<height>26</height>
-					</size>
-				</anchored>
-				<parameters>
-					<icons>button_statpointmode_down</icons>
-					<defaulticon>button_statpointmode</defaulticon>
-					<tooltips>Define point ranges</tooltips>
-					<defaulttooltip>Define point ranges</defaulttooltip>
-				</parameters>
+			<buttoncontrol>
+				<anchored position="insidebottomright" offset="25,19" width="33" height="26" />
+				<state icon="button_statpointmode" />
+				<state icon="button_statpointmode_down" />
+				<default>1</default>
+				<tooltip textres="local_tooltip_definepoints" />
 				<script>
+					function onInit()
+						onValueChanged();
+					end
+					
 					function onValueChanged()
-						local state = getState();
+						local state = (getValue() == 1);
 						
+						window.label_score.setVisible(not state);
+						window.label_cost.setVisible(not state);
 						window.scores.setVisible(not state);
 						window.ranges.setVisible(state);
 						window.rangelabel.setVisible(state);
 					end
 				</script>
-			</button_checkbox>
+			</buttoncontrol>
 		</sheetdata>
 	</windowclass>
 
-	<windowclass name="statchat">
-		<frame>ctbox</frame>
+	<windowclass name="statchat_logmode">
 		<sheetdata>
-			<chatwindow name="chat">
-				<bounds>35,25,-35,-70</bounds>
-				<droptypes>
-					<type>dice</type>
-				</droptypes>
+			<statchat_chat_step name="chat">
+				<bounds>20,25,-30,-50</bounds>
 				<stateframe>
-					<drophilight>
-						<name>chatboxhilight</name>
-						<offset>-6,2,-3,9</offset>
-					</drophilight>
+					<drophilight name="chatboxhilight" offset="6,13,17,12" />
 				</stateframe>
 				<script file="desktop/scripts/statchat_window.lua" />
-			</chatwindow>
+			</statchat_chat_step>
+			<scrollbar name="chatscroll">
+				<bounds>-35,29,20,-54</bounds>
+				<target>chat</target>
+			</scrollbar>
 
-			<subwindow name="rollmode">
-				<anchored>
-					<position>over</position>
-				</anchored>
-				<class>statchat_rollmode</class>
-				<activate />
-			</subwindow>			
-			<subwindow name="pointmode">
-				<anchored>
-					<position>over</position>
-				</anchored>
-				<class>statchat_pointmode</class>
-			</subwindow>			
-
-			<genericcontrol>
-				<bounds>95,-65,87,15</bounds>
-				<icon>tabhorizontal</icon>
-				<script>
-					function onInit()
-						labelwidget = addTextWidget("sheetlabelsmall", "Points");
-						labelwidget.setPosition("center", 0, 1);
-					end
-					
-					function onClickDown(button, x, y)
-						return true;
-					end
-					
-					function onClickRelease(button, x, y)
-						window.rollmode.setVisible(false);
-						window.pointmode.setVisible(true);
-					
-						bringToFront();
-						return true;
-					end
-				</script>
-			</genericcontrol>
-			<genericcontrol>
-				<bounds>25,-65,87,15</bounds>
-				<icon>tabhorizontal</icon>
-				<script>
-					function onInit()
-						labelwidget = addTextWidget("sheetlabelsmall", "Rolls");
-						labelwidget.setPosition("center", 0, 1);
-					end
-					
-					function onClickDown(button, x, y)
-						return true;
-					end
-					
-					function onClickRelease(button, x, y)
-						window.rollmode.setVisible(true);
-						window.pointmode.setVisible(false);
-					
-						bringToFront();
-						return true;
-					end
-				</script>
-			</genericcontrol>
+			<chatentry name="entry">
+				<bounds>18,-32,-20,-14</bounds>
+				<chatwindow>chat</chatwindow>
+				<font>chatfont</font>
+				<script file="desktop/scripts/chat_entry.lua" />
+			</chatentry>
 		</sheetdata>
 	</windowclass>
-
-	<windowclass name="statdiecup">
-		<sizelimits>
-			<minimum>
-				<height>30</height>
-			</minimum>
-		</sizelimits>
-		<frame>collector</frame>
+	
+	<windowclass name="statchat">
+		<frame>chatbox</frame>
 		<sheetdata>
-			<diecontrol>
-				<bounds>0,0,-1,-1</bounds>
-				<droptypes>
-					<type>dice</type>
-				</droptypes>
-				<stateframe>
-					<drophilight>
-						<name>modstackfocus</name>
-						<offset>-3,-3,-2,-2</offset>
-					</drophilight>
-				</stateframe>
-			</diecontrol>
+			<subwindow name="logmode">
+				<anchored position="over" />
+				<class>statchat_logmode</class>
+				<activate />
+			</subwindow>			
+			<subwindow name="rollmode">
+				<anchored position="over" />
+				<class>statchat_rollmode</class>
+			</subwindow>			
+			<subwindow name="pointmode">
+				<anchored position="over" />
+				<class>statchat_pointmode</class>
+			</subwindow>			
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="statchat_tabs">
+		<sheetdata>
+			<tabh_local name="tab_points">
+				<bounds>165,0,87,15</bounds>
+				<textres>local_tab_points</textres>
+				<script>
+					function onButtonPress()
+						local w = Interface.findWindow("statchat", "");
+						w.setFrame("ctbox");
+						w.logmode.setVisible(false);
+						w.rollmode.setVisible(false);
+						w.pointmode.setVisible(true);
+						super.onButtonPress();
+					end
+				</script>
+			</tabh_local>
+			<tabh_local name="tab_rolls">
+				<bounds>95,0,87,15</bounds>
+				<textres>local_tab_rolls</textres>
+				<script>
+					function onButtonPress()
+						local w = Interface.findWindow("statchat", "");
+						w.setFrame("ctbox");
+						w.logmode.setVisible(false);
+						w.rollmode.setVisible(true);
+						w.pointmode.setVisible(false);
+						super.onButtonPress();
+					end
+				</script>
+			</tabh_local>
+			<tabh_local name="tab_log">
+				<bounds>25,0,87,15</bounds>
+				<textres>local_tab_log</textres>
+				<script>
+					function onButtonPress()
+						local w = Interface.findWindow("statchat", "");
+						w.setFrame("chatbox");
+						w.logmode.setVisible(true);
+						w.rollmode.setVisible(false);
+						w.pointmode.setVisible(false);
+						super.onButtonPress();
+					end
+				</script>
+			</tabh_local>
 		</sheetdata>
 	</windowclass>
 </root>

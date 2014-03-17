@@ -5,7 +5,7 @@
 
 function action(draginfo)
 	local aParty = {};
-	for _,v in pairs(window.partylist.getWindows()) do
+	for _,v in pairs(window.list.getWindows()) do
 		local rActor = ActorManager.getActor("pc", v.link.getTargetDatabaseNode());
 		if rActor then
 			table.insert(aParty, rActor);
@@ -16,16 +16,13 @@ function action(draginfo)
 	end
 	
 	local rAction = {};
-	rAction.label = "Party Attack";
+	rAction.label = Interface.getString("ps_label_groupatk");
 	rAction.modifier = window.bonus.getValue();
 	rAction.crit = 20;
 	
 	local rRoll = ActionAttack.getRoll(nil, rAction);
 	
-	local bSecretRoll = window.hiderollresults.getState();
-	if bSecretRoll then
-		rRoll.sDesc = "[GM] " .. rRoll.sDesc;
-	end
+	rRoll.bSecret = (window.hiderollresults.getValue() == 1);
 	
 	local sStackDesc, nStackMod = ModifierStack.getStack(true);
 	if sStackDesc ~= "" then
@@ -34,9 +31,8 @@ function action(draginfo)
 	rRoll.nMod = rRoll.nMod + nStackMod;
 	
 	for _,v in pairs(aParty) do
-		ActionsManager.handleActionNonDrag(nil, "attack", { rRoll }, nil, { { v } });
+		ActionsManager.actionDirect(nil, "attack", { rRoll }, { { v } });
 	end
-
 	return true;
 end
 

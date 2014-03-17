@@ -4,35 +4,30 @@
 --
 
 function onInit()
-	OptionsManager.registerCallback("SYSTEM", onSystemChanged);
+	OptionsManager.registerCallback("REVL", update);
+	
+	if not User.isHost() then
+		list.setAnchor("bottom", "sheetframe", "bottom", "absolute", -20);
+	end
+
 	onSystemChanged();
 end
 
 function onClose()
-	OptionsManager.unregisterCallback("SYSTEM", onSystemChanged);
+	OptionsManager.unregisterCallback("REVL", update);
+end
+
+function update()
+	hiderollresults.setVisible(OptionsManager.isOption("REVL", "on"));
 end
 
 function onSystemChanged()
-	local bPFMode = OptionsManager.isOption("SYSTEM", "pf");
-	
+	local bPFMode = DataCommon.isPFRPG();
 	cmdlabel.setVisible(bPFMode);
-	
-	for _,w in pairs(partylist.getWindows()) do
-		w.onSystemChanged(bPFMode);
-	end
 end
 
 function onSubwindowInstantiated()
-	for _,v in pairs(partylist.getWindows()) do
-		v.onXPChanged();
-		v.onHPChanged();
+	for _,v in pairs(list.getWindows()) do
+		v.onHealthChanged();
 	end
-end
-
-function clearEffect()
-	effectduration.setValue(1);
-	effectunit.setStringValue("");
-	effectisgmonly.setState(0);
-	effectapply.setStringValue("");
-	effectlabel.setValue("");
 end

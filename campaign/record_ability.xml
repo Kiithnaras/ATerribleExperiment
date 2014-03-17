@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="ref_ability">
+		<frame>referencepage</frame>
+		<placement>
+			<size width="400" height="350" />
+		</placement>
+		<sizelimits>
+			<dynamic />
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip field="value" />
+		<script>
+			function onInit()
+				local sNode = getDatabaseNode().getNodeName();
+				DB.addHandler(sNode .. ".locked", "onUpdate", onLockChanged);
+				onLockChanged();
+			end
+
+			function onClose()
+				local sNode = getDatabaseNode().getNodeName();
+				DB.removeHandler(sNode .. ".locked", "onUpdate", onLockChanged);
+			end
+
+			function onLockChanged()
+				if header.subwindow then
+					header.subwindow.update();
+				end
+				
+				local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
+				description.setReadOnly(bReadOnly);
+			end
+		</script>
+		<sheetdata>
+			<sub_record_header name="header">
+				<class>ability_header</class>
+			</sub_record_header>
+
+			<stringfield name="description">
+				<anchored>
+					<top parent="header" anchor="bottom" offset="15" />
+					<left offset="35" />
+					<right offset="-40" />
+					<bottom offset="-35" />
+				</anchored>
+				<frame name="groupbox" offset="15,15,20,15" />
+				<font>reference-r</font>
+				<selectioncolor>FFD296</selectioncolor>
+				<multilinespacing>20</multilinespacing>
+			</stringfield>
+			<scrollbar>
+				<anchored to="description" position="right" offset="-5,-5" />
+				<target>description</target>
+			</scrollbar>
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="ability_header">
+		<margins control="0,0,0,7" />
+		<script>
+			function onInit()
+				update();
+			end
+			function update()
+				local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
+				value.setReadOnly(bReadOnly);
+			end
+		</script>
+		<sheetdata>
+			<link_record_header>
+				<class>ref_ability</class>
+				<description field="value" />
+			</link_record_header>
+
+			<string_record_name name="value">
+				<anchored>
+					<top offset="5"/>
+					<left offset="40" />
+					<right offset="-40" />
+				</anchored>
+			</string_record_name>
+
+			<icon_record_locked name="hardlocked">
+				<bounds>-25,5,20,20</bounds>
+			</icon_record_locked>
+			<button_record_locked name="locked">
+				<bounds>-25,5,20,20</bounds>
+			</button_record_locked>
+		</sheetdata>
+	</windowclass>
+</root>

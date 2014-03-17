@@ -8,15 +8,15 @@ OOB_MSGTYPE_APPLYINIT = "applyinit";
 function onInit()
 	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_APPLYINIT, handleApplyInit);
 
-	ActionsManager.registerActionIcon("init", "action_roll");
 	ActionsManager.registerModHandler("init", modRoll);
 	ActionsManager.registerResultHandler("init", onResolve);
 end
 
 function handleApplyInit(msgOOB)
+	local rSource = ActorManager.getActor(msgOOB.sSourceType, msgOOB.sSourceNode);
 	local nTotal = tonumber(msgOOB.nTotal) or 0;
 
-	DB.setValue(msgOOB.sSourceCTNode .. ".initresult", "number", nTotal);
+	DB.setValue(ActorManager.getCTNode(rSource), "initresult", "number", nTotal);
 end
 
 function notifyApplyInit(rSource, nTotal)
@@ -28,35 +28,33 @@ function notifyApplyInit(rSource, nTotal)
 	msgOOB.type = OOB_MSGTYPE_APPLYINIT;
 	
 	msgOOB.nTotal = nTotal;
-	msgOOB.sSourceCTNode = rSource.sCTNode;
+
+	local sSourceType, sSourceNode = ActorManager.getTypeAndNodeName(rSource);
+	msgOOB.sSourceType = sSourceType;
+	msgOOB.sSourceNode = sSourceNode;
 
 	Comm.deliverOOBMessage(msgOOB, "");
 end
 
-function performRoll(draginfo, rActor, bSecretRoll)
-	-- Build the basic roll
+function getRoll(rActor, bSecretRoll)
 	local rRoll = {};
-	rRoll.aDice = { "d6","d6","d6" };
+	rRoll.sType = "init";
+	rRoll.aDice = { "d20" };
 	rRoll.nMod = 0;
 	
-	-- Build the description
 	rRoll.sDesc = "[INIT]";
-	if bSecretRoll then
-		rRoll.sDesc = "[GM] " .. rRoll.sDesc;
-	end
+	
+	rRoll.bSecret = bSecretRoll;
 
 	-- Determine the modifier and ability to use for this roll
 	local sAbility = nil;
-	if rActor then
-		if rActor.sType == "pc" then
-			rRoll.nMod = DB.getValue(rActor.nodeCreature, "initiative.total", 0);
-			sAbility = DB.getValue(rActor.nodeCreature, "initiative.ability", "");
-		elseif rActor.sType == "ct" or rActor.sType == "npc" then
-			if rActor.nodeCT then
-				rRoll.nMod = DB.getValue(rActor.nodeCT, "init", 0);
-			else
-				rRoll.nMod = DB.getValue(rActor.nodeCreature, "init", 0);
-			end
+	local sActorType, nodeActor = ActorManager.getTypeAndNode(rActor);
+	if nodeActor then
+		if sActorType == "pc" then
+			rRoll.nMod = DB.getValue(nodeActor, "initiative.total", 0);
+			sAbility = DB.getValue(nodeActor, "initiative.ability", "");
+		else
+			rRoll.nMod = DB.getValue(nodeActor, "init", 0);
 		end
 	end
 	if sAbility and sAbility ~= "" and sAbility ~= "dexterity" then
@@ -65,16 +63,17 @@ function performRoll(draginfo, rActor, bSecretRoll)
 			rRoll.sDesc = rRoll.sDesc .. " [MOD:" .. sAbilityEffect .. "]";
 		end
 	end
+
+	return rRoll;
+end
+
+function performRoll(draginfo, rActor, bSecretRoll)
+	local rRoll = getRoll(rActor, bSecretRoll);
 	
-	-- Make the roll
-	ActionsManager.performSingleRollAction(draginfo, rActor, "init", rRoll);
+	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
 function modRoll(rSource, rTarget, rRoll)
-	if rTarget and rTarget.nOrder then
-		return;
-	end
-	
 	if rSource then
 		local bEffects = false;
 
@@ -89,7 +88,7 @@ function modRoll(rSource, rTarget, rRoll)
 		end
 		
 		-- DETERMINE EFFECTS
-		local aAddDice, nAddMod, nEffectCount = EffectsManager.getEffectsBonus(rSource, {"INIT"});
+		local aAddDice, nAddMod, nEffectCount = EffectManager.getEffectsBonus(rSource, {"INIT"});
 		if nEffectCount > 0 then
 			bEffects = true;
 			for _,vDie in ipairs(aAddDice) do
@@ -98,8 +97,14 @@ function modRoll(rSource, rTarget, rRoll)
 			rRoll.nMod = rRoll.nMod + nAddMod;
 		end
 		
+		-- Get condition modifiers
+		if EffectManager.hasEffectCondition(rSource, "Deafened") then
+			bEffects = true;
+			rRoll.nMod = rRoll.nMod - 4;
+		end
+		
 		-- GET STAT MODIFIERS
-		local nBonusStat, nBonusEffects = ActorManager.getAbilityEffectsBonus(rSource, sActionStat);
+		local nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, sActionStat);
 		if nBonusEffects > 0 then
 			bEffects = true;
 			rRoll.nMod = rRoll.nMod + nBonusStat;
@@ -110,9 +115,9 @@ function modRoll(rSource, rTarget, rRoll)
 			local sEffects = "";
 			local sMod = StringManager.convertDiceToString(aAddDice, nAddMod, true);
 			if sMod ~= "" then
-				sEffects = "[EFFECTS " .. sMod .. "]";
+				sEffects = "[" .. Interface.getString("effects_tag") .. " " .. sMod .. "]";
 			else
-				sEffects = "[EFFECTS]";
+				sEffects = "[" .. Interface.getString("effects_tag") .. "]";
 			end
 			rRoll.sDesc = rRoll.sDesc .. " " .. sEffects;
 		end

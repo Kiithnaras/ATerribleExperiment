@@ -6,386 +6,25 @@
 -->
 
 <root>
-	<windowclass name="clienttracker_entry">
-		<frame>ctentrybox</frame>
-		<sizelimits>
-			<minimum>
-				<height>32</height>
-			</minimum>
-		</sizelimits>
-		<script file="ct/scripts/clientct_entry.lua" />
-		<sheetdata>
-			<!-- Hidden fields -->
-			<hs name="type">
-				<script>
-					function onValueChanged()
-						window.onTypeChanged();
-					end
-				</script>
-			</hs>
-			<hs name="tokenrefid" />
-			<hs name="tokenrefnode" />
-			<hlink name="link" />
-			<hn name="init" />
-			<hn name="show_npc" />
-
-			<spacer name="active_spacer_top">
-				<height>5</height>
-				<invisible />
-			</spacer>
-			
-			<!-- ACTIVE INDICATOR -->
-			<hn name="active">
-				<script>
-					function onValueChanged()
-						window.onActiveChanged();
-					end
-				</script>
-			</hn>
-			<genericcontrol name="passive_icon">
-				<anchored>
-					<top>
-						<parent>active_spacer_top</parent>
-						<anchor>bottom</anchor>
-					</top>
-					<left />
-					<size>
-						<width>33</width>
-						<height>40</height>
-					</size>
-				</anchored>
-				<icon>indicator_ctpassive</icon>
-			</genericcontrol>
-			<genericcontrol name="active_icon">
-				<anchored>
-					<top>
-						<parent>active_spacer_top</parent>
-						<anchor>bottom</anchor>
-					</top>
-					<left />
-					<size>
-						<width>33</width>
-						<height>40</height>
-					</size>
-				</anchored>
-				<icon>indicator_ctactive</icon>
-				<invisible />
-			</genericcontrol>
-
-			<!-- Basics -->
-			<tokenfield name="token">
-				<anchored>
-					<top>
-						<parent>active_spacer_top</parent>
-						<anchor>bottom</anchor>
-						<offset>7</offset>
-					</top>
-					<left><offset>33</offset></left>
-					<size>
-						<height>25</height>
-						<width>25</width>
-					</size>
-				</anchored>
-				<empty>indicator_emptytoken</empty>
-				<nodrag />
-				<nodrop />
-			</tokenfield>
-
-			<hs name="friendfoe">
-				<script>
-					function onValueChanged()
-						window.onFactionChanged();
-					end
-				</script>
-			</hs>
-			<genericcontrol name="friendfoe_icon">
-				<anchored>
-					<top>
-						<parent>active_spacer_top</parent>
-						<anchor>bottom</anchor>
-						<offset>8</offset>
-					</top>
-					<right><offset>-10</offset></right>
-					<size>
-						<width>20</width>
-						<height>20</height>
-					</size>
-				</anchored>
-				<script>
-					function updateIcon(value)
-						if value == "friend" then
-							setIcon("indicator_ctfffriend");
-							setTooltipText("Friendly");
-						elseif value == "neutral" then
-							setIcon("indicator_ctffneutral");
-							setTooltipText("Neutral");
-						elseif value == "foe" then
-							setIcon("indicator_ctfffoe");
-							setTooltipText("Hostile");
-						else
-							setIcon("indicator_ctffempty");
-							setTooltipText("");
-						end
-					end
-				</script>
-			</genericcontrol>
-
-			<number_ct_static name="wounds">
-				<anchored>
-					<right>
-						<parent>friendfoe_icon</parent>
-						<anchor>left</anchor>
-						<offset>-8</offset>
-					</right>
-					<top>
-						<parent>active_spacer_top</parent>
-						<anchor>bottom</anchor>
-						<offset>7</offset>
-					</top>
-					<size>
-						<width>34</width>
-						<height>23</height>
-					</size>
-				</anchored>
-				<script>
-					function onValueChanged()
-						window.onWoundsChanged();
-					end
-				</script>
-			</number_ct_static>
-			<number_ct_static name="nonlethal">
-				<anchored>
-					<right>
-						<parent>wounds</parent>
-						<anchor>left</anchor>
-					</right>
-					<top>
-						<parent>active_spacer_top</parent>
-						<anchor>bottom</anchor>
-						<offset>7</offset>
-					</top>
-					<size>
-						<width>34</width>
-						<height>23</height>
-					</size>
-				</anchored>
-				<script>
-					function onValueChanged()
-						window.onWoundsChanged();
-					end
-				</script>
-			</number_ct_static>
-			<number_ct_static name="hptemp">
-				<anchored>
-					<right>
-						<parent>nonlethal</parent>
-						<anchor>left</anchor>
-					</right>
-					<top>
-						<parent>active_spacer_top</parent>
-						<anchor>bottom</anchor>
-						<offset>7</offset>
-					</top>
-					<size>
-						<width>34</width>
-						<height>23</height>
-					</size>
-				</anchored>
-				<color>#FF0000AA</color>
-				<script>
-					function onValueChanged()
-						window.onWoundsChanged();
-					end
-				</script>
-			</number_ct_static>
-			<number_ct_static name="hp">
-				<anchored>
-					<right>
-						<parent>hptemp</parent>
-						<anchor>left</anchor>
-					</right>
-					<top>
-						<parent>active_spacer_top</parent>
-						<anchor>bottom</anchor>
-						<offset>7</offset>
-					</top>
-					<size>
-						<width>34</width>
-						<height>23</height>
-					</size>
-				</anchored>
-				<script>
-					function onValueChanged()
-						window.onWoundsChanged();
-					end
-				</script>
-			</number_ct_static>
-
-			<number_ct_static name="initresult">
-				<anchored>
-					<right>
-						<parent>friendfoe_icon</parent>
-						<anchor>left</anchor>
-						<offset>-142</offset>
-					</right>
-					<top>
-						<parent>active_spacer_top</parent>
-						<anchor>bottom</anchor>
-						<offset>7</offset>
-					</top>
-					<size>
-						<width>34</width>
-						<height>23</height>
-					</size>
-				</anchored>
-				<script>
-					function onValueChanged()
-						window.windowlist.applySort();
-					end
-				</script>
-			</number_ct_static>
-
-			<stringu_sm name="name">
-				<anchored>
-					<top>
-						<parent>active_spacer_top</parent>
-						<anchor>bottom</anchor>
-						<offset>12</offset>
-					</top>
-					<left>
-						<parent>token</parent>
-						<anchor>right</anchor>
-						<offset>2</offset>
-					</left>
-					<right>
-						<parent>initresult</parent>
-						<anchor>left</anchor>
-						<offset>-4</offset>
-					</right>
-					<size>
-						<height>20</height>
-					</size>
-				</anchored>
-				<font>ct_name</font>
-				<static />
-			</stringu_sm>
-
-			<stringfield name="status">
-				<anchored>
-					<top>
-						<parent>active_spacer_top</parent>
-						<anchor>bottom</anchor>
-						<offset>12</offset>
-					</top>
-					<left>
-						<parent>initresult</parent>
-						<anchor>right</anchor>
-						<offset>9</offset>
-					</left>
-					<right>
-						<offset>-38</offset>
-					</right>
-					<size>
-						<height>15</height>
-					</size>
-				</anchored>
-				<frame>
-					<name>modifier</name>
-					<offset>7,6,7,5</offset>
-				</frame>
-				<font>ct_text</font>
-				<center />
-				<invisible />
-				<static />
-			</stringfield>
-
-			<stringcontrol name="effects_label">
-				<anchored>
-					<left>
-						<parent>name</parent>
-						<anchor>left</anchor>
-						<offset>5</offset>
-					</left>
-					<top>
-						<parent>name</parent>
-						<anchor>bottom</anchor>
-					</top>
-					<size>
-						<width>40</width>
-						<height>14</height>
-					</size>
-				</anchored>
-				<font>sheetlabelsmall</font>
-				<static>Effects:</static>
-				<invisible />
-				<nodrag />
-				<nodragselect />
-			</stringcontrol>
-			<stringcontrol name="effects_str">
-				<anchored>
-					<left>
-						<parent>name</parent>
-						<anchor>left</anchor>
-						<offset>50</offset>
-					</left>
-					<top>
-						<parent>name</parent>
-						<anchor>bottom</anchor>
-						<relation>relative</relation>
-					</top>
-					<right>
-						<anchor>right</anchor>
-						<offset>-10</offset>
-					</right>
-				</anchored>
-				<font>sheetlabelsmall</font>
-				<multilinespacing>14</multilinespacing>
-				<invisible />
-				<static />
-				<nodrag />
-				<nodragselect />
-			</stringcontrol>
-
-			<spacer name="spacer">
-				<anchor>name</anchor>
-				<relative />
-				<height>7</height>
-			</spacer>
-			
-			<spacer name="active_spacer_bottom">
-				<anchor>name</anchor>
-				<relative />
-				<height>5</height>
-				<invisible />
-			</spacer>
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="clienttracker_window">
+	<windowclass name="combattracker_client">
 		<frame>ctbox</frame>
 		<placement>
-			<size>
-				<width>527</width>
-				<height>512</height>
-			</size>
+			<size width="500" height="500" />
 		</placement>
 		<sizelimits>
-			<minimum>
-				<width>320</width>
-				<height>210</height>
-			</minimum>
-			<maximum>
-				<height>10000</height>
-			</maximum>
+			<minimum width="350" height="350" />
 			<dynamic />
 		</sizelimits>
-		<minimize>minimized_combat</minimize>
 		<softclose />
 		<nodelete />
 		<script>
 			function onInit()
 				OptionsManager.registerCallback("SHPH", updateHealthDisplay);
 				updateHealthDisplay();
+			end
+			
+			function onClose()
+				OptionsManager.unregisterCallback("SHPH", updateHealthDisplay);
 			end
 			
 			function updateHealthDisplay()
@@ -398,155 +37,240 @@
 
 				label_status.setVisible(not bOption);
 
-				for k,w in pairs(list.getWindows()) do
+				for _,w in pairs(list.getWindows()) do
 					w.updateHealthDisplay();
 				end
 			end
 		</script>
 		<sheetdata>
-			<!-- WINDOW TITLE -->
 			<windowtitlebar>
-				<title>
-					<text>Combat Tracker</text>
-				</title>
+				<resource>ct_window_title</resource>
 			</windowtitlebar>
 
-			<!-- HEADER LABELS -->
-			<stringcontrol name="label_name">
-				<bounds>60,48,30,10</bounds>
-				<font>ct_header</font>
-				<static>Name</static>
-			</stringcontrol>
-			<stringcontrol name="label_init">
-				<anchored>
-					<right>
-						<anchor>right</anchor>
-						<offset>-202</offset>
-					</right>
-					<top>
-						<anchor>top</anchor>
-						<offset>48</offset>
-					</top>
-				</anchored>
-				<font>ct_header</font>
-				<static>Init</static>
-			</stringcontrol>
-			<stringcontrol name="label_hp">
-				<anchored>
-					<right>
-						<anchor>right</anchor>
-						<offset>-170</offset>
-					</right>
-					<top>
-						<anchor>top</anchor>
-						<offset>48</offset>
-					</top>
-				</anchored>
-				<font>ct_header</font>
-				<static>HP</static>
-			</stringcontrol>
-			<stringcontrol name="label_temp">
-				<anchored>
-					<right>
-						<anchor>right</anchor>
-						<offset>-130</offset>
-					</right>
-					<top>
-						<anchor>top</anchor>
-						<offset>48</offset>
-					</top>
-				</anchored>
-				<font>ct_header</font>
-				<static>Temp</static>
-			</stringcontrol>
-			<stringcontrol name="label_nonlethal">
-				<anchored>
-					<right>
-						<anchor>right</anchor>
-						<offset>-97</offset>
-					</right>
-					<top>
-						<anchor>top</anchor>
-						<offset>48</offset>
-					</top>
-				</anchored>
-				<font>ct_header</font>
-				<static>Subd</static>
-			</stringcontrol>
-			<stringcontrol name="label_wounds">
-				<anchored>
-					<right>
-						<anchor>right</anchor>
-						<offset>-65</offset>
-					</right>
-					<top>
-						<anchor>top</anchor>
-						<offset>48</offset>
-					</top>
-				</anchored>
-				<font>ct_header</font>
-				<static>Wnd</static>
-			</stringcontrol>
-			<stringcontrol name="label_status">
-				<anchored>
-					<right>
-						<anchor>right</anchor>
-						<offset>-106</offset>
-					</right>
-					<top>
-						<anchor>top</anchor>
-						<offset>48</offset>
-					</top>
-				</anchored>
-				<font>ct_header</font>
-				<static>Status</static>
-			</stringcontrol>
+			<label_ct name="label_name">
+				<bounds>63,38,-265,20</bounds>
+				<static textres="ct_label_name" />
+				<center />
+			</label_ct>
+			<label_ct name="label_init">
+				<anchored position="insidetopright" offset="225,38" width="30" />
+				<static textres="init" />
+				<center />
+			</label_ct>
+			<label_ct name="label_hp">
+				<anchored position="insidetopright" offset="180,38" width="30" />
+				<static textres="hp" />
+				<tooltip textres="hitpoints" />
+				<center />
+			</label_ct>
+			<label_ct name="label_temp">
+				<anchored position="insidetopright" offset="140,38" width="30" />
+				<static textres="ct_label_hptemp" />
+				<tooltip textres="ct_tooltip_hptemp" />
+				<center />
+			</label_ct>
+			<label_ct name="label_nonlethal">
+				<anchored position="insidetopright" offset="100,38" width="30" />
+				<static textres="ct_label_nonlethal" />
+				<tooltip textres="ct_tooltip_nonlethal" />
+				<center />
+			</label_ct>
+			<label_ct name="label_wounds">
+				<anchored position="insidetopright" offset="60,38" width="30" />
+				<static textres="ct_label_wounds" />
+				<tooltip textres="ct_tooltip_wounds" />
+				<center />
+			</label_ct>
+			<label_ct name="label_status">
+				<anchored position="insidetopright" offset="60,38" width="150" />
+				<static textres="ct_label_status" />
+				<center />
+			</label_ct>
 
 			<windowlist name="list">
-				<class>clienttracker_entry</class>
-				<datasource>.</datasource>
-				<skipempty />
 				<bounds>0,65,-20,-55</bounds>
+				<datasource>.list</datasource>
+				<class>client_ct_entry</class>
 				<script file="ct/scripts/clientct.lua" />
 			</windowlist>
-			<scrollbar>
-				<bounds>-26,65,20,-60</bounds>
-				<target>list</target>
-			</scrollbar>
+			<scrollbar_list />
 			
-			<buttoncontrol name="turn_complete">
+			<button_ct_endturn name="turn_complete">
 				<bounds>62,-45,33,26</bounds>
-				<icon>
-					<normal>button_ctnextactor</normal>
-					<pressed>button_ctnextactor_down</pressed>
-				</icon>
-				<tooltip>
-					<text>Turn complete</text>
-				</tooltip>
-				<script>
-					function onButtonPress()
-						CTManager.notifyEndTurn();
-					end
-				</script>
-			</buttoncontrol>
+			</button_ct_endturn>
 			
-			<stringcontrol name="roundcounterlabel">
-				<bounds>-158,-39,50,15</bounds>
-				<font>ct_label</font>
-				<static>Round</static>
-			</stringcontrol>
-			<number name="roundcounter" source="..combattracker_props.round">
+			<label_ct name="roundcounterlabel">
+				<bounds>-158,-39,50,20</bounds>
+				<static textres="ct_label_round" />
+			</label_ct>
+			<simplenumber name="round">
 				<bounds>-108,-45,40,25</bounds>
-				<frame>
-					<name>ctwindow_sheetgroup</name>
-					<offset>3,3,3,3</offset>
-				</frame>
-				<font>ct_labelnumber</font>
+				<frame name="ct_groupbox" offset="3,3,3,3" />
 				<gmeditonly />
-			</number>
+			</simplenumber>
 
 			<resize_ctbox />
-			<close_combattracker />
+			<close_ctbox />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="client_ct_entry">
+		<margins control="0,0,0,2" />
+		<frame>ctentrybox</frame>
+		<script file="ct/scripts/clientct_entry.lua" />
+		<sheetdata>
+			<hs name="tokenrefid" />
+			<hs name="tokenrefnode" />
+			<hn name="tokenvis" />
+			<hlink name="link" />
+			<hn name="init" />
+
+			<genericcontrol name="active_spacer_top">
+				<anchored width="0" height="5">
+					<top />
+					<left />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+			
+			<button_ctentry_client_active name="active">
+				<anchored width="33" height="40">
+					<top parent="active_spacer_top" anchor="bottom" />
+					<left />
+				</anchored>
+			</button_ctentry_client_active>
+			<token_ctentry_client name="token">
+				<anchored width="25" height="25">
+					<top parent="active_spacer_top" anchor="bottom" offset="7" />
+					<left offset="33" />
+				</anchored>
+			</token_ctentry_client>
+
+			<genericcontrol name="rightanchor">
+				<anchored width="0" height="0">
+					<top parent="active_spacer_top" anchor="bottom" offset="10" />
+					<right />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+			<button_ctentry_friendfoe name="friendfoe">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-10" />
+				</anchored>
+			</button_ctentry_friendfoe>
+			<number_ct_static name="wounds">
+				<anchored to="rightanchor" width="30" height="20">
+					<top />
+					<right anchor="left" relation="relative" offset="-10" />
+				</anchored>
+				<script>
+					function onValueChanged()
+						window.onHealthChanged();
+					end
+				</script>
+			</number_ct_static>
+			<number_ct_static name="nonlethal">
+				<anchored to="rightanchor" width="30" height="20">
+					<top />
+					<right anchor="left" relation="relative" offset="-10" />
+				</anchored>
+				<script>
+					function onValueChanged()
+						window.onHealthChanged();
+					end
+				</script>
+			</number_ct_static>
+			<number_ct_static name="hptemp">
+				<anchored to="rightanchor" width="30" height="20">
+					<top />
+					<right anchor="left" relation="relative" offset="-10" />
+				</anchored>
+				<color>0000AA</color>
+				<script>
+					function onValueChanged()
+						window.onHealthChanged();
+					end
+				</script>
+			</number_ct_static>
+			<number_ct_static name="hp">
+				<anchored to="rightanchor" width="30" height="20">
+					<top />
+					<right anchor="left" relation="relative" offset="-10" />
+				</anchored>
+				<script>
+					function onValueChanged()
+						window.onHealthChanged();
+					end
+				</script>
+			</number_ct_static>
+			<simplestring name="status">
+				<anchored to="rightanchor" width="150" height="20">
+					<top />
+					<right anchor="left" relation="relative" offset="-10" />
+				</anchored>
+				<frame name="fieldlight" offset="7,5,7,5" />
+				<center />
+				<static />
+				<invisible />
+			</simplestring>
+			<number_ct_static name="initresult">
+				<anchored to="rightanchor" width="30" height="20">
+					<top />
+					<right anchor="left" relation="relative" offset="-15" />
+				</anchored>
+				<script>
+					function onValueChanged()
+						window.windowlist.applySort();
+					end
+				</script>
+			</number_ct_static>
+
+			<stringu name="name">
+				<anchored height="20">
+					<top parent="active_spacer_top" anchor="bottom" offset="10" />
+					<left parent="token" anchor="right" offset="5" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-10" />
+				</anchored>
+				<readonly />
+			</stringu>
+
+			<label name="effects_label">
+				<anchored>
+					<top parent="name" anchor="bottom" relation="current" offset="2" />
+					<left offset="63" />
+				</anchored>
+				<static textres="ct_label_effects" />
+				<nodrag />
+				<invisible />
+			</label>
+			<stringcontrol name="effects_str">
+				<anchored>
+					<top parent="name" anchor="bottom" relation="relative" offset="2" />
+					<left parent="effects_label" anchor="right" offset="5" />
+					<right offset="-10" />
+				</anchored>
+				<multilinespacing>20</multilinespacing>
+				<font>sheettext</font>
+				<static />
+				<nodrag />
+				<invisible />
+			</stringcontrol>
+
+			<genericcontrol name="spacer">
+				<anchored width="0" height="7">
+					<top parent="name" anchor="bottom" relation="relative" />
+					<left />
+				</anchored>
+			</genericcontrol>
+
+			<genericcontrol name="active_spacer_bottom">
+				<anchored width="0" height="5">
+					<top parent="name" anchor="bottom" relation="relative" />
+					<left />
+				</anchored>
+				<invisible />
+			</genericcontrol>
 		</sheetdata>
 	</windowclass>
 </root>

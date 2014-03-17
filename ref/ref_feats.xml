@@ -6,95 +6,112 @@
 -->
 
 <root>
-	<windowclass name="referencefeatcontent">
+	<windowclass name="referencefeat">
+		<frame>referencepage</frame>
+		<placement>
+			<size width="400" height="350" />
+		</placement>
+		<sizelimits>
+			<dynamic />
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip field="name" />
+		<nodelete />
+		<sheetdata>
+			<sub_ref_header name="header">
+				<class>ref_feat_header</class>
+			</sub_ref_header>
+
+			<sub_ref_content name="content">
+				<class>ref_feat_stats</class>
+			</sub_ref_content>
+			<scrollbar_ref_content />
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="ref_feat_header">
+		<margins control="0,0,0,7" />
+		<sheetdata>
+			<link_record_header>
+				<class>referencefeat</class>
+			</link_record_header>
+			<string_record_name name="name">
+				<anchored>
+					<top offset="5"/>
+					<left offset="40" />
+					<right offset="-25" />
+				</anchored>
+				<static />
+			</string_record_name>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="ref_feat_stats">
 		<script>
 			function onInit()
-				label_type.setValue("[" .. type.getValue() .. "]");
+				type_label.setValue("[" .. type.getValue() .. "]");
 			end
 		</script>
 		<sheetdata>
 			<anchor_column name="columnanchor" />
 			
 			<hs name="type" />
-			<label_reftype name="label_type" />
-
-			<spacer>
-				<anchor>columnanchor</anchor>
-				<height>5</height>
-				<relative />
-			</spacer>
 			
-			<string_column name="prerequisites" />
-			<label_column>
-				<anchor>prerequisites</anchor>
-				<static>Prerequisites</static>
+			<label_column name="type_label">
+				<anchored>
+					<top relation="relative" offset="7" />
+				</anchored>
+				<font>reference-b-large</font>
 			</label_column>
+
+			<label_column name="prerequisites_label">
+				<static textres="ref_label_prereq" />
+			</label_column>
+			<string_columnh name="prerequisites">
+				<readonly />
+			</string_columnh>
 			
 			<line_column name="line_benefit" />
 
-			<label_refdesc name="label_benefit">
-				<static>Benefit</static>
-			</label_refdesc>
-			<ft_refdesc name="benefit">
-				<label>label_benefit</label>
+			<label_column name="benefit_label">
+				<static textres="ref_label_benefit" />
+			</label_column>
+			<ft_columnh name="benefit">
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="27" />
+				</anchored>
 				<separator>line_benefit</separator>
-			</ft_refdesc>
+				<readonly />
+			</ft_columnh>
 
 			<line_column name="line_normal" />
 
-			<label_refdesc name="label_normal">
-				<static>Normal</static>
-			</label_refdesc>
-			<ft_refdesc name="normal">
-				<label>label_normal</label>
+			<label_column name="normal_label">
+				<static textres="ref_label_normal" />
+			</label_column>
+			<ft_columnh name="normal">
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="27" />
+				</anchored>
 				<separator>line_normal</separator>
-			</ft_refdesc>
+				<readonly />
+			</ft_columnh>
 
 			<line_column name="line_special" />
 
-			<label_refdesc name="label_special">
-				<static>Special</static>
-			</label_refdesc>
-			<ft_refdesc name="special">
-				<label>label_special</label>
+			<label_column name="special_label">
+				<static textres="ref_label_special" />
+			</label_column>
+			<ft_columnh name="special">
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="27" />
+				</anchored>
 				<separator>line_special</separator>
-			</ft_refdesc>
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="referencefeat">
-		<frame>whitecontrolarea</frame>
-		<placement>
-			<size>
-				<width>400</width>
-				<height>350</height>
-			</size>
-		</placement>
-		<sizelimits>
-			<dynamic />
-		</sizelimits>
-		<minimize>minimized_reference</minimize>
-		<tooltip>
-			<field>name</field>
-		</tooltip>
-		<sheetdata>
-			<string_name_static name="name" />
-			<link_tl name="open">
-				<class>referencefeat</class>
-			</link_tl>
-
-			<subwindow name="content">
-				<bounds>20,40,-20,-10</bounds>
-				<class>referencefeatcontent</class>
-				<activate />
-			</subwindow>
-			<scrollbar>
-				<bounds>-25,50,20,-15</bounds>
-				<target>content</target>
-			</scrollbar>
-			
-			<resize />
-			<close />
+				<readonly />
+			</ft_columnh>
 		</sheetdata>
 	</windowclass>
 </root>

@@ -5,7 +5,7 @@
 
 function action(draginfo)
 	local aParty = {};
-	for _,v in pairs(window.partylist.getWindows()) do
+	for _,v in pairs(window.list.getWindows()) do
 		local rActor = ActorManager.getActor("pc", v.link.getTargetDatabaseNode());
 		if rActor then
 			table.insert(aParty, rActor);
@@ -22,10 +22,10 @@ function action(draginfo)
 		nTargetDC = nil;
 	end
 	
-	local bSecretRoll = window.hiderollresults.getState();
+	local bSecretRoll = (window.hiderollresults.getValue() == 1);
 	
 	for _,v in pairs(aParty) do
-		ActionAbility.performRoll(nil, v, sAbilityStat, nTargetDC, bSecretRoll, true);
+		ActionAbility.performRoll(nil, v, sAbilityStat, nTargetDC, bSecretRoll);
 	end
 
 	return true;

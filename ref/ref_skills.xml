@@ -6,8 +6,50 @@
 -->
 
 <root>
-	<!-- Skills -->
-	<windowclass name="referenceskillcontent">
+	<windowclass name="referenceskill">
+		<frame>referencepage</frame>
+		<placement>
+			<size width="400" height="350" />
+		</placement>
+		<sizelimits>
+			<dynamic />
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip field="name" />
+		<nodelete />
+		<sheetdata>
+			<sub_ref_header name="header">
+				<class>ref_skill_header</class>
+			</sub_ref_header>
+
+			<sub_ref_content name="content">
+				<class>ref_skill_stats</class>
+			</sub_ref_content>
+			<scrollbar_ref_content />
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="ref_skill_header">
+		<margins control="0,0,0,7" />
+		<sheetdata>
+			<link_record_header>
+				<class>referenceskill</class>
+			</link_record_header>
+			<string_record_name name="name">
+				<anchored>
+					<top offset="5"/>
+					<left offset="40" />
+					<right offset="-25" />
+				</anchored>
+				<static />
+			</string_record_name>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="ref_skill_stats">
 		<script>
 			function onInit()
 				local aLabel = {};
@@ -20,7 +62,7 @@
 					table.insert(aLabel, "Armor check penalty");
 				end
 
-				label_type.setValue("[" .. table.concat(aLabel, "; ") .. "]");
+				type_label.setValue("[" .. table.concat(aLabel, "; ") .. "]");
 			end
 		</script>
 		<sheetdata>
@@ -29,60 +71,19 @@
 			<hs name="ability" />
 			<hn name="trained" />
 			<hn name="armorcheckpenalty" />
-			<label_reftype name="label_type" />
-
-			<spacer>
-				<anchor>columnanchor</anchor>
-				<height>5</height>
-				<relative />
-			</spacer>
 			
-			<referenceformattedtextfield name="text">
+			<label name="type_label">
 				<anchored>
-					<top>
-						<parent>columnanchor</parent>
-						<anchor>bottom</anchor>
-						<relation>relative</relation>
-					</top>
-					<left>
-						<anchor>left</anchor>
-					</left>
-					<right>
-						<anchor>right</anchor>
-					</right>
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left />
+					<right />
 				</anchored>
-			</referenceformattedtextfield>
-		</sheetdata>
-	</windowclass>
+				<font>reference-b-large</font>
+			</label>
 
-	<windowclass name="referenceskill">
-		<frame>whitecontrolarea</frame>
-		<placement>
-			<size>
-				<width>400</width>
-				<height>350</height>
-			</size>
-		</placement>
-		<sizelimits>
-			<dynamic />
-		</sizelimits>
-		<minimize>minimized_reference</minimize>
-		<tooltip>
-			<field>name</field>
-		</tooltip>
-		<sheetdata>
-			<string_name_static name="name" />
-			<link_tl name="open">
-				<class>referenceskill</class>
-			</link_tl>
-
-			<sub_refcontent name="content">
-				<class>referenceskillcontent</class>
-			</sub_refcontent>
-			<scrollbar_refcontent />
-			
-			<resize />
-			<close />
+			<ft_columnh name="text">
+				<readonly />
+			</ft_columnh>
 		</sheetdata>
 	</windowclass>
 </root>

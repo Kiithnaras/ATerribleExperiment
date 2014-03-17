@@ -20,7 +20,7 @@ function setRows(n)
 	
 	-- Otherwise, need to create some
 	for i = 1, n - #windows do
-		NodeManager.createWindow(self);
+		createWindow();
 	end
 end
 
@@ -37,12 +37,6 @@ function updateTotals()
 	end
 	
 	window.total.setValue(sum);
-	
-	if not window.ranges.hasNonzeroCosts() then
-		window.costwarning.setVisible(true);
-	else
-		window.costwarning.setVisible(false);
-	end
 end
 
 function calculatePointCost(score)

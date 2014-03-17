@@ -5,7 +5,7 @@
 
 function action()	
 	local aParty = {};
-	for _,v in pairs(window.partylist.getWindows()) do
+	for _,v in pairs(window.list.getWindows()) do
 		local rActor = ActorManager.getActor("pc", v.link.getTargetDatabaseNode());
 		if rActor then
 			table.insert(aParty, rActor);
@@ -15,14 +15,17 @@ function action()
 		aParty = nil;
 	end
 	
-	local sSkill = window.selectedskill.getValue();
+	local sSkill = DB.getValue("partysheet.selectedskill", "");
+	if sSkill == "" then
+		return true;
+	end
 	
-	local nTargetDC = window.skilldc.getValue();
+	local nTargetDC = DB.getValue("partysheet.skilldc", 0);
 	if nTargetDC == 0 then
 		nTargetDC = nil;
 	end
 	
-	local bSecretRoll = window.hiderollresults.getState();
+	local bSecretRoll = (window.hiderollresults.getValue() == 1);
 	
 	local sSkillLookup;
 	local sSubSkill = nil;
@@ -39,13 +42,13 @@ function action()
 			local rMessage = ChatManager.createBaseMessage(v, true);
 			rMessage.text = rMessage.text .. "[SKILL] " .. sSkill .. " [UNTRAINED]";			
 			if bSecretRoll or OptionsManager.isOption("REVL", "off") then
-				rMessage.text = "[GM] " .. rMessage.text;
+				rMessage.secret = true;
 				Comm.addChatMessage(rMessage);
 			else
 				Comm.deliverChatMessage(rMessage);
 			end
 		else
-			ActionSkill.performRoll(nil, v, sSkill, nValue, nil, nTargetDC, bSecretRoll, true);
+			ActionSkill.performRoll(nil, v, sSkill, nValue, nil, nTargetDC, bSecretRoll);
 		end
 	end
 	

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="charsheet_inventory" merge="join">
+		<sheetdata>
+			<genericcontrol name="showonminisheet_header" insertbefore="carried_header">
+				<anchored to="rightanchor" width="12" height="10">
+					<top offset="5" />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+				<icon>char_quicklist</icon>
+				<tooltip textres="char_tooltip_itemshowmini" />
+			</genericcontrol>
+			
+			<frame_char name="armorpenaltyframe" insertbefore="encumbranceframe">
+				<bounds>15,280,240,58</bounds>
+			</frame_char>
+			<label insertbefore="encumbranceframe">
+				<anchored to="armorpenaltyframe" position="insidetopleft" offset="15,24" />
+				<static textres="char_label_invarmor" />
+			</label>
+			<basicnumber name="armormaxstatbonus" source="encumbrance.armormaxstatbonus" insertbefore="encumbranceframe">
+				<anchored to="armorpenaltyframe" position="insidetopleft" offset="85,24" width="35" height="20" />
+			</basicnumber>
+			<label_fieldtop insertbefore="encumbranceframe">
+				<anchored to="armormaxstatbonus" offset="6,1" />
+				<static textres="char_label_invarmormaxability" />
+			</label_fieldtop>
+			<basicnumber name="armorcheckpenalty" source="encumbrance.armorcheckpenalty" insertbefore="encumbranceframe">
+				<anchored to="armormaxstatbonus" position="right" offset="15,0" width="35" />
+			</basicnumber>
+			<label_fieldtop insertbefore="encumbranceframe">
+				<anchored to="armorcheckpenalty" offset="6,1" />
+				<static textres="char_label_invarmorskillcheckpenalty" />
+			</label_fieldtop>
+			<basicnumber name="spellfailure" source="encumbrance.spellfailure" insertbefore="encumbranceframe">
+				<anchored to="armorcheckpenalty" position="right" offset="15,0" width="35" />
+				<hideonvalue>0</hideonvalue>
+			</basicnumber>
+			<label_fieldtop insertbefore="encumbranceframe">
+				<anchored to="spellfailure" offset="6,1"/>
+				<static textres="char_label_invarmorspellfailure" />
+			</label_fieldtop>
+			<buttonfield name="usearmormaxstatbonus" source="encumbrance.armormaxstatbonusactive" insertbefore="encumbranceframe">
+				<anchored to="armorpenaltyframe" position="insidetopleft" offset="67,28" width="12" height="12" />
+				<state icon="button_checkoff" tooltipres="char_tooltip_armormodoff" />
+				<state icon="button_checkon" tooltipres="char_tooltip_armormodon" />
+				<script>
+					function onInit()
+						onValueChanged();
+					end
+					
+					function onValueChanged()
+						if getValue() == 1 then
+							window.armormaxstatbonus.setColor("FF000000");
+							window.armorcheckpenalty.setColor("FF000000");
+							window.spellfailure.setColor("FF000000");
+						else
+							window.armormaxstatbonus.setColor("7F000000");
+							window.armorcheckpenalty.setColor("7F000000");
+							window.spellfailure.setColor("7F000000");
+						end
+					end
+				</script>
+			</buttonfield>
+
+			<frame_char name="encumbranceframe">
+				<bounds>15,338,240,142</bounds>
+			</frame_char>
+			<simplenumber name="encumbranceload" source="encumbrance.load">
+				<anchored offset="160,16" />
+			</simplenumber>
+			<label name="encumbrance_label">
+				<anchored offset="15,16" />
+			</label>
+			<basicnumber name="encumbrancelightload" source="encumbrance.lightload" insertbefore="coinframe">
+				<anchored to="encumbranceframe" position="insidetopleft" offset="20,62" width="55" height="20" />
+			</basicnumber>
+			<label_fieldtop>
+				<anchored to="encumbrancelightload" />
+				<static textres="char_label_invenclt" />
+			</label_fieldtop>
+			<basicnumber name="encumbrancemediumload" source="encumbrance.mediumload" insertbefore="coinframe">
+				<anchored to="encumbrancelightload" position="right" offset="15,0" width="55" />
+			</basicnumber>
+			<label_fieldtop>
+				<anchored to="encumbrancemediumload" />
+				<static textres="char_label_invencmed" />
+			</label_fieldtop>
+			<basicnumber name="encumbranceheavyload" source="encumbrance.heavyload" insertbefore="coinframe">
+				<anchored to="encumbrancemediumload" position="right" offset="15,0" width="55" />
+			</basicnumber>
+			<label_fieldtop>
+				<anchored to="encumbranceheavyload" />
+				<static textres="char_label_invenchvy" />
+			</label_fieldtop>
+			<basicnumber name="encumbranceliftoverhead" source="encumbrance.liftoverhead" insertbefore="coinframe">
+				<anchored to="encumbrancelightload" position="below" offset="0,20" height="20" />
+			</basicnumber>
+			<label_fieldtop>
+				<anchored to="encumbranceliftoverhead" />
+				<static textres="char_label_invencliftover" />
+			</label_fieldtop>
+			<basicnumber name="encumbranceliftoffground" source="encumbrance.liftoffground" insertbefore="coinframe">
+				<anchored to="encumbranceliftoverhead" position="right" offset="15,0" width="55" />
+			</basicnumber>
+			<label_fieldtop>
+				<anchored to="encumbranceliftoffground" />
+				<static textres="char_label_invenclift" />
+			</label_fieldtop>
+			<basicnumber name="encumbrancepushordrag" source="encumbrance.pushordrag" insertbefore="coinframe">
+				<anchored to="encumbranceliftoffground" position="right" offset="15,0" width="55" />
+			</basicnumber>
+			<label_fieldtop>
+				<anchored to="encumbrancepushordrag" />
+				<static textres="char_label_invencdrag" />
+			</label_fieldtop>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="char_invitem" merge="join">
+		<sheetdata>
+			<button_checkbox name="showonminisheet" insertbefore="carried">
+				<anchored width="12" height="12">
+					<top offset="6" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
+				</anchored>
+				<default>1</default>
+			</button_checkbox>
+		</sheetdata>
+	</windowclass>
+</root>

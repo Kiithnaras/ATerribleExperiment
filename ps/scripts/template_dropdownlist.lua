@@ -10,7 +10,7 @@ local sSelFont = "";
 local sFrame = "";
 local sSelFrame = "";
 
-local nRowHeight = 15;
+local nRowHeight = 20;
 local nRowsVisible = 0;
 
 function onInit()

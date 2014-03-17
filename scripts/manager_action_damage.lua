@@ -8,12 +8,6 @@ OOB_MSGTYPE_APPLYDMG = "applydmg";
 function onInit()
 	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_APPLYDMG, handleApplyDamage);
 
-	ActionsManager.registerActionIcon("damage", "action_damage");
-	ActionsManager.registerActionIcon("spdamage", "action_damage");
-
-	ActionsManager.registerTargetingHandler("damage", onTargeting);
-	ActionsManager.registerTargetingHandler("spdamage", onSpellTargeting);
-	
 	ActionsManager.registerModHandler("damage", modDamage);
 	ActionsManager.registerModHandler("spdamage", modSpellDamage);
 	ActionsManager.registerModHandler("stabilization", modStabilization);
@@ -27,80 +21,59 @@ function onInit()
 end
 
 function handleApplyDamage(msgOOB)
-	-- GET THE TARGET ACTOR
-	local rTarget = ActorManager.getActor("ct", msgOOB.sTargetCTNode);
-	if not rTarget then
-		rTarget = ActorManager.getActor(msgOOB.sTargetType, msgOOB.sTargetCreatureNode);
+	local rSource = ActorManager.getActor(msgOOB.sSourceType, msgOOB.sSourceNode);
+	local rTarget = ActorManager.getActor(msgOOB.sTargetType, msgOOB.sTargetNode);
+	if rTarget then
+		rTarget.nOrder = msgOOB.nTargetOrder;
 	end
 	
-	-- GET THE SOURCE ACTOR
-	local rSource = ActorManager.getActor("ct", msgOOB.sSourceCTNode);
-	
-	-- Apply the damage
 	local nTotal = tonumber(msgOOB.nTotal) or 0;
-	applyDamage(rSource, rTarget, msgOOB.sDamage, nTotal);
+	applyDamage(rSource, rTarget, (tonumber(msgOOB.nSecret) == 1), msgOOB.sRollType, msgOOB.sDamage, nTotal);
 end
 
-function notifyApplyDamage(rSource, rTarget, sDesc, nTotal)
+function notifyApplyDamage(rSource, rTarget, bSecret, sRollType, sDesc, nTotal)
 	if not rTarget then
 		return;
 	end
-	if not (rTarget.nodeCT or (rTarget.sType == "pc" and rTarget.nodeCreature)) then
+	local sTargetType, sTargetNode = ActorManager.getTypeAndNodeName(rTarget);
+	if sTargetType ~= "pc" and sTargetType ~= "ct" then
 		return;
 	end
 
 	local msgOOB = {};
 	msgOOB.type = OOB_MSGTYPE_APPLYDMG;
 	
+	if bSecret then
+		msgOOB.nSecret = 1;
+	else
+		msgOOB.nSecret = 0;
+	end
+	msgOOB.sRollType = sRollType;
 	msgOOB.nTotal = nTotal;
 	msgOOB.sDamage = sDesc;
-	msgOOB.sTargetType = rTarget.sType;
-	msgOOB.sTargetCreatureNode = rTarget.sCreatureNode;
-	msgOOB.sTargetCTNode = rTarget.sCTNode;
-	if rSource then
-		msgOOB.sSourceCTNode = rSource.sCTNode;
-	end
+	msgOOB.sTargetType = sTargetType;
+	msgOOB.sTargetNode = sTargetNode;
+	msgOOB.nTargetOrder = rTarget.nOrder;
+
+	local sSourceType, sSourceNode = ActorManager.getTypeAndNodeName(rSource);
+	msgOOB.sSourceType = sSourceType;
+	msgOOB.sSourceNode = sSourceNode;
 
 	Comm.deliverOOBMessage(msgOOB, "");
 end
 
-function onTargeting(rSource, rRolls)
-	if #rRolls == 1 then
-		if string.match(rRolls[1].sDesc, "%[SELF%]") then
-			return { { rSource } };
-		end
-	end
-	
-	local aTargets = TargetingManager.getFullTargets(rSource);
-	if #aTargets <= 1 then
-		return { aTargets };
-	end
-	
-	local aTargeting = {};
-	for _,vTarget in ipairs(aTargets) do
-		table.insert(aTargeting, { vTarget });
-	end
-	
-	return aTargeting;
-end
-
-function onSpellTargeting(rSource, rRolls)
-	return { TargetingManager.getFullTargets(rSource) };
-end
-
 function performStabilizationRoll(rActor)
-	local rRoll = GameSystemManager.getStabilizationRoll(rActor);
+	local rRoll = GameSystem.getStabilizationRoll(rActor);
 
-	ActionsManager.performSingleRollAction(nil, rActor, "stabilization", rRoll);
+	ActionsManager.performAction(nil, rActor, rRoll);
 end
 
 function getRoll(rActor, rAction)
-	-- Build basic roll
 	local rRoll = {};
+	rRoll.sType = "damage";
 	rRoll.aDice = {};
 	rRoll.nMod = 0;
 	
-	-- Build the description label
 	rRoll.sDesc = "[DAMAGE";
 	if rAction.order and rAction.order > 1 then
 		rRoll.sDesc = rRoll.sDesc .. " #" .. rAction.order;
@@ -170,17 +143,18 @@ end
 function performRoll(draginfo, rActor, rAction)
 	local rRoll = getRoll(rActor, rAction);
 	
-	ActionsManager.performSingleRollAction(draginfo, rActor, "damage", rRoll, nil, true);
+	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
 function modStabilization(rSource, rTarget, rRoll)
-	GameSystemManager.modStabilization(rSource, rTarget, rRoll);
+	GameSystem.modStabilization(rSource, rTarget, rRoll);
 end
 
 function modDamage(rSource, rTarget, rRoll)
 	local aAddDesc = {};
 	local aAddDice = {};
 	local nAddMod = 0;
+	local bPFMode = DataCommon.isPFRPG();
 	
 	-- Build attack type filter
 	local aAttackFilter = {};
@@ -189,27 +163,6 @@ function modDamage(rSource, rTarget, rRoll)
 		table.insert(aAttackFilter, "ranged");
 	elseif sAttackType == "M" then
 		table.insert(aAttackFilter, "melee");
-	end
-	
-	if rTarget then
-		if rTarget.nOrder then
-			if rSource and rSource.nodeCT then
-				local nAddEffect;
-				aAddDice, nAddMod, nAddEffect = EffectsManager.getEffectsBonus(rSource, "DMG", false, aAttackFilter, rTarget, true);
-				if nAddEffect > 0 then
-					nAddMod = StringManager.evalDice(aAddDice, nAddMod);
-				
-					rRoll.nMod = rRoll.nMod + nAddMod;
-					if nAddMod ~= 0 then
-						rRoll.sDesc = string.format("%s [SPECIFIC %+d]", rRoll.sDesc, nAddMod);
-					else
-						rRoll.sDesc = rRoll.sDesc .. " [SPECIFIC]";
-					end
-				end
-			end
-			
-			return;
-		end
 	end
 	
 	local aDamageTypes = decodeDamageTypes(false, rRoll.sDesc, rRoll.aDice, rRoll.nMod);
@@ -300,64 +253,53 @@ function modDamage(rSource, rTarget, rRoll)
 		-- GET STAT MODIFIERS
 		local nBonusStat, nBonusEffects;
 		if nMult > 0 then
-			local nActionStatMod = ActorManager.getAbilityBonus(rSource, sActionStat);
+			-- Get original stat modifier
+			local nActionStatMod = ActorManager2.getAbilityBonus(rSource, sActionStat);
 			
-			nBonusStat, nBonusEffects = ActorManager.getAbilityEffectsBonus(rSource, sActionStat);
-
+			-- Get modified stat modifier
+			nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, sActionStat);
 			if nBonusEffects > 0 then
 				bEffects = true;
 			end
-			if nBonusStat > 0 and nActionStatMax > 0 then
-				nBonusStat = math.min(nBonusStat, nActionStatMax);
+			local nTotalStatMod = nActionStatMod + nBonusStat;
+			
+			-- Handle maximums
+			-- WORKAROUND: If max limited, then assume bows which allow no penalty
+			if nActionStatMax > 0 then
+				nActionStatMod = math.max(math.min(nActionStatMod, nActionStatMax), 0);
+				nTotalStatMod = math.max(math.min(nTotalStatMod, nActionStatMax), 0);
 			end
 			
-			-- WORKAROUND: If max limited, then assume bows which allow no penalty
-			if nBonusStat >= 0 then
-				if nActionStatMod >= 0 then
-					nEffectMod = nEffectMod + math.floor(nBonusStat * nMult);
-				else
-					if nActionStatMax > 0 then
-						nBonusStat = math.max(nBonusStat + nActionStatMod, 0);
-						nEffectMod = nEffectMod + math.floor(nBonusStat * nMult);
-					else
-						if nBonusStat + nActionStatMod > 0 then
-							nEffectMod = nEffectMod + (-nActionStatMod);
-							nEffectMod = nEffectMod + math.floor((nBonusStat + nActionStatMod) * nMult);
-						else
-							nEffectMod = nEffectMod + nBonusStat;
-						end
-					end
-				end
-			elseif nBonusStat < 0 then
-				if nActionStatMod <= 0 then
-					if nActionStatMax == 0 then
-						nEffectMod = nEffectMod + nBonusStat;
-					end
-				else
-					if nActionStatMod + nBonusStat < 0 then
-						nEffectMod = nEffectMod - math.floor(nActionStatMod * nMult);
-						if nActionStatMax == 0 then
-							nEffectMod = nEffectMod + (nActionStatMod + nBonusStat);
-						end
-					else
-						nEffectMod = nEffectMod + math.floor(nBonusStat * nMult);
-					end
-				end
+			-- Handle multipliers correctly (i.e. negative values are not multiplied, but positive values are)
+			local nMultOrigStatMod, nMultNewStatMod;
+			if nActionStatMod <= 0 then
+				nMultOrigStatMod = nActionStatMod;
+			else
+				nMultOrigStatMod = math.floor(nActionStatMod * nMult);
 			end
+			if nTotalStatMod <= 0 then
+				nMultNewStatMod = nTotalStatMod;
+			else
+				nMultNewStatMod = math.floor(nTotalStatMod * nMult);
+			end
+			
+			-- Calculate bonus difference and apply
+			local nMultDiffStatMod = nMultNewStatMod - nMultOrigStatMod;
+			nEffectMod = nEffectMod + nMultDiffStatMod;
 		end
-		nBonusStat, nBonusEffects = ActorManager.getAbilityEffectsBonus(rSource, sActionStat2);
+		nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, sActionStat2);
 		if nBonusEffects > 0 then
 			bEffects = true;
 			nEffectMod = nEffectMod + nBonusStat;
 		end
 
 		-- GET CONDITION MODIFIERS
-		if EffectsManager.hasEffectCondition(rSource, "Sickened") then
+		if EffectManager.hasEffectCondition(rSource, "Sickened") then
 			nEffectMod = nEffectMod - 2;
 			bEffects = true;
 		end
-		if OptionsManager.isOption("SYSTEM", "pf") then
-			if EffectsManager.hasEffect(rSource, "Incorporeal") and sAttackType == "M" and not string.match(string.lower(rRoll.sDesc), "incorporeal touch") then
+		if bPFMode then
+			if EffectManager.hasEffect(rSource, "Incorporeal") and sAttackType == "M" and not string.match(string.lower(rRoll.sDesc), "incorporeal touch") then
 				bEffects = true;
 				table.insert(aAddDesc, "[INCORPOREAL]");
 			end
@@ -374,7 +316,7 @@ function modDamage(rSource, rTarget, rRoll)
 		end
 		
 		-- GET GENERAL DAMAGE MODIFIERS
-		local aEffects, nEffectCount = EffectsManager.getEffectsBonusByType(rSource, "DMG", true, aAttackFilter);
+		local aEffects, nEffectCount = EffectManager.getEffectsBonusByType(rSource, "DMG", true, aAttackFilter, rTarget);
 		if nEffectCount > 0 then
 			bEffects = true;
 			
@@ -416,7 +358,7 @@ function modDamage(rSource, rTarget, rRoll)
 		end
 		
 		-- GET DAMAGE TYPE MODIFIER
-		local aEffects = EffectsManager.getEffectsByType(rSource, "DMGTYPE", {});
+		local aEffects = EffectManager.getEffectsByType(rSource, "DMGTYPE", {});
 		local aAddTypes = {};
 		for _,v in ipairs(aEffects) do
 			for _,v2 in ipairs(v.remainder) do
@@ -446,9 +388,9 @@ function modDamage(rSource, rTarget, rRoll)
 			local sEffects = "";
 			local sMod = StringManager.convertDiceToString(aEffectDice, nEffectMod, true);
 			if sMod ~= "" then
-				sEffects = "[EFFECTS " .. sMod .. "]";
+				sEffects = "[" .. Interface.getString("effects_tag") .. " " .. sMod .. "]";
 			else
-				sEffects = "[EFFECTS]";
+				sEffects = "[" .. Interface.getString("effects_tag") .. "]";
 			end
 			table.insert(aAddDesc, sEffects);
 			
@@ -476,25 +418,6 @@ function modSpellDamage(rSource, rTarget, rRoll)
 	local aAddDesc = {};
 	local aAddDice = {};
 	local nAddMod = 0;
-	
-	if rTarget and rTarget.nOrder then
-		if rSource and rSource.nodeCT then
-			local nAddEffect;
-			aAddDice, nAddMod, nAddEffect = EffectsManager.getEffectsBonus(rSource, "DMGS", false, nil, rTarget, true);
-			if nAddEffect > 0 then
-				nAddMod = StringManager.evalDice(aAddDice, nAddMod);
-			
-				rRoll.nMod = rRoll.nMod + nAddMod;
-				if nAddMod ~= 0 then
-					rRoll.sDesc = string.format("%s [SPECIFIC %+d]", rRoll.sDesc, nAddMod);
-				else
-					rRoll.sDesc = rRoll.sDesc .. " [SPECIFIC]";
-				end
-			end
-		end
-		
-		return;
-	end
 	
 	local aDamageTypes = decodeDamageTypes(false, rRoll.sDesc, rRoll.aDice, rRoll.nMod);
 	rRoll.sDesc = string.gsub(rRoll.sDesc, " %[TYPE: ([^]]+)%]", "");
@@ -562,12 +485,12 @@ function modSpellDamage(rSource, rTarget, rRoll)
 		-- GET STAT MODIFIERS
 		local nBonusStat, nBonusEffects;
 		if sActionStat then
-			nBonusStat, nBonusEffects = ActorManager.getAbilityEffectsBonus(rSource, sActionStat);
+			nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, sActionStat);
 
 			if nBonusEffects > 0 then
 				bEffects = true;
 
-				local nActionStatMod = ActorManager.getAbilityBonus(rSource, sActionStat);
+				local nActionStatMod = ActorManager2.getAbilityBonus(rSource, sActionStat);
 				if nBonusStat > 0 and nActionStatMax > 0 then
 					nBonusStat = math.min(nBonusStat, nActionStatMax);
 				end
@@ -576,7 +499,7 @@ function modSpellDamage(rSource, rTarget, rRoll)
 			end
 		end
 		if sActionStat2 then
-			nBonusStat, nBonusEffects = ActorManager.getAbilityEffectsBonus(rSource, sActionStat2);
+			nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, sActionStat2);
 			if nBonusEffects > 0 then
 				bEffects = true;
 				nEffectMod = nEffectMod + nBonusStat;
@@ -594,7 +517,7 @@ function modSpellDamage(rSource, rTarget, rRoll)
 		end
 		
 		-- GET GENERAL DAMAGE MODIFIERS
-		local aEffects, nEffectCount = EffectsManager.getEffectsBonusByType(rSource, "DMGS", true, nil);
+		local aEffects, nEffectCount = EffectManager.getEffectsBonusByType(rSource, "DMGS", true, nil);
 		if nEffectCount > 0 then
 			bEffects = true;
 			
@@ -636,7 +559,7 @@ function modSpellDamage(rSource, rTarget, rRoll)
 		end
 		
 		-- GET DAMAGE TYPE MODIFIER
-		local aEffects = EffectsManager.getEffectsByType(rSource, "DMGTYPE", {});
+		local aEffects = EffectManager.getEffectsByType(rSource, "DMGTYPE", {});
 		local aAddTypes = {};
 		for _,v in ipairs(aEffects) do
 			for _,v2 in ipairs(v.remainder) do
@@ -666,9 +589,9 @@ function modSpellDamage(rSource, rTarget, rRoll)
 			local sEffects = "";
 			local sMod = StringManager.convertDiceToString(aEffectDice, nEffectMod, true);
 			if sMod ~= "" then
-				sEffects = "[EFFECTS " .. sMod .. "]";
+				sEffects = "[" .. Interface.getString("effects_tag") .. " " .. sMod .. "]";
 			else
-				sEffects = "[EFFECTS]";
+				sEffects = "[" .. Interface.getString("effects_tag") .. "]";
 			end
 			table.insert(aAddDesc, sEffects);
 			
@@ -692,7 +615,7 @@ function modSpellDamage(rSource, rTarget, rRoll)
 	rRoll.nMod = rRoll.nMod + nAddMod;
 end
 
-function onDamageRoll(rSource, rRoll, rCustom)
+function onDamageRoll(rSource, rRoll)
 	local bMaximize = rRoll.sDesc:match(" %[MAXIMIZE%]");
 	local bEmpower = rRoll.sDesc:match(" %[EMPOWER%]");
 	local nEmpowerTotalMod = 0;
@@ -765,7 +688,7 @@ function onDamage(rSource, rTarget, rRoll)
 	-- Handle minimum damage
 	if string.match(rMessage.text, " %[MIN OVERRIDE%]") then
 		rMessage.text = string.gsub(rMessage.text, " %[MIN OVERRIDE%]", "");
-	elseif nTotal <= 0 then
+	elseif nTotal <= 0 and rRoll.aDice and #rRoll.aDice > 0 then
 		local nMinDmgAdj = -(nTotal) + 1;
 		rMessage.text = string.format("%s [MIN DMG ADJ %+d]", rMessage.text, nMinDmgAdj);
 		rMessage.diemodifier = rMessage.diemodifier + nMinDmgAdj;
@@ -775,22 +698,20 @@ function onDamage(rSource, rTarget, rRoll)
 	-- Send the chat message
 	local bShowMsg = true;
 	if rTarget and rTarget.nOrder and rTarget.nOrder ~= 1 then
-		if not string.match(rRoll.sDesc, "%[SPECIFIC") then
-			bShowMsg = false;
-		end
+		bShowMsg = false;
 	end
 	if bShowMsg then
 		Comm.deliverChatMessage(rMessage);
 	end
 
 	-- Apply damage to the PC or CT entry referenced
-	notifyApplyDamage(rSource, rTarget, rMessage.text, nTotal);
+	notifyApplyDamage(rSource, rTarget, rMessage.secret, rRoll.sType, rMessage.text, nTotal);
 end
 
 function onStabilization(rSource, rTarget, rRoll)
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 
-	local bSuccess = GameSystemManager.getStabilizationResult(rRoll);
+	local bSuccess = GameSystem.getStabilizationResult(rRoll);
 	if bSuccess then
 		rMessage.text = rMessage.text .. " [SUCCESS]";
 	else
@@ -800,9 +721,9 @@ function onStabilization(rSource, rTarget, rRoll)
 	Comm.deliverChatMessage(rMessage);
 
 	if bSuccess then
-		EffectsManager.addEffect("", "", rSource.nodeCT, { sName = "Stable", nDuration = 0 }, true);
+		EffectManager.addEffect("", "", ActorManager.getCTNode(rSource), { sName = "Stable", nDuration = 0 }, true);
 	else
-		ActionDamage.applyDamage(nil, rSource, "[DAMAGE] Dying", 1);
+		ActionDamage.applyDamage(nil, rSource, false, "number", "[DAMAGE] Dying", 1);
 	end
 end
 
@@ -1099,14 +1020,15 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput)
 	local bVulnerable = false;
 	local bResist = false;
 	local aWords;
+	local bPFMode = DataCommon.isPFRPG();
 	
 	-- GET THE DAMAGE ADJUSTMENT EFFECTS
-	local aImmune = EffectsManager.getEffectsBonusByType(rTarget, "IMMUNE", false, {}, rSource);
-	local aVuln = EffectsManager.getEffectsBonusByType(rTarget, "VULN", false, {}, rSource);
-	local aResist = EffectsManager.getEffectsBonusByType(rTarget, "RESIST", false, {}, rSource);
-	local aDR = EffectsManager.getEffectsByType(rTarget, "DR", {}, rSource);
+	local aImmune = EffectManager.getEffectsBonusByType(rTarget, "IMMUNE", false, {}, rSource);
+	local aVuln = EffectManager.getEffectsBonusByType(rTarget, "VULN", false, {}, rSource);
+	local aResist = EffectManager.getEffectsBonusByType(rTarget, "RESIST", false, {}, rSource);
+	local aDR = EffectManager.getEffectsByType(rTarget, "DR", {}, rSource);
 	
-	local bIncorporealTarget = EffectsManager.hasEffect(rTarget, "Incorporeal", rSource);
+	local bIncorporealTarget = EffectManager.hasEffect(rTarget, "Incorporeal", rSource);
 	
 	-- IF IMMUNE ALL, THEN JUST HANDLE IT NOW
 	if aImmune["all"] then
@@ -1116,55 +1038,57 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput)
 	end
 	
 	-- HANDLE REGENERATION
-	local aRegen = EffectsManager.getEffectsBonusByType(rTarget, "REGEN", false, {});
-	local nRegen = 0;
-	for _, _ in pairs(aRegen) do
-		nRegen = nRegen + 1;
-	end
-	if nRegen > 0 then
-		local aRemap = {};
-		for k,v in pairs(rDamageOutput.aDamageTypes) do
-			local bCheckRegen = true;
-			
-			local aSrcDmgClauseTypes = {};
-			local aTemp = StringManager.split(k, ",", true);
-			for i = 1, #aTemp do
-				if aTemp[i] == "nonlethal" then
-					bCheckRegen = false;
-					break;
-				elseif aTemp[i] ~= "untyped" and aTemp[i] ~= "" then
-					table.insert(aSrcDmgClauseTypes, aTemp[i]);
-				end
-			end
-
-			if bCheckRegen then
-				local bMatchAND, nMatchAND, bMatchDMG, aClausesOR;
-				local bApplyRegen;
-				for kRegen, vRegen in pairs(aRegen) do
-					bApplyRegen = true;
-					
-					local sRegen = table.concat(vRegen.remainder, " ");
-					
-					aClausesOR = decodeAndOrClauses(sRegen);
-					if matchAndOrClauses(aClausesOR, aSrcDmgClauseTypes) then
-						bApplyRegen = false;
-					end
-					
-					if bApplyRegen then
-						local kNew = table.concat(aSrcDmgClauseTypes, ",");
-						if kNew ~= "" then
-							kNew = kNew .. ",nonlethal";
-						else
-							kNew = "nonlethal";
-						end
-						aRemap[k] = kNew;
-					end
-				end
-			end
+	if not bPFMode then
+		local aRegen = EffectManager.getEffectsBonusByType(rTarget, "REGEN", false, {});
+		local nRegen = 0;
+		for _, _ in pairs(aRegen) do
+			nRegen = nRegen + 1;
 		end
-		for k,v in pairs(aRemap) do
-			rDamageOutput.aDamageTypes[v] = rDamageOutput.aDamageTypes[k];
-			rDamageOutput.aDamageTypes[k] = nil;
+		if nRegen > 0 then
+			local aRemap = {};
+			for k,v in pairs(rDamageOutput.aDamageTypes) do
+				local bCheckRegen = true;
+				
+				local aSrcDmgClauseTypes = {};
+				local aTemp = StringManager.split(k, ",", true);
+				for i = 1, #aTemp do
+					if aTemp[i] == "nonlethal" then
+						bCheckRegen = false;
+						break;
+					elseif aTemp[i] ~= "untyped" and aTemp[i] ~= "" then
+						table.insert(aSrcDmgClauseTypes, aTemp[i]);
+					end
+				end
+
+				if bCheckRegen then
+					local bMatchAND, nMatchAND, bMatchDMG, aClausesOR;
+					local bApplyRegen;
+					for kRegen, vRegen in pairs(aRegen) do
+						bApplyRegen = true;
+						
+						local sRegen = table.concat(vRegen.remainder, " ");
+						
+						aClausesOR = decodeAndOrClauses(sRegen);
+						if matchAndOrClauses(aClausesOR, aSrcDmgClauseTypes) then
+							bApplyRegen = false;
+						end
+						
+						if bApplyRegen then
+							local kNew = table.concat(aSrcDmgClauseTypes, ",");
+							if kNew ~= "" then
+								kNew = kNew .. ",nonlethal";
+							else
+								kNew = "nonlethal";
+							end
+							aRemap[k] = kNew;
+						end
+					end
+				end
+			end
+			for k,v in pairs(aRemap) do
+				rDamageOutput.aDamageTypes[v] = rDamageOutput.aDamageTypes[k];
+				rDamageOutput.aDamageTypes[k] = nil;
+			end
 		end
 	end
 	
@@ -1260,7 +1184,7 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput)
 				if bIgnoreDamage then
 					nLocalDamageAdjust = -v;
 					bResist = true;
-				elseif OptionsManager.isOption("SYSTEM", "pf") then
+				elseif bPFMode then
 					nLocalDamageAdjust = nLocalDamageAdjust - math.ceil((v + nLocalDamageAdjust) / 2);
 					bResist = true;
 				end
@@ -1288,7 +1212,7 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput)
 	end
 
 	-- HANDLE IMMUNITY TO NONLETHAL
-	if EffectsManager.hasEffectCondition(rTarget, "Construct traits") or EffectsManager.hasEffectCondition(rTarget, "Undead traits") then
+	if EffectManager.hasEffectCondition(rTarget, "Construct traits") or EffectManager.hasEffectCondition(rTarget, "Undead traits") then
 		if nNonlethal > 0 then
 			nNonlethal = 0;
 			bResist = true;
@@ -1307,21 +1231,29 @@ function decodeDamageText(nDamage, sDamageDesc)
 	rDamageOutput.nVal = nDamage;
 	
 	if string.match(sDamageDesc, "%[HEAL") then
-		if string.match(sDamageDesc, "%[TEMP%]") then
-			-- SET MESSAGE TYPE
-			rDamageOutput.sType = "nTempHP";
-			rDamageOutput.sTypeOutput = "Temporary hit points";
-		else
-			-- SET MESSAGE TYPE
-			rDamageOutput.sType = "heal";
-			rDamageOutput.sTypeOutput = "Heal";
+		if nDamage >= 0 then
+			if string.match(sDamageDesc, "%[TEMP%]") then
+				-- SET MESSAGE TYPE
+				rDamageOutput.sType = "temphp";
+				rDamageOutput.sTypeOutput = "Temporary hit points";
+			else
+				-- SET MESSAGE TYPE
+				rDamageOutput.sType = "heal";
+				rDamageOutput.sTypeOutput = "Heal";
+			end
 		end
 	elseif string.match(sDamageDesc, "%[FHEAL") then
 		rDamageOutput.sType = "fheal";
 		rDamageOutput.sTypeOutput = "Fast healing";
 	elseif string.match(sDamageDesc, "%[REGEN") then
-		rDamageOutput.sType = "regen";
-		rDamageOutput.sTypeOutput = "Regeneration";
+		local bPFMode = DataCommon.isPFRPG();
+		if bPFMode then
+			rDamageOutput.sType = "heal";
+			rDamageOutput.sTypeOutput = "Regeneration";
+		else
+			rDamageOutput.sType = "regen";
+			rDamageOutput.sTypeOutput = "Regeneration";
+		end
 	elseif nDamage < 0 then
 		rDamageOutput.sType = "heal";
 		rDamageOutput.sTypeOutput = "Heal";
@@ -1378,30 +1310,38 @@ function decodeDamageText(nDamage, sDamageDesc)
 	return rDamageOutput;
 end
 
-function applyDamage(rSource, rTarget, sDamage, nTotal)
+function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal)
 	-- SETUP
 	local nTotalHP = 0;
 	local nTempHP = 0;
 	local nNonLethal = 0;
 	local nWounds = 0;
+	local bPFMode = DataCommon.isPFRPG();
 
 	local aNotifications = {};
 	
 	-- GET HEALTH FIELDS
-	if rTarget.sType == "pc" and rTarget.nodeCreature then
-		nTotalHP = DB.getValue(rTarget.nodeCreature, "hp.total", 0);
-		nTempHP = DB.getValue(rTarget.nodeCreature, "hp.temporary", 0);
-		nNonlethal = DB.getValue(rTarget.nodeCreature, "hp.nonlethal", 0);
-		nWounds = DB.getValue(rTarget.nodeCreature, "hp.wounds", 0);
-	elseif rTarget.nodeCT then
-		nTotalHP = DB.getValue(rTarget.nodeCT, "hp", 0);
-		nTempHP = DB.getValue(rTarget.nodeCT, "hptemp", 0);
-		nNonlethal = DB.getValue(rTarget.nodeCT, "nonlethal", 0);
-		nWounds = DB.getValue(rTarget.nodeCT, "wounds", 0);
-	else
-		return "";
+	local sTargetType, nodeTarget = ActorManager.getTypeAndNode(rTarget);
+	if sTargetType ~= "pc" and sTargetType ~= "ct" then
+		return;
 	end
 	
+	if sTargetType == "pc" then
+		nTotalHP = DB.getValue(nodeTarget, "hp.total", 0);
+		nTempHP = DB.getValue(nodeTarget, "hp.temporary", 0);
+		nNonlethal = DB.getValue(nodeTarget, "hp.nonlethal", 0);
+		nWounds = DB.getValue(nodeTarget, "hp.wounds", 0);
+	else
+		nTotalHP = DB.getValue(nodeTarget, "hp", 0);
+		nTempHP = DB.getValue(nodeTarget, "hptemp", 0);
+		nNonlethal = DB.getValue(nodeTarget, "nonlethal", 0);
+		nWounds = DB.getValue(nodeTarget, "wounds", 0);
+	end
+	
+	-- Remember current health status
+	local sOriginalStatus, sNewStatus;
+	_,_,sOriginalStatus = ActorManager2.getPercentWounded(sTargetType, nodeTarget);
+
 	-- DECODE DAMAGE DESCRIPTION
 	local rDamageOutput = decodeDamageText(nTotal, sDamage);
 	
@@ -1416,7 +1356,7 @@ function applyDamage(rSource, rTarget, sDamage, nTotal)
 			
 			local nNonlethalHealAmount = math.min(nHealAmount, nNonlethal);
 			nNonlethal = nNonlethal - nNonlethalHealAmount;
-			if rDamageOutput.sType == "fheal" then
+			if (not bPFMode) and (rDamageOutput.sType == "fheal") then
 				nHealAmount = nHealAmount - nNonlethalHealAmount;
 			end
 
@@ -1427,7 +1367,7 @@ function applyDamage(rSource, rTarget, sDamage, nTotal)
 			
 			-- IF WE HEALED FROM NEGATIVE TO ZERO OR HIGHER, THEN REMOVE STABLE EFFECT
 			if (nOriginalWounds > nTotalHP) and (nWounds <= nTotalHP) then
-				EffectsManager.removeEffect(rTarget.nodeCT, "Stable");
+				EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Stable");
 			end
 			
 			-- SET THE ACTUAL HEAL AMOUNT FOR DISPLAY
@@ -1457,16 +1397,22 @@ function applyDamage(rSource, rTarget, sDamage, nTotal)
 		end
 
 	-- TEMPORARY HIT POINTS
-	elseif rDamageOutput.sType == "nTempHP" then
+	elseif rDamageOutput.sType == "temphp" then
 		-- APPLY TEMPORARY HIT POINTS
 		nTempHP = math.max(nTempHP, nTotal);
 
 	-- DAMAGE
 	else
+	
 		-- APPLY ANY TARGETED DAMAGE EFFECTS
 		-- NOTE: DICE ARE RANDOMLY DETERMINED BY COMPUTER, INSTEAD OF ROLLED
-		if rSource then
-			local aTargetedDamage = EffectsManager.getEffectsBonusByType(rSource, {"DMG"}, true, rDamageOutput.aDamageFilter, rTarget, true);
+		if rSource and rTarget and rTarget.nOrder then
+			local aTargetedDamage;
+			if sRollType == "spdamage" then
+				aTargetedDamage = EffectManager.getEffectsBonusByType(rSource, {"DMGS"}, true, rDamageOutput.aDamageFilter, rTarget, true);
+			else
+				aTargetedDamage = EffectManager.getEffectsBonusByType(rSource, {"DMG"}, true, rDamageOutput.aDamageFilter, rTarget, true);
+			end
 
 			local nDamageEffectTotal = 0;
 			local nDamageEffectCount = 0;
@@ -1495,9 +1441,10 @@ function applyDamage(rSource, rTarget, sDamage, nTotal)
 
 			if nDamageEffectCount > 0 then
 				if nDamageEffectTotal ~= 0 then
-					table.insert(aNotifications, string.format("[EFFECTS %+d]", nDamageEffectTotal));
+					local sFormat = "[" .. Interface.getString("effects_tag") .. " %+d]";
+					table.insert(aNotifications, string.format(sFormat, nDamageEffectTotal));
 				else
-					table.insert(aNotifications, "[EFFECTS]");
+					table.insert(aNotifications, "[" .. Interface.getString("effects_tag") .. "]");
 				end
 			end
 		end
@@ -1568,50 +1515,30 @@ function applyDamage(rSource, rTarget, sDamage, nTotal)
 		if nNonlethal < 0 then
 			nNonlethal = 0;
 		end
-
-		-- ADD STATUS CHANGE NOTIFICATIONS
-		if nTotal > 0 then
-			if (nNonlethal > 0) then
-				if (nOriginalWounds + nOriginalNonlethal < nTotalHP) and (nWounds + nNonlethal == nTotalHP) then
-					table.insert(aNotifications, "[STAGGERED]");
-				elseif (nOriginalWounds + nOriginalNonlethal <= nTotalHP) and (nWounds + nNonlethal > nTotalHP) then
-					table.insert(aNotifications, "[UNCONSCIOUS]");
-				end
-			end
-			
-			local moderate_hp = nTotalHP / 3;
-			local heavy_hp = 2 * moderate_hp;
-			local nDying = GameSystemManager.getDeathThreshold(rTarget);
-			if (nOriginalWounds < nTotalHP + nDying) and (nWounds >= nTotalHP + nDying) then
-				table.insert(aNotifications, "[DEAD]");
-			elseif (nOriginalWounds < nTotalHP) and (nWounds > nTotalHP) then
-				table.insert(aNotifications, "[DYING]");
-			elseif (nOriginalWounds < nTotalHP) and (nWounds == nTotalHP) then
-				table.insert(aNotifications, "[DISABLED]");
-			elseif (nOriginalWounds < heavy_hp) and (nWounds >= heavy_hp) then
-				table.insert(aNotifications, "[HEAVY DAMAGE]");
-			elseif (nOriginalWounds < moderate_hp) and (nWounds >= moderate_hp) then
-				table.insert(aNotifications, "[MODERATE DAMAGE]");
-			end
-		end
 	end
 
 	-- SET HEALTH FIELDS
-	if rTarget.sType == "pc" and rTarget.nodeCreature then
-		DB.setValue(rTarget.nodeCreature, "hp.temporary", "number", nTempHP);
-		DB.setValue(rTarget.nodeCreature, "hp.wounds", "number", nWounds);
-		DB.setValue(rTarget.nodeCreature, "hp.nonlethal", "number", nNonlethal);
+	if sTargetType == "pc" then
+		DB.setValue(nodeTarget, "hp.temporary", "number", nTempHP);
+		DB.setValue(nodeTarget, "hp.wounds", "number", nWounds);
+		DB.setValue(nodeTarget, "hp.nonlethal", "number", nNonlethal);
 	else
-		DB.setValue(rTarget.nodeCT, "hptemp", "number", nTempHP);
-		DB.setValue(rTarget.nodeCT, "wounds", "number", nWounds);
-		DB.setValue(rTarget.nodeCT, "nonlethal", "number", nNonlethal);
+		DB.setValue(nodeTarget, "hptemp", "number", nTempHP);
+		DB.setValue(nodeTarget, "wounds", "number", nWounds);
+		DB.setValue(nodeTarget, "nonlethal", "number", nNonlethal);
 	end
 
+	-- Check for status change
+	_,_,sNewStatus = ActorManager2.getPercentWounded(sTargetType, nodeTarget);
+	if sOriginalStatus ~= sNewStatus then
+		table.insert(aNotifications, "[" .. sNewStatus:upper() .. "]");
+	end
+	
 	-- OUTPUT RESULTS
-	messageDamage(rSource, rTarget, rDamageOutput.sTypeOutput, sDamage, rDamageOutput.sVal, table.concat(aNotifications, " "));
+	messageDamage(rSource, rTarget, bSecret, rDamageOutput.sTypeOutput, sDamage, rDamageOutput.sVal, table.concat(aNotifications, " "));
 end
 
-function messageDamage(rSource, rTarget, sDamageType, sDamageDesc, sTotal, sExtraResult)
+function messageDamage(rSource, rTarget, bSecret, sDamageType, sDamageDesc, sTotal, sExtraResult)
 	if not (rTarget or sExtraResult ~= "") then
 		return;
 	end
@@ -1620,11 +1547,11 @@ function messageDamage(rSource, rTarget, sDamageType, sDamageDesc, sTotal, sExtr
 	local msgLong = {font = "msgfont"};
 
 	if sDamageType == "Heal" or sDamageType == "Temporary hit points" then
-		msgShort.icon = "indicator_heal";
-		msgLong.icon = "indicator_heal";
+		msgShort.icon = "roll_heal";
+		msgLong.icon = "roll_heal";
 	else
-		msgShort.icon = "indicator_damage";
-		msgLong.icon = "indicator_damage";
+		msgShort.icon = "roll_damage";
+		msgLong.icon = "roll_damage";
 	end
 
 	msgShort.text = sDamageType .. " ->";
@@ -1638,6 +1565,5 @@ function messageDamage(rSource, rTarget, sDamageType, sDamageDesc, sTotal, sExtr
 		msgLong.text = msgLong.text .. " " .. sExtraResult;
 	end
 	
-	local bGMOnly = string.match(sDamageDesc, "^%[GM%]") or string.match(sDamageDesc, "^%[TOWER%]") ;
-	ActionsManager.messageResult(bGMOnly, rSource, rTarget, msgLong, msgShort);
+	ActionsManager.messageResult(bSecret, rSource, rTarget, msgLong, msgShort);
 end

@@ -4,7 +4,6 @@
 --
 
 function onInit()
-	ActionsManager.registerActionIcon("skill", "action_roll");
 	ActionsManager.registerModHandler("skill", modSkill);
 	ActionsManager.registerResultHandler("skill", onRoll);
 end
@@ -22,10 +21,10 @@ function performPCRoll(draginfo, rActor, nodeSkill)
 	performRoll(draginfo, rActor, sSkillName, nSkillMod, sSkillStat);
 end
 
-function performRoll(draginfo, rActor, sSkillName, nSkillMod, sSkillStat, nTargetDC, bSecretRoll, bAddName, sExtra)
-	-- Build basic roll
+function getRoll(rActor, sSkillName, nSkillMod, sSkillStat, nTargetDC, bSecretRoll, sExtra)
 	local rRoll = {};
-	rRoll.aDice = { "d6","d6","d6" };
+	rRoll.sType = "skill";
+	rRoll.aDice = { "d20" };
 	rRoll.nMod = nSkillMod or 0;
 	rRoll.sDesc = "[SKILL] " .. sSkillName;
 	if sExtra then
@@ -34,7 +33,7 @@ function performRoll(draginfo, rActor, sSkillName, nSkillMod, sSkillStat, nTarge
 	
 	-- If custom skill, then add in ability that modifies it.
 	local bCustom = true;
-	for k, v in pairs(GameSystemManager.getSkillList()) do
+	for k, v in pairs(DataCommon.skilldata) do
 		if k == sSkillName then
 			bCustom = false;
 		end
@@ -46,27 +45,20 @@ function performRoll(draginfo, rActor, sSkillName, nSkillMod, sSkillStat, nTarge
 		end
 	end
 	
-	if bAddName then
-		rRoll.sDesc = "[ADDNAME] " .. rRoll.sDesc;
-	end
-	if bSecretRoll then
-		rRoll.sDesc = "[GM] " .. rRoll.sDesc;
-	end
+	rRoll.bSecret = bSecretRoll;
 	
-	local rCustom = {};
-	if nTargetDC then
-		table.insert(rCustom, { nMod = nTargetDC } );
-	end
+	rRoll.nTarget = nTargetDC;
 	
-	-- Perform roll
-	ActionsManager.performSingleRollAction(draginfo, rActor, "skill", rRoll, rCustom);
+	return rRoll;
+end
+
+function performRoll(draginfo, rActor, sSkillName, nSkillMod, sSkillStat, nTargetDC, bSecretRoll, sExtra)
+	local rRoll = getRoll(rActor, sSkillName, nSkillMod, sSkillStat, nTargetDC, bSecretRoll, sExtra);
+	
+	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
 function modSkill(rSource, rTarget, rRoll)
-	if rTarget and rTarget.nOrder then
-		return;
-	end
-	
 	local bAssist = Input.isShiftPressed();
 	if bAssist then
 		rRoll.sDesc = rRoll.sDesc .. " [ASSIST]";
@@ -88,7 +80,7 @@ function modSkill(rSource, rTarget, rRoll)
 		if sModStat then
 			sActionStat = DataCommon.ability_stol[sModStat];
 		else
-			for k, v in pairs(GameSystemManager.getSkillList()) do
+			for k, v in pairs(DataCommon.skilldata) do
 				if string.lower(k) == sSkillLower then
 					sActionStat = v.stat;
 				end
@@ -112,64 +104,53 @@ function modSkill(rSource, rTarget, rRoll)
 		table.insert(aSkillFilter, aSkillNameFilter);
 		
 		-- Get effects
-		local aAddDice, nAddMod, nEffectCount = EffectsManager.getEffectsBonus(rSource, {"SKILL"}, false, aSkillFilter);
+		local aAddDice, nAddMod, nEffectCount = EffectManager.getEffectsBonus(rSource, {"SKILL"}, false, aSkillFilter);
 		if (nEffectCount > 0) then
 			bEffects = true;
 		end
 		
 		-- Get condition modifiers
-		if EffectsManager.hasEffectCondition(rSource, "Frightened") or 
-				EffectsManager.hasEffectCondition(rSource, "Panicked") or
-				EffectsManager.hasEffectCondition(rSource, "Shaken") then
+		if EffectManager.hasEffectCondition(rSource, "Frightened") or 
+				EffectManager.hasEffectCondition(rSource, "Panicked") or
+				EffectManager.hasEffectCondition(rSource, "Shaken") then
 			bEffects = true;
 			nAddMod = nAddMod - 2;
 		end
-		if EffectsManager.hasEffectCondition(rSource, "Sickened") then
+		if EffectManager.hasEffectCondition(rSource, "Sickened") then
 			bEffects = true;
 			nAddMod = nAddMod - 2;
 		end
-		if EffectsManager.hasEffectCondition(rSource, "Exhausted") then
+		if EffectManager.hasEffectCondition(rSource, "Blinded") then
 			if sActionStat == "strength" or sActionStat == "dexterity" then
 				bEffects = true;
-				nAddMod = nAddMod - 3;
+				nAddMod = nAddMod - 4;
+			elseif sSkillLower == "search" or sSkillLower == "perception" then
+				bEffects = true;
+				nAddMod = nAddMod - 4;
 			end
-		elseif EffectsManager.hasEffectCondition(rSource, "Fatigued") then
-			if sActionStat == "strength" or sActionStat == "dexterity" then
+		elseif EffectManager.hasEffectCondition(rSource, "Dazzled") then
+			if sSkillLower == "spot" or sSkillLower == "search" or sSkillLower == "perception" then
 				bEffects = true;
 				nAddMod = nAddMod - 1;
 			end
 		end
-		if EffectsManager.hasEffectCondition(rSource, "Blinded") then
-			if sActionStat == "strength" or sActionStat == "dexterity" then
-				bEffects = true;
-				nAddMod = nAddMod - 2;
-			end
-			if sSkillLower == "search" or sSkillLower == "perception" then
-				bEffects = true;
-				nAddMod = nAddMod - 4;
-			end
-		elseif EffectsManager.hasEffectCondition(rSource, "Dazzled") then
-			if sSkillLower == "spot" or sSkillLower == "search" or sSkillLower == "notice" then
-				bEffects = true;
-				nAddMod = nAddMod - 1;
-			end
-		end
-		if EffectsManager.hasEffectCondition(rSource, "Fascinated") then
-			if sSkillLower == "spot" or sSkillLower == "listen" or sSkillLower == "notice" then
+		if EffectManager.hasEffectCondition(rSource, "Fascinated") then
+			if sSkillLower == "spot" or sSkillLower == "listen" or sSkillLower == "perception" then
 				bEffects = true;
 				nAddMod = nAddMod - 4;
 			end
 		end
+		-- Exhausted and Fatigued are handled by the effect checks for general ability modifiers
 
 		-- Get ability modifiers
-		local nBonusStat, nBonusEffects = ActorManager.getAbilityEffectsBonus(rSource, sActionStat);
+		local nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, sActionStat);
 		if nBonusEffects > 0 then
 			bEffects = true;
 			nAddMod = nAddMod + nBonusStat;
 		end
 		
 		-- Get negative levels
-		local nNegLevelMod, nNegLevelCount = EffectsManager.getEffectsBonus(rSource, {"NLVL"}, true);
+		local nNegLevelMod, nNegLevelCount = EffectManager.getEffectsBonus(rSource, {"NLVL"}, true);
 		if nNegLevelCount > 0 then
 			bEffects = true;
 			nAddMod = nAddMod - nNegLevelMod;
@@ -185,23 +166,24 @@ function modSkill(rSource, rTarget, rRoll)
 			local sEffects = "";
 			local sMod = StringManager.convertDiceToString(aAddDice, nAddMod, true);
 			if sMod ~= "" then
-				sEffects = "[EFFECTS " .. sMod .. "]";
+				sEffects = "[" .. Interface.getString("effects_tag") .. " " .. sMod .. "]";
 			else
-				sEffects = "[EFFECTS]";
+				sEffects = "[" .. Interface.getString("effects_tag") .. "]";
 			end
 			rRoll.sDesc = rRoll.sDesc .. " " .. sEffects;
 		end
 	end
 end
 
-function onRoll(rSource, rTarget, rRoll, rCustom)
+function onRoll(rSource, rTarget, rRoll)
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 
-	if rCustom and rCustom[1] and rCustom[1].nMod then
+	if rRoll.nTarget then
 		local nTotal = ActionsManager.total(rRoll);
+		local nTargetDC = tonumber(rRoll.nTarget) or 0;
 		
-		rMessage.text = rMessage.text .. " (vs. DC " .. rCustom[1].nMod .. ")";
-		if nTotal >= rCustom[1].nMod then
+		rMessage.text = rMessage.text .. " (vs. DC " .. nTargetDC .. ")";
+		if nTotal >= nTargetDC then
 			rMessage.text = rMessage.text .. " [SUCCESS]";
 		else
 			rMessage.text = rMessage.text .. " [FAILURE]";

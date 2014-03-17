@@ -5,157 +5,104 @@
   attribution and copyright information.
 -->
 
-<root version="2.9" release="10" logo="logo.png">
-	<!-- ATTRIBUTES -->
+<root version="3.0" release="11" logo="logo.png">
+	<!-- Attributes -->
 	<description>
-		<text>Fantasy ruleset for playing 3.5E</text>
+		<text>D&amp;D 3.5E</text>
 		<author>SmiteWorks USA, LLC</author>
 		<website>http://www.fantasygrounds.com</website>
 	</description>
 	<importinfo>
-		<acceptfrom ruleset="d20_JPG" />
 		<acceptfrom ruleset="d20" />
-		<acceptfrom ruleset="foundation" />
-		<acceptfrom ruleset="3.5E" />
 	</importinfo>
 
-	<!-- GAME ELEMENTS -->
+	<!-- Layers -->
+	<importruleset source="CoreRPG" />
+	
+	<!-- Tabletop settings -->
 	<includefile source="gameelements.xml" />
 
-	<!-- GRAPHICS -->
+	<!-- Graphics -->
 	<includefile source="graphics/graphics_fonts.xml" />
 	<includefile source="graphics/graphics_frames.xml" />
+	<includefile source="graphics/graphics_icons.xml" />
 	<includefile source="graphics/graphics_radial.xml" />
-	<includefile source="graphics/graphics_misc.xml" />
-	<includefile source="graphics/graphics_portraitsets.xml" />
 	
-	<!-- TEMPLATES -->
-	<includefile source="common/template_common.xml" />
-	<includefile source="common/template_buttons.xml" />
-	<includefile source="common/template_lists.xml" />
-	<includefile source="common/template_toolbar.xml" />
-	<includefile source="common/template_common_35E.xml" />
+	<!-- Strings -->
+	<includefile source="strings/strings_35e.xml" />
 
-	<includefile source="common/spells.xml" />
-	<includefile source="common/spells_mini.xml" />
-
-	<includefile source="campaign/template_campaign.xml" />
-	<includefile source="campaign/template_npc.xml" />
-	<includefile source="charsheet/template_charsheet.xml" />
-	<includefile source="ps/template_ps.xml" />
-	<includefile source="ct/template_ct.xml" />
-	<includefile source="desktop/template_desktop.xml" />
-	<includefile source="ref/template_ref.xml" />
-	<includefile source="utility/template_utility.xml" />
-
-	<!-- DESKTOP -->
+	<!-- Desktop -->
 	<includefile source="desktop/desktop_classes.xml" />
 	<includefile source="desktop/desktop_local.xml" />
-	<includefile source="desktop/desktop_panels.xml" />
-	<includefile source="desktop/desktop_dicetower.xml" />
-	<script name="ModifierStack" file="desktop/scripts/modifierstack.lua" />
-	<script name="35E_Desktop" file="desktop/scripts/desktop.lua" />
+	<script name="Desktop" file="desktop/scripts/desktop.lua" />
 
-	<!-- CAMPAIGN INFORMATION -->
-	<includefile source="campaign/campaign_story.xml" />
-	<includefile source="campaign/campaign_images.xml" />
-	<includefile source="campaign/campaign_npcs.xml" />
-	<includefile source="campaign/campaign_items.xml" />
-	<includefile source="campaign/campaign_notes.xml" />
-
-	<includefile source="campaign/npc_top.xml" />
-	<includefile source="campaign/npc_main.xml" />
-	<includefile source="campaign/npc_spells.xml" />
-	<includefile source="campaign/encounter_top.xml" />
-
-	<includefile source="campaign/item_top.xml" />
-	<includefile source="campaign/item_main.xml" />
-	<includefile source="campaign/parcel_top.xml" />
-	
-	<!-- CHARACTER SHEET -->
-	<includefile source="charsheet/charsheet_main.xml" />
-	<includefile source="charsheet/charsheet_combat.xml" />
-	<includefile source="charsheet/charsheet_skills.xml" />
-	<includefile source="charsheet/charsheet_abilities.xml" />
-	<includefile source="charsheet/charsheet_inventory.xml" />
-	<includefile source="charsheet/charsheet_weapons.xml" />
-	<includefile source="charsheet/charsheet_actions.xml" />
-	<includefile source="charsheet/charsheet_notes.xml" />
-	<includefile source="charsheet/charsheetmini_main.xml" />
-	<includefile source="charsheet/charsheetmini_abilities.xml" />
-	<includefile source="charsheet/charsheetmini_inventory.xml" />
-	<includefile source="charsheet/charsheetmini_actions.xml" />
-	<includefile source="charsheet/charsheet_toplevel.xml" />
-	<script name="CharManager" file="charsheet/scripts/manager_char.lua" />
-
-	<!-- PARTY SHEET -->
-	<includefile source="ps/ps_main.xml" />
-	<includefile source="ps/ps_skills.xml" />
-	<includefile source="ps/ps_inventory.xml" />
-	<includefile source="ps/ps_order.xml" />
-	<includefile source="ps/ps_xp.xml" />
-	<includefile source="ps/ps_top.xml" />
-	<script name="PartyManager" file="ps/scripts/manager_ps.lua" />
-	
-	<!-- CALENDAR -->
-	<includefile source="calendar/calendar.xml" />
-	<includefile source="calendar/calendar_log.xml" />
-	<script name="CalendarManager" file="calendar/scripts/manager_calendar.lua" />
-	
-	<!-- COMBAT TRACKER -->
-	<includefile source="ct/ct_effects.xml" />
-	<includefile source="ct/ct_host.xml" />
-	<includefile source="ct/ct_client.xml" />
-	<script name="CTManager" file="ct/scripts/manager_ct.lua" />
-
-	<!-- OTHER WINDOWS -->
-	<includefile source="utility/utility_modules.xml" />
-	<includefile source="utility/utility_tokenbag.xml" />
+	<!-- Utility -->
 	<includefile source="utility/utility_modifiers.xml" />
 	<includefile source="utility/utility_effects.xml" />
-	<includefile source="utility/utility_tables.xml" />
-	<includefile source="utility/utility_options.xml" />
-	<includefile source="utility/utility_charlist_host.xml" />
-	<includefile source="utility/utility_charlist_client.xml" />
-	<includefile source="utility/utility_export.xml" />
-	<includefile source="utility/utility_misc.xml" />
-	
-	<!-- REFERENCE -->
-	<includefile source="ref/ref_basicclasses.xml" />
-	<includefile source="ref/ref_library.xml" />
-	<includefile source="ref/ref_abilities.xml" />
-	<includefile source="ref/ref_spells.xml" />
-	<includefile source="ref/ref_equipment.xml" />
-	<includefile source="ref/ref_equipment_lists.xml" />
+	<includefile source="utility/utility_library.xml" />
+
+	<!-- Reference -->
+	<includefile source="ref/template_ref.xml" />
 	<includefile source="ref/ref_feats.xml" />
 	<includefile source="ref/ref_skills.xml" />
-	<includefile source="ref/ref_quests.xml" />
+	<includefile source="ref/ref_equipment.xml" />
+	<includefile source="ref/ref_equipment_lists.xml" />
+	<includefile source="ref/ref_spells.xml" />
+
+	<!-- Campaign Records -->
+	<includefile source="campaign/template_campaign.xml" />
+	<includefile source="campaign/template_char.xml" />
+	<includefile source="campaign/template_spell.xml" />
+
+	<includefile source="campaign/record_spell.xml" />
+	<includefile source="campaign/record_spell_mini.xml" />
+
+	<includefile source="campaign/record_char.xml" />
+	<includefile source="campaign/record_char_main.xml" />
+	<includefile source="campaign/record_char_combat.xml" />
+	<includefile source="campaign/record_char_skills.xml" />
+	<includefile source="campaign/record_char_abilities.xml" />
+	<includefile source="campaign/record_char_inventory.xml" />
+	<includefile source="campaign/record_char_notes.xml" />
+	<includefile source="campaign/record_char_actions.xml" />
+	<includefile source="campaign/record_charmini_main.xml" />
+	<includefile source="campaign/record_charmini_abilities.xml" />
+	<includefile source="campaign/record_charmini_inventory.xml" />
+	<includefile source="campaign/record_charmini_actions.xml" />
+	<includefile source="campaign/record_ability.xml" />
+	<script name="CharManager" file="campaign/scripts/manager_char.lua" />
+
+	<includefile source="campaign/record_npc.xml" />
+	<includefile source="campaign/record_encounter.xml" />
+	<includefile source="campaign/record_item.xml" />
+	<includefile source="campaign/record_parcel.xml" />
+	<includefile source="campaign/record_quest.xml" />
 	
-	<!-- HIGH-LEVEL SCRIPTS -->
+	<!-- Combat tracker -->
+	<includefile source="ct/template_ct.xml" />
+	<includefile source="ct/ct_host.xml" />
+	<includefile source="ct/ct_client.xml" />
+
+	<!-- Party sheet -->
+	<includefile source="ps/template_ps.xml" />
+	<includefile source="ps/ps.xml" />
+	<includefile source="ps/ps_main.xml" />
+	<includefile source="ps/ps_skills.xml" />
+	<includefile source="ps/ps_xp.xml" />
+	<script name="PartyManager2" file="ps/scripts/manager_ps2.lua" />
+
+	<!-- High-level scripts -->
 	<script name="DataCommon" file="scripts/data_common.lua" />
+	<script name="GameSystem" file="scripts/manager_gamesystem.lua" />
 
-	<script name="ChatManager" file="scripts/manager_chat.lua" />
-	<script name="OOBManager" file="scripts/manager_oob.lua" />
-	<script name="GmIdentityManager" file="scripts/manager_gmidentity.lua" />
-	<script name="ExportManager" file="scripts/manager_export.lua" />
-	<script name="WindowManager" file="scripts/manager_windows.lua" />
-	<script name="DesktopManager" file="scripts/manager_desktop.lua" />
-	<script name="NodeManager" file="scripts/manager_node.lua" />
-	<script name="StringManager" file="scripts/manager_string.lua" />
-	<script name="DiceTowerManager" file="scripts/manager_dicetower.lua" />
-	<script name="OptionsManager" file="scripts/manager_options.lua" />
-	<script name="TableManager" file="scripts/manager_table.lua" />
-	<script name="TargetingManager" file="scripts/manager_targeting.lua" />
-	<script name="TokenManager" file="scripts/manager_token.lua" />
+	<script name="ActorManager2" file="scripts/manager_actor2.lua" />
+	<script name="CombatManager2" file="scripts/manager_combat2.lua" />
+	<script name="EffectManager" file="scripts/manager_effect.lua" />
+	<script name="ItemManager2" file="scripts/manager_item2.lua" />
+	<script name="SpellManager" file="scripts/manager_spell.lua" />
+	<script name="TokenManager2" file="scripts/manager_token2.lua" />
+	<script name="VersionManager2" file="scripts/manager_version2.lua" />
 	
-	<script name="GameSystemManager" file="scripts/manager_gamesystem.lua" />
-	
-	<script name="ActorManager" file="scripts/manager_actor.lua" />
-	<script name="EffectsManager" file="scripts/manager_effect.lua" />
-	<script name="ItemsManager" file="scripts/manager_items.lua" />
-	<script name="SpellsManager" file="scripts/manager_spells.lua" />
-
-	<script name="ActionsManager" file="scripts/manager_actions.lua" />
 	<script name="ActionAbility" file="scripts/manager_action_ability.lua" />
 	<script name="ActionAttack" file="scripts/manager_action_attack.lua" />
 	<script name="ActionDamage" file="scripts/manager_action_damage.lua" />
@@ -164,6 +111,4 @@
 	<script name="ActionInit" file="scripts/manager_action_init.lua" />
 	<script name="ActionSkill" file="scripts/manager_action_skill.lua" />
 	<script name="ActionSpell" file="scripts/manager_action_spell.lua" />
-	
-	<script name="VersionManager" file="scripts/manager_version.lua" />
 </root>

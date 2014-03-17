@@ -6,14 +6,246 @@
 -->
 
 <root>
+	<windowclass name="ps_skills">
+		<script file="ps/scripts/ps_skill.lua" />
+		<sheetdata>
+			<genericcontrol name="sheetframe">
+				<bounds>10,35,-20,-15</bounds>
+				<disabled />
+			</genericcontrol>
+			
+			<label name="namelabel">
+				<anchored to="sheetframe" position="insidetopleft" offset="65,25" width="110" />
+				<static textres="ps_label_name" />
+				<center />
+			</label>
+			
+			<genericcontrol name="skillanchor">
+				<anchored to="sheetframe" position="insidetopleft" offset="178,25" width="0" height="20" />
+			</genericcontrol>
+			<label_ps_skill name="spotlabel">
+				<static textres="ps_label_spot" />
+				<tooltip textres="skill_value_spot" />
+			</label_ps_skill>
+			<label_ps_skill name="listenlabel">
+				<static textres="ps_label_listen" />
+				<tooltip textres="skill_value_listen" />
+			</label_ps_skill>
+			<label_ps_skill name="searchlabel">
+				<static textres="ps_label_search" />
+				<tooltip textres="skill_value_search" />
+			</label_ps_skill>
+			<label_ps_skill name="perceptionlabel">
+				<static textres="ps_label_perception" />
+				<tooltip textres="skill_value_perception" />
+			</label_ps_skill>
+			<label_ps_skill name="smlabel">
+				<static textres="ps_label_sensemotive" />
+				<tooltip textres="skill_value_sensemotive" />
+			</label_ps_skill>
+			<label name="passivelabel">
+				<anchored>
+					<top parent="sheetframe" offset="8" />
+					<left parent="spotlabel" />
+					<right parent="smlabel" />
+				</anchored>
+				<static textres="ps_label_passive" />
+				<center />
+			</label>
+			
+			<label_ps_skill name="arcanalabel">
+				<anchored>
+					<left offset="15" />
+				</anchored>
+				<static textres="ps_label_knowarcana" />
+				<tooltip textres="skill_value_knowarcana" />
+			</label_ps_skill>
+			<label_ps_skill name="dungeoneeringlabel">
+				<static textres="ps_label_knowdungeoneering" />
+				<tooltip textres="skill_value_knowdungeoneering" />
+			</label_ps_skill>
+			<label_ps_skill name="locallabel">
+				<static textres="ps_label_knowlocal" />
+				<tooltip textres="skill_value_knowlocal" />
+			</label_ps_skill>
+			<label_ps_skill name="naturelabel">
+				<static textres="ps_label_knownature" />
+				<tooltip textres="skill_value_knownature" />
+			</label_ps_skill>
+			<label_ps_skill name="planeslabel">
+				<static textres="ps_label_knowplanes" />
+				<tooltip textres="skill_value_knowplanes" />
+			</label_ps_skill>
+			<label_ps_skill name="religionlabel">
+				<static textres="ps_label_knowreligion" />
+				<tooltip textres="skill_value_knowreligion" />
+			</label_ps_skill>
+			<label name="knowledgeskillslabel">
+				<anchored>
+					<top parent="sheetframe" offset="8" />
+					<left parent="arcanalabel" />
+					<right parent="religionlabel" />
+				</anchored>
+				<static textres="ps_label_knowledge" />
+				<center />
+			</label>
+			
+			<label_ps_skill name="blufflabel">
+				<anchored>
+					<left offset="15" />
+				</anchored>
+				<static textres="ps_label_bluff" />
+				<tooltip textres="skill_value_bluff" />
+			</label_ps_skill>
+			<label_ps_skill name="diplomacylabel">
+				<static textres="ps_label_diplomacy" />
+				<tooltip textres="skill_value_diplomacy" />
+			</label_ps_skill>
+			<label_ps_skill name="gatherinfolabel">
+				<static textres="ps_label_gatherinfo" />
+				<tooltip textres="skill_value_gatherinfo" />
+			</label_ps_skill>
+			<label_ps_skill name="intimidatelabel">
+				<static textres="ps_label_intimidate" />
+				<tooltip textres="skill_value_intimidate" />
+			</label_ps_skill>
+			<label name="socialskillslabel">
+				<anchored>
+					<top parent="sheetframe" offset="8" />
+					<left parent="blufflabel" />
+					<right parent="intimidatelabel" />
+				</anchored>
+				<static textres="ps_label_social" />
+				<center />
+			</label>
+
+			<label_ps_skill name="acrobaticslabel">
+				<anchored>
+					<left offset="15" />
+				</anchored>
+				<static textres="ps_label_acrobatics" />
+				<tooltip textres="skill_value_acrobatics" />
+			</label_ps_skill>
+			<label_ps_skill name="climblabel">
+				<static textres="ps_label_climb" />
+				<tooltip textres="skill_value_climb" />
+			</label_ps_skill>
+			<label_ps_skill name="heallabel">
+				<static textres="ps_label_heal" />
+				<tooltip textres="skill_value_heal" />
+			</label_ps_skill>
+			<label_ps_skill name="jumplabel">
+				<static textres="ps_label_jump" />
+				<tooltip textres="skill_value_jump" />
+			</label_ps_skill>
+			<label_ps_skill name="survivallabel">
+				<static textres="ps_label_survival" />
+				<tooltip textres="skill_value_survival" />
+			</label_ps_skill>
+			<label_ps_skill name="hidelabel">
+				<anchored>
+					<left offset="15" />
+				</anchored>
+				<static textres="ps_label_hide" />
+				<tooltip textres="skill_value_hide" />
+			</label_ps_skill>
+			<label_ps_skill name="movesilentlabel">
+				<static textres="ps_label_movesilent" />
+				<tooltip textres="skill_value_movesilent" />
+			</label_ps_skill>
+			<label_ps_skill name="stealthlabel">
+				<anchored>
+					<left offset="15" />
+				</anchored>
+				<static textres="ps_label_stealth" />
+				<tooltip textres="skill_value_stealth" />
+			</label_ps_skill>
+			<label name="physicalskillslabel">
+				<anchored>
+					<top parent="sheetframe" offset="8" />
+					<left parent="acrobaticslabel" />
+					<right parent="stealthlabel" />
+				</anchored>
+				<static textres="ps_label_physical" />
+				<center />
+			</label>
+
+			<windowlist name="list">
+				<anchored to="sheetframe">
+					<top offset="55" />
+					<left offset="15" />
+					<right offset="-25" />
+					<bottom offset="-50" />
+				</anchored>
+				<frame name="groupbox" offset="10,10,20,10" />
+				<datasource>.partyinformation</datasource>
+				<class>ps_skillsitem</class>
+				<sortby><control>name</control></sortby>
+				<allowdelete />
+				<empty font="list-empty" gmtextres="ps_emptylistother" />
+			</windowlist>
+			<scrollbar_list />
+	
+			<genericcontrol name="leftanchor">
+				<anchored to="sheetframe" position="insidebottomleft" offset="5,10" height="20" width="0" />
+				<gmvisibleonly />
+			</genericcontrol>
+			
+			<buttonfield name="hiderollresults">
+				<anchored to="leftanchor" height="20" width="20">
+					<top />
+					<left anchor="right" relation="relative" offset="15" />
+				</anchored>
+				<frame name="fielddark" offset="10,8,10,6" />
+				<state icon="visibilityon" tooltipres="ps_tooltip_showrollon" />
+				<state icon="visibilityoff" tooltipres="ps_tooltip_showrolloff" />
+				<gmvisibleonly />
+			</buttonfield>
+
+			<genericcontrol name="partyskillframe">
+				<anchored to="leftanchor" height="20" width="270">
+					<top />
+					<left anchor="right" relation="relative" offset="15" />
+				</anchored>
+				<frame name="groupbox" offset="10,10,10,10" />
+				<gmvisibleonly />
+			</genericcontrol>			
+			<button_roll name="skillroll">
+				<anchored to="partyskillframe" position="insidetopleft" offset="5,0" />
+				<script file="ps/scripts/ps_roll_skill.lua" />
+				<gmvisibleonly />
+			</button_roll>
+			<label name="skilllabel">
+				<anchored to="skillroll" position="righthigh" offset="5,0" />
+				<static textres="ps_label_groupskill" />
+				<gmvisibleonly />
+			</label>	
+			<string_dropdown name="selectedskill">
+				<anchored to="skilllabel" position="righthigh" offset="10,0" width="120" height="20" />
+				<empty textres="ps_empty_skill" />
+				<gmvisibleonly />
+			</string_dropdown>
+			<dropdown name="skilldropdown">
+				<target>selectedskill</target>
+				<position>0,4</position>
+				<gmvisibleonly />
+				<script>
+					function onInit()
+						super.onInit();
+						addItems(DataCommon.psskilldata);
+					end
+				</script>
+			</dropdown>
+			<basicnumber name="skilldc">
+				<anchored to="selectedskill" position="righthigh" offset="10,0" width="30" height="20" />
+				<gmvisibleonly />
+			</basicnumber>			
+		</sheetdata>
+	</windowclass>
+	
 	<windowclass name="ps_skillsitem">
-		<frame>modifier</frame>
-		<sizelimits>
-			<minimum>
-				<height>55</height>
-				<width>-1</width>
-			</minimum>
-		</sizelimits>
+		<margins control="0,0,0,10" />
+		<frame>partysheetentry</frame>
 		<script file="ps/scripts/ps_skillitem.lua" />
 		<sheetdata>
 			<hlink name="link">
@@ -24,9 +256,6 @@
 				</script>
 			</hlink>
 			
-			<spacer>
-				<height>60</height>
-			</spacer>
 			<portrait_base>
 				<bounds>10,10,40,40</bounds>
 			</portrait_base>
@@ -34,22 +263,17 @@
 				<bounds>10,10,40,40</bounds>
 			</portrait>
 			
-			<string_psname name="name">
-				<anchored>
-					<top><offset>10</offset></top>
-					<left><offset>55</offset></left>
-					<size>
-						<width>80</width>
-						<height>20</height>
-					</size>
+			<string_ps name="name">
+				<anchored position="insidetopleft" offset="55,20" width="110" height="20" />
+				<empty textres="char_emptyname" />
+			</string_ps>
+			
+			<genericcontrol name="skillanchor">
+				<anchored to="name" width="0" height="20">
+					<top offset="-10" />
+					<left anchor="right" offset="-3" />
 				</anchored>
-				<empty>&#171; Unnamed &#187;</empty>
-			</string_psname>
-			
-			<genericcontrol name="anchorskill">
-				<bounds>135,10,0,20</bounds>
 			</genericcontrol>
-			
 			<number_ps_skill name="spot">
 				<skill>Spot</skill>
 			</number_ps_skill>
@@ -59,16 +283,17 @@
 			<number_ps_skill name="search">
 				<skill>Search</skill>
 			</number_ps_skill>
-			<number_ps_skill name="notice">
-				<skill>Notice</skill>
+			<number_ps_skill name="perception">
+				<skill>Perception</skill>
 			</number_ps_skill>
 			<number_ps_skill name="sensemotive">
 				<skill>Sense Motive</skill>
 			</number_ps_skill>
 
-			<spacer_skill />
-			
 			<number_ps_skill name="arcana">
+				<anchored>
+					<left offset="15" />
+				</anchored>
 				<skill>Knowledge</skill>
 				<subskill>Arcana</subskill>
 			</number_ps_skill>
@@ -93,9 +318,10 @@
 				<subskill>Religion</subskill>
 			</number_ps_skill>
 
-			<spacer_skill />
-			
 			<number_ps_skill name="bluff">
+				<anchored>
+					<left offset="15" />
+				</anchored>
 				<skill>Bluff</skill>
 			</number_ps_skill>
 			<number_ps_skill name="diplomacy">
@@ -108,9 +334,10 @@
 				<skill>Intimidate</skill>
 			</number_ps_skill>
 
-			<spacer_skill />
-			
 			<number_ps_skill name="acrobatics">
+				<anchored>
+					<left offset="15" />
+				</anchored>
 				<skill>Acrobatics</skill>
 			</number_ps_skill>
 			<number_ps_skill name="climb">
@@ -125,493 +352,40 @@
 			<number_ps_skill name="survival">
 				<skill>Survival</skill>
 			</number_ps_skill>
-
-			<spacer_skill />
-			
 			<number_ps_skill name="hide">
+				<anchored>
+					<left offset="15" />
+				</anchored>
 				<skill>Hide</skill>
 			</number_ps_skill>
 			<number_ps_skill name="movesilent">
 				<skill>Move Silently</skill>
 			</number_ps_skill>
 			<number_ps_skill name="stealth">
+				<anchored>
+					<left offset="15" />
+				</anchored>
 				<skill>Stealth</skill>
 			</number_ps_skill>
 			
 			<string_ps name="senses">
-				<anchored>
-					<left><offset>145</offset></left>
-					<top><offset>35</offset></top>
-					<right><parent>religion</parent></right>
-					<size>
-						<height>20</height>
-					</size>
+				<anchored height="20">
+					<left parent="spot" />
+					<right parent="religion" />
+					<top offset="30" />
 				</anchored>
-				<empty>&#171; No Special Senses &#187;</empty>
+				<tooltip textres="char_label_senses" />
 			</string_ps>
-			<stringfield name="languages">
-				<anchored>
-					<left><parent>bluff</parent></left>
-					<top><offset>35</offset></top>
-					<right><parent>stealth</parent></right>
-					<size>
-						<height>20</height>
-					</size>
+			<stringu name="languages">
+				<anchored height="20">
+					<left parent="bluff" />
+					<right parent="skillanchor" relation="relative" />
+					<top offset="30" />
 				</anchored>
-				<font>sheettextsupersmall</font>
-				<lineoffset default="on">-1</lineoffset>
 				<readonly />
 				<nodrag />
-				<nodragselect />
-				<empty>&#171; No Known Languages &#187;</empty>
-			</stringfield>
-		</sheetdata>
-	</windowclass>
-	
-	<windowclass name="ps_skills">
-		<script file="ps/scripts/ps_skill.lua" />
-		<sheetdata>
-			<frame_ps name="sheetframe" />
-			<label_ps_sheet>
-				<static>Skill Information</static>
-			</label_ps_sheet>
-			
-			<!-- Header Labels -->
-			<header_ps2 name="portraitlabel">
-				<anchored>
-					<left><offset>20</offset></left>
-					<size>
-						<width>40</width>
-					</size>
-				</anchored>
-				<static>Portrait</static>
-			</header_ps2>
-			<header_ps2 name="namelabel">
-				<anchored>
-					<left><offset>65</offset></left>
-					<size>
-						<width>80</width>
-					</size>
-				</anchored>
-				<static>Name</static>
-			</header_ps2>
-			
-			<genericcontrol name="anchorlabel">
-				<anchored>
-					<to>sheetframe</to>
-					<top><offset>47</offset></top>
-					<left><offset>145</offset></left>
-					<size><width>0</width><height>15</height></size>
-				</anchored>
-				<disabled />
-			</genericcontrol>
-			
-			<label_skill name="spotlabel">
-				<static>Spot</static>
-			</label_skill>
-			<label_skill name="listenlabel">
-				<static>List</static>
-			</label_skill>
-			<label_skill name="searchlabel">
-				<static>Srch</static>
-			</label_skill>
-			<label_skill name="noticelabel">
-				<static>Ntce</static>
-			</label_skill>
-			<label_skill name="smlabel">
-				<static>SMo</static>
-			</label_skill>
-			<header_ps1 name="passivelabel">
-				<anchored>
-					<left><parent>spotlabel</parent></left>
-					<right><parent>smlabel</parent></right>
-				</anchored>
-				<center />
-				<static>Passive</static>
-			</header_ps1>
-			
-			<spacer_label />
-			
-			<label_skill name="arcanalabel">
-				<static>Arcn</static>
-			</label_skill>
-			<label_skill name="dungeoneeringlabel">
-				<static>Dung</static>
-			</label_skill>
-			<label_skill name="locallabel">
-				<static>Locl</static>
-			</label_skill>
-			<label_skill name="naturelabel">
-				<static>Natr</static>
-			</label_skill>
-			<label_skill name="planeslabel">
-				<static>Plane</static>
-			</label_skill>
-			<label_skill name="religionlabel">
-				<static>Relig</static>
-			</label_skill>
-			<header_ps1 name="knowledgeskillslabel">
-				<anchored>
-					<left><parent>arcanalabel</parent></left>
-					<right><parent>religionlabel</parent></right>
-				</anchored>
-				<center />
-				<static>Knowledge Skills</static>
-			</header_ps1>
-			
-			<spacer_label />
-			
-			<label_skill name="blufflabel">
-				<static>Bluff</static>
-			</label_skill>
-			<label_skill name="diplomacylabel">
-				<static>Dipl</static>
-			</label_skill>
-			<label_skill name="gatherinfolabel">
-				<static>GInf</static>
-			</label_skill>
-			<label_skill name="intimidatelabel">
-				<static>Intim</static>
-			</label_skill>
-			<header_ps1 name="socialskillslabel">
-				<anchored>
-					<left><parent>blufflabel</parent></left>
-					<right><parent>intimidatelabel</parent></right>
-				</anchored>
-				<center />
-				<static>Social Skills</static>
-			</header_ps1>
-
-			<spacer_label />
-			
-			<label_skill name="acrobaticslabel">
-				<static>Acro</static>
-			</label_skill>
-			<label_skill name="climblabel">
-				<static>Clim</static>
-			</label_skill>
-			<label_skill name="heallabel">
-				<static>Heal</static>
-			</label_skill>
-			<label_skill name="jumplabel">
-				<static>Jump</static>
-			</label_skill>
-			<label_skill name="survivallabel">
-				<static>Surv</static>
-			</label_skill>
-			
-			<spacer_label />
-			
-			<label_skill name="hidelabel">
-				<static>Hide</static>
-			</label_skill>
-			<label_skill name="movesilentlabel">
-				<static>MS</static>
-			</label_skill>
-			<label_skill name="stealthlabel">
-				<static>Stlh</static>
-			</label_skill>
-			
-			<header_ps1 name="physicalskillslabel">
-				<anchored>
-					<left><parent>acrobaticslabel</parent></left>
-					<right><parent>stealthlabel</parent></right>
-				</anchored>
-				<center />
-				<static>Physical Skills</static>
-			</header_ps1>
-
-			<!-- Party List -->
-			<list_ps name="partylist">
-				<anchored>
-					<bottom><offset>-52</offset></bottom>
-				</anchored>
-				<class>ps_skillsitem</class>
-				<allowdelete />
-				<empty>
-					<font>reference-i</font>
-					<text>Drop PCs here to add party members.</text>
-				</empty>
-				<script file="ps/scripts/ps_mainlist.lua" />
-			</list_ps>
-			<scrollbar_ps />
-	
-			<!-- Party sheet roll visibility -->
-			<genericcontrol name="showrollframe">
-				<anchored>
-					<to>sheetframe</to>
-					<left><offset>10</offset></left>
-					<bottom><offset>-10</offset></bottom>
-					<size>
-						<height>35</height>
-						<width>40</width>
-					</size>
-				</anchored>
-				<frame>
-					<name>sheetgroup</name>
-					<offset>5,5,5,5</offset>
-				</frame>
-			</genericcontrol>			
-			<button_checkbox name="hiderollresults">
-				<anchored>
-					<to>showrollframe</to>
-					<position>insidetopleft</position>
-					<offset>6,3</offset>
-					<size>
-						<height>30</height>
-						<width>30</width>
-					</size>
-				</anchored>
-				<parameters>
-					<icons>indicator_visibilityoff</icons>
-					<defaulticon>indicator_visibilityon</defaulticon>
-					<tooltips>Hide Roll Results</tooltips>
-					<defaulttooltip>Show Roll Results</defaulttooltip>
-				</parameters>
-			</button_checkbox>
-
-			<!-- Party skill check -->
-			<genericcontrol name="partyskillframe">
-				<anchored>
-					<to>showrollframe</to>
-					<position>right</position>
-					<offset>10,0</offset>
-					<size>
-						<width>360</width>
-					</size>
-				</anchored>
-				<frame>
-					<name>sheetgroup</name>
-					<offset>5,5,5,5</offset>
-				</frame>
-			</genericcontrol>							
-			<button_ps>
-				<anchored>
-					<to>partyskillframe</to>
-					<position>insidetopleft</position>
-					<offset>10,6</offset>
-				</anchored>
-				<script file="ps/scripts/ps_roll_skill.lua" />
-			</button_ps>
-			<label>
-				<anchored>
-					<to>partyskillframe</to>
-					<position>insidetopleft</position>
-					<offset>40,11</offset>
-					<size>
-						<height>20</height>
-					</size>
-				</anchored>
-				<static>Skill Check:</static>
-			</label>	
-			<string_dropdown name="selectedskill">
-				<anchored>
-					<to>partyskillframe</to>
-					<position>insidetopleft</position>
-					<offset>115,10</offset>
-					<size>
-						<height>20</height>
-						<width>200</width>
-					</size>
-				</anchored>
-				<empty>&#171; Unnamed &#187;</empty>
-			</string_dropdown>
-			<dropdown name="skilldropdown">
-				<target>selectedskill</target>
-				<position>0,3</position>
-				<script>
-					function onInit()
-						super.onInit();
-						OptionsManager.registerCallback("SYSTEM", onSystemChanged);
-						onSystemChanged();
-					end
-					
-					function onClose()
-						OptionsManager.unregisterCallback("SYSTEM", onSystemChanged);
-					end
-
-					function onSystemChanged()
-						clear();
-						addItems(GameSystemManager.getPSSkillList());
-					end
-				</script>
-			</dropdown>
-			<basicnumber name="skilldc">
-				<anchored>
-					<to>partyskillframe</to>
-					<top><offset>8</offset></top>
-					<right><offset>-10</offset></right>
-					<size>
-						<width>30</width>
-						<height>20</height>
-					</size>
-				</anchored>
-				<font>sheetnumbersmall</font>
-			</basicnumber>			
-		</sheetdata>
-	</windowclass>
-	
-	<windowclass name="psclient_skills">
-		<script file="ps/scripts/ps_skill.lua" />
-		<sheetdata>
-			<frame_ps name="sheetframe" />
-			<label_ps_sheet>
-				<static>Skill Information</static>
-			</label_ps_sheet>
-			
-			<!-- column labels -->
-			<header_ps2 name="portraitlabel">
-				<anchored>
-					<left><offset>20</offset></left>
-					<size>
-						<width>40</width>
-					</size>
-				</anchored>
-				<static>Portrait</static>
-			</header_ps2>
-			<header_ps2 name="namelabel">
-				<anchored>
-					<left><offset>65</offset></left>
-					<size>
-						<width>80</width>
-					</size>
-				</anchored>
-				<static>Name</static>
-			</header_ps2>
-			
-			<genericcontrol name="anchorlabel">
-				<anchored>
-					<to>sheetframe</to>
-					<top><offset>47</offset></top>
-					<left><offset>145</offset></left>
-					<size><width>0</width><height>15</height></size>
-				</anchored>
-				<disabled />
-			</genericcontrol>
-			
-			<label_skill name="spotlabel">
-				<static>Spot</static>
-			</label_skill>
-			<label_skill name="listenlabel">
-				<static>List</static>
-			</label_skill>
-			<label_skill name="searchlabel">
-				<static>Srch</static>
-			</label_skill>
-			<label_skill name="noticelabel">
-				<static>Ntce</static>
-			</label_skill>
-			<label_skill name="smlabel">
-				<static>SMo</static>
-			</label_skill>
-			<header_ps1 name="passivelabel">
-				<anchored>
-					<left><parent>spotlabel</parent></left>
-					<right><parent>smlabel</parent></right>
-				</anchored>
-				<center />
-				<static>Passive</static>
-			</header_ps1>
-			
-			<spacer_label />
-			
-			<label_skill name="arcanalabel">
-				<static>Arcn</static>
-			</label_skill>
-			<label_skill name="dungeoneeringlabel">
-				<static>Dung</static>
-			</label_skill>
-			<label_skill name="locallabel">
-				<static>Locl</static>
-			</label_skill>
-			<label_skill name="naturelabel">
-				<static>Natr</static>
-			</label_skill>
-			<label_skill name="planeslabel">
-				<static>Plane</static>
-			</label_skill>
-			<label_skill name="religionlabel">
-				<static>Relig</static>
-			</label_skill>
-			<header_ps1 name="knowledgeskillslabel">
-				<anchored>
-					<left><parent>arcanalabel</parent></left>
-					<right><parent>religionlabel</parent></right>
-				</anchored>
-				<center />
-				<static>Knowledge Skills</static>
-			</header_ps1>
-			
-			<spacer_label />
-			
-			<label_skill name="blufflabel">
-				<static>Bluff</static>
-			</label_skill>
-			<label_skill name="diplomacylabel">
-				<static>Dipl</static>
-			</label_skill>
-			<label_skill name="gatherinfolabel">
-				<static>GInf</static>
-			</label_skill>
-			<label_skill name="intimidatelabel">
-				<static>Intim</static>
-			</label_skill>
-			<header_ps1 name="socialskillslabel">
-				<anchored>
-					<left><parent>blufflabel</parent></left>
-					<right><parent>intimidatelabel</parent></right>
-				</anchored>
-				<center />
-				<static>Social Skills</static>
-			</header_ps1>
-
-			<spacer_label />
-			
-			<label_skill name="acrobaticslabel">
-				<static>Acro</static>
-			</label_skill>
-			<label_skill name="climblabel">
-				<static>Clim</static>
-			</label_skill>
-			<label_skill name="heallabel">
-				<static>Heal</static>
-			</label_skill>
-			<label_skill name="jumplabel">
-				<static>Jump</static>
-			</label_skill>
-			<label_skill name="survivallabel">
-				<static>Surv</static>
-			</label_skill>
-			
-			<spacer_label />
-			
-			<label_skill name="hidelabel">
-				<static>Hide</static>
-			</label_skill>
-			<label_skill name="movesilentlabel">
-				<static>MS</static>
-			</label_skill>
-			<label_skill name="stealthlabel">
-				<static>Stlh</static>
-			</label_skill>
-			
-			<header_ps1 name="physicalskillslabel">
-				<anchored>
-					<left><parent>acrobaticslabel</parent></left>
-					<right><parent>stealthlabel</parent></right>
-				</anchored>
-				<center />
-				<static>Physical Skills</static>
-			</header_ps1>
-
-			<!-- Party List -->
-			<list_ps name="partylist">
-				<class>ps_skillsitem</class>
-			</list_ps>
-			<scrollbar_ps />
-		
-			<!-- party skill vs DC control -->
-			<hn name="skilldc" />
+				<tooltip textres="char_label_languages" />
+			</stringu>
 		</sheetdata>
 	</windowclass>
 </root>

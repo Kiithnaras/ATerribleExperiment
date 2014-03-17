@@ -8,35 +8,18 @@ OOB_MSGTYPE_APPLYSAVE = "applysave";
 function onInit()
 	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_APPLYSAVE, handleApplySave);
 
-	ActionsManager.registerActionIcon("spellcast", "action_roll");
-	ActionsManager.registerActionIcon("clc", "action_roll");
-	ActionsManager.registerActionIcon("save", "action_roll");
-	ActionsManager.registerActionIcon("cast", "action_roll");
-	ActionsManager.registerActionIcon("castattack", "action_roll");
-	ActionsManager.registerActionIcon("castclc", "action_roll");
-	ActionsManager.registerActionIcon("castsave", "action_roll");
-	ActionsManager.registerActionIcon("spellclc", "action_roll");
-	ActionsManager.registerActionIcon("spellsave", "action_roll");
-	ActionsManager.registerActionIcon("concentration", "action_roll");
-	
-	ActionsManager.registerMultiHandler("spellcast", translateSpellCast);
-	
-	ActionsManager.registerTargetingHandler("spellcast", onCastTargeting);
-	ActionsManager.registerTargetingHandler("clc", onTargeting);
-	ActionsManager.registerTargetingHandler("spellsave", onTargeting);
-	
-	ActionsManager.registerModHandler("castattack", modCastAttack);
+	ActionsManager.registerTargetingHandler("cast", onSpellTargeting);
+	ActionsManager.registerTargetingHandler("clc", onCastCLC);
+	ActionsManager.registerTargetingHandler("spellsave", onSpellTargeting);
+
 	ActionsManager.registerModHandler("castsave", modCastSave);
 	ActionsManager.registerModHandler("clc", modCLC);
-	ActionsManager.registerModHandler("spellsave", modSpellSave);
 	ActionsManager.registerModHandler("save", modSave);
 	ActionsManager.registerModHandler("concentration", modConcentration);
 	
 	ActionsManager.registerResultHandler("cast", onSpellCast);
-	ActionsManager.registerResultHandler("castattack", onCastAttack);
 	ActionsManager.registerResultHandler("castclc", onCastCLC);
 	ActionsManager.registerResultHandler("castsave", onCastSave);
-	ActionsManager.registerResultHandler("spellclc", onSpellCLC);
 	ActionsManager.registerResultHandler("clc", onCLC);
 	ActionsManager.registerResultHandler("spellsave", onSpellSave);
 	ActionsManager.registerResultHandler("save", onSave);
@@ -44,28 +27,19 @@ end
 
 function handleApplySave(msgOOB)
 	-- GET THE TARGET ACTOR
-	local rSource = ActorManager.getActor("ct", msgOOB.sSourceCTNode);
-	if not rSource then
-		rSource = ActorManager.getActor(msgOOB.sSourceType, msgOOB.sSourceCreatureNode);
-	end
-	local rTarget = ActorManager.getActor("ct", msgOOB.sTargetCTNode);
-	if not rTarget then
-		rTarget = ActorManager.getActor(msgOOB.sTargetType, msgOOB.sTargetCreatureNode);
-	end
+	local rSource = ActorManager.getActor(msgOOB.sSourceType, msgOOB.sSourceNode);
+	local rTarget = ActorManager.getActor(msgOOB.sTargetType, msgOOB.sTargetNode);
 	
 	local sSaveShort, sSaveDC = string.match(msgOOB.sDesc, "%[(%w+) DC (%d+)%]")
 	if sSaveShort then
 		local sSave = DataCommon.save_stol[sSaveShort];
 		if sSave then
-			local isGMOnly = string.match(msgOOB.sDesc, "^%[GM%]");
-			local bRemoveOnMiss = string.match(msgOOB.sDesc, "%[MULTI%]") or string.match(msgOOB.sDesc, "%[RM%]");
-	
-			performSaveRoll(nil, rTarget, sSave, msgOOB.nDC, isGMOnly, true, rSource, bRemoveOnMiss);
+			performSaveRoll(nil, rTarget, sSave, msgOOB.nDC, (tonumber(msgOOB.nSecret) == 1), rSource, msgOOB.bRemoveOnMiss);
 		end
 	end
 end
 
-function notifyApplySave(rSource, rTarget, sDesc, nDC)
+function notifyApplySave(rSource, rTarget, bSecret, sDesc, nDC, bRemoveOnMiss)
 	if not rTarget then
 		return;
 	end
@@ -73,90 +47,52 @@ function notifyApplySave(rSource, rTarget, sDesc, nDC)
 	local msgOOB = {};
 	msgOOB.type = OOB_MSGTYPE_APPLYSAVE;
 	
+	if bSecret then
+		msgOOB.nSecret = 1;
+	else
+		msgOOB.nSecret = 0;
+	end
 	msgOOB.sDesc = sDesc;
 	msgOOB.nDC = nDC;
-	if rSource then
-		msgOOB.sSourceType = rSource.sType;
-		msgOOB.sSourceCreatureNode = rSource.sCreatureNode;
-		msgOOB.sSourceCTNode = rSource.sCTNode;
-	end
-	msgOOB.sTargetType = rTarget.sType;
-	msgOOB.sTargetCreatureNode = rTarget.sCreatureNode;
-	msgOOB.sTargetCTNode = rTarget.sCTNode;
 
-	if not User.isHost() and rTarget.sType == "pc" and rTarget.nodeCreature and rTarget.nodeCreature.isOwner() then
-		handleApplySave(msgOOB);
-	else
-		Comm.deliverOOBMessage(msgOOB, "");
+	local sSourceType, sSourceNode = ActorManager.getTypeAndNodeName(rSource);
+	msgOOB.sSourceType = sSourceType;
+	msgOOB.sSourceNode = sSourceNode;
+
+	local sTargetType, sTargetNode = ActorManager.getTypeAndNodeName(rTarget);
+	msgOOB.sTargetType = sTargetType;
+	msgOOB.sTargetNode = sTargetNode;
+
+	if bRemoveOnMiss then
+		msgOOB.bRemoveOnMiss = 1;
 	end
+
+	Comm.deliverOOBMessage(msgOOB, "");
 end
 
-function onCastTargeting(rSource, rRolls)
-	local aTargets = TargetingManager.getFullTargets(rSource);
-	
-	if #aTargets > 1 and OptionsManager.isOption("RMMT", "multi") then
-		for i = 2, 4 do
-			if rRolls[i] then
-				rRolls[i].sDesc = rRolls[i].sDesc .. " [MULTI]";
+function onSpellTargeting(rSource, aTargeting, rRolls)
+	if OptionsManager.isOption("RMMT", "multi") then
+		local aTargets = {};
+		for _,vTargetGroup in ipairs(aTargeting) do
+			for _,vTarget in ipairs(vTargetGroup) do
+				table.insert(aTargets, vTarget);
 			end
 		end
-	elseif OptionsManager.isOption("RMMT", "on") then
-		for i = 2, 4 do
-			if rRolls[i] then
-				rRolls[i].sDesc = rRolls[i].sDesc .. " [RM]";
+		if #aTargets > 1 then
+			for _,vRoll in ipairs(rRolls) do
+				vRoll.bRemoveOnMiss = "true";
 			end
 		end
 	end
-	
-	local aTargeting = {};
-	for _,vTarget in ipairs(aTargets) do
-		table.insert(aTargeting, { vTarget });
-	end
-	
 	return aTargeting;
-end
-
-function onTargeting(rSource, rRolls)
-	local aTargets = TargetingManager.getFullTargets(rSource);
-	
-	if #aTargets > 1 and OptionsManager.isOption("RMMT", "multi") then
-		for _,vRoll in ipairs(rRolls) do
-			vRoll.sDesc = vRoll.sDesc .. " [MULTI]";
-		end
-	end
-	
-	local aTargeting = {};
-	for _,vTarget in ipairs(aTargets) do
-		table.insert(aTargeting, { vTarget });
-	end
-	
-	return aTargeting;
-end
-
-function translateSpellCast(nSlot)
-	local sType = "";
-	
-	if nSlot == 1 then
-		sType = "cast";
-	elseif nSlot == 2 then
-		sType = "castattack";
-	elseif nSlot == 3 then
-		sType = "castclc";
-	elseif nSlot == 4 then
-		sType = "castsave";
-	end
-	
-	return sType;
 end
 
 function getSpellCastRoll(rActor, rAction)
 	local rRoll = {};
-
-	-- Build the basic roll
+	rRoll.sType = "cast";
 	rRoll.aDice = {};
 	rRoll.nMod = 0;
 	
-	-- Build the description
 	rRoll.sDesc = "[CAST";
 	if rAction.order and rAction.order > 1 then
 		rRoll.sDesc = rRoll.sDesc .. " #" .. rAction.order;
@@ -168,12 +104,10 @@ end
 
 function getCLCRoll(rActor, rAction)
 	local rRoll = {};
-
-	-- Build the basic roll
-	rRoll.aDice = { "d6","d6","d6" };
+	rRoll.sType = "clc";
+	rRoll.aDice = { "d20" };
 	rRoll.nMod = rAction.clc or 0;
 	
-	-- Build the description
 	rRoll.sDesc = "[CL CHECK";
 	if rAction.order and rAction.order > 1 then
 		rRoll.sDesc = rRoll.sDesc .. " #" .. rAction.order;
@@ -188,12 +122,10 @@ end
 
 function getSaveVsRoll(rActor, rAction)
 	local rRoll = {};
-
-	-- Build the basic roll
+	rRoll.sType = "spellsave";
 	rRoll.aDice = {};
 	rRoll.nMod = rAction.savemod or 0;
 	
-	-- Build the description
 	rRoll.sDesc = "[SAVE VS";
 	if rAction.order and rAction.order > 1 then
 		rRoll.sDesc = rRoll.sDesc .. " #" .. rAction.order;
@@ -217,36 +149,27 @@ function getSaveVsRoll(rActor, rAction)
 	return rRoll;
 end
 
-function performSaveRoll(draginfo, rActor, sSave, sSaveDC, bSecretRoll, bAddName, rSource, bRemoveOnMiss)
-	-- Build basic roll
+function performSaveRoll(draginfo, rActor, sSave, sSaveDC, bSecretRoll, rSource, bRemoveOnMiss)
 	local rRoll = {};
-	rRoll.aDice = { "d6","d6","d6" };
+	rRoll.sType = "save";
+	rRoll.aDice = { "d20" };
 	rRoll.nMod = 0;
 	
 	-- Look up actor specific information
 	local sAbility = nil;
-	if rActor then
-		if rActor.sType == "pc" then
-			rRoll.nMod = DB.getValue(rActor.nodeCreature, "saves." .. sSave .. ".total", 0);
-			sAbility = DB.getValue(rActor.nodeCreature, "saves." .. sSave .. ".ability", "");
-		elseif rActor.sType == "ct" or rActor.sType == "npc" then
-			if rActor.nodeCT then
-				rRoll.nMod = DB.getValue(rActor.nodeCT, sSave .. "save", 0);
-			else
-				rRoll.nMod = DB.getValue(rActor.nodeCreature, sSave .. "save", 0);
-			end
+	local sActorType, nodeActor = ActorManager.getTypeAndNode(rActor);
+	if nodeActor then
+		if sActorType == "pc" then
+			rRoll.nMod = DB.getValue(nodeActor, "saves." .. sSave .. ".total", 0);
+			sAbility = DB.getValue(nodeActor, "saves." .. sSave .. ".ability", "");
+		else
+			rRoll.nMod = DB.getValue(nodeActor, sSave .. "save", 0);
 		end
 	end
 	
-	-- Build the description
-	local bOverride = false;
 	rRoll.sDesc = "[SAVE] " .. string.upper(string.sub(sSave, 1, 1)) .. string.sub(sSave, 2);
-	if bAddName then
-		rRoll.sDesc = "[ADDNAME] " .. rRoll.sDesc;
-	end
-	if bSecretRoll then
-		rRoll.sDesc = "[GM] " .. rRoll.sDesc;
-	end
+	rRoll.bSecret = bSecretRoll;
+
 	if sAbility and sAbility ~= "" then
 		if (sSave == "fortitude" and sAbility ~= "constitution") or
 				(sSave == "reflex" and sAbility ~= "dexterity") or
@@ -259,28 +182,16 @@ function performSaveRoll(draginfo, rActor, sSave, sSaveDC, bSecretRoll, bAddName
 	end
 	if sSaveDC then
 		rRoll.sDesc = rRoll.sDesc .. " [VS DC " .. sSaveDC .. "]";
-		bOverride = true;
 	end
 	if bRemoveOnMiss then
-		rRoll.sDesc = rRoll.sDesc .. " [RM]";
+		rRoll.bRemoveOnMiss = "true";
 	end
 
-	local rCustom = nil;
 	if rSource then
-		rCustom = {};
-		rCustom.sSourceCT = rSource.sCTNode;
+		rRoll.sSource = ActorManager.getCTNodeName(rSource);
 	end
 
-	-- Make the roll
-	ActionsManager.performSingleRollAction(draginfo, rActor, "save", rRoll, rCustom, bOverride);
-end
-
-function modCastAttack(rSource, rTarget, rRoll)
-	if (#(rRoll.aDice) == 0) and (rRoll.nMod == 0) then
-		return;
-	end
-	
-	ActionAttack.modAttack(rSource, rTarget, rRoll);
+	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
 function modCastSave(rSource, rTarget, rRoll)
@@ -291,9 +202,10 @@ function modCastSave(rSource, rTarget, rRoll)
 			sActionStat = DataCommon.ability_stol[sModStat];
 		end
 		if sActionStat then
-			local nBonusStat, nBonusEffects = ActorManager.getAbilityEffectsBonus(rSource, sActionStat);
+			local nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, sActionStat);
 			if nBonusEffects > 0 then
-				rRoll.sDesc = rRoll.sDesc .. " " .. string.format("[EFFECTS %+d]", nBonusStat);
+				local sFormat = "[" .. Interface.getString("effects_tag") .. " %+d]";
+				rRoll.sDesc = rRoll.sDesc .. " " .. string.format(sFormat, nBonusStat);
 				rRoll.nMod = rRoll.nMod + nBonusStat;
 			end
 		end
@@ -301,29 +213,17 @@ function modCastSave(rSource, rTarget, rRoll)
 end
 
 function modCLC(rSource, rTarget, rRoll)
-	if rTarget and rTarget.nOrder then
-		return;
-	end
-	
 	if rSource then
 		-- Get negative levels
-		local nNegLevelMod, nNegLevelCount = EffectsManager.getEffectsBonus(rSource, {"NLVL"}, true);
+		local nNegLevelMod, nNegLevelCount = EffectManager.getEffectsBonus(rSource, {"NLVL"}, true);
 		if nNegLevelCount > 0 then
 			rRoll.nMod = rRoll.nMod - nNegLevelMod;
-			rRoll.sDesc = rRoll.sDesc .. " [EFFECTS -" .. nNegLevelCount .. "]";
+			rRoll.sDesc = rRoll.sDesc .. " [" .. Interface.getString("effects_tag") .. " -" .. nNegLevelCount .. "]";
 		end
 	end
 end
 
-function modSpellSave(rSource, rTarget, rRoll)
-	modCastSave(rSource, rTarget, rRoll);
-end
-
 function modSave(rSource, rTarget, rRoll)
-	if rTarget and rTarget.nOrder then
-		return;
-	end
-
 	local aAddDesc = {};
 	local aAddDice = {};
 	local nAddMod = 0;
@@ -359,37 +259,41 @@ function modSave(rSource, rTarget, rRoll)
 		end
 		
 		-- Get effect modifiers
+		local rSaveSource = nil;
+		if rRoll.sSource then
+			rSaveSource = ActorManager.getActor("ct", rRoll.sSource);
+		end
 		local nEffectCount;
-		aAddDice, nAddMod, nEffectCount = EffectsManager.getEffectsBonus(rSource, "SAVE", false, aSaveFilter, rTarget);
+		aAddDice, nAddMod, nEffectCount = EffectManager.getEffectsBonus(rSource, "SAVE", false, aSaveFilter, rSaveSource);
 		if (nEffectCount > 0) then
 			bEffects = true;
 		end
 
 		-- Get condition modifiers
-		if EffectsManager.hasEffectCondition(rSource, "Frightened") or 
-				EffectsManager.hasEffectCondition(rSource, "Panicked") or
-				EffectsManager.hasEffectCondition(rSource, "Shaken") then
+		if EffectManager.hasEffectCondition(rSource, "Frightened") or 
+				EffectManager.hasEffectCondition(rSource, "Panicked") or
+				EffectManager.hasEffectCondition(rSource, "Shaken") then
 			nAddMod = nAddMod - 2;
 			bEffects = true;
 		end
-		if EffectsManager.hasEffectCondition(rSource, "Sickened") then
+		if EffectManager.hasEffectCondition(rSource, "Sickened") then
 			nAddMod = nAddMod - 2;
 			bEffects = true;
 		end
-		if sSave == "reflex" and EffectsManager.hasEffectCondition(rSource, "Slowed") then
+		if sSave == "reflex" and EffectManager.hasEffectCondition(rSource, "Slowed") then
 			nAddMod = nAddMod - 1;
 			bEffects = true;
 		end
 
 		-- Get ability modifiers
-		local nBonusStat, nBonusEffects = ActorManager.getAbilityEffectsBonus(rSource, sActionStat);
+		local nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, sActionStat);
 		if nBonusEffects > 0 then
 			bEffects = true;
 			nAddMod = nAddMod + nBonusStat;
 		end
 		
 		-- Get negative levels
-		local nNegLevelMod, nNegLevelCount = EffectsManager.getEffectsBonus(rSource, {"NLVL"}, true);
+		local nNegLevelMod, nNegLevelCount = EffectManager.getEffectsBonus(rSource, {"NLVL"}, true);
 		if nNegLevelCount > 0 then
 			bEffects = true;
 			nAddMod = nAddMod - nNegLevelMod;
@@ -400,9 +304,9 @@ function modSave(rSource, rTarget, rRoll)
 			local sEffects = "";
 			local sMod = StringManager.convertDiceToString(aAddDice, nAddMod, true);
 			if sMod ~= "" then
-				sEffects = "[EFFECTS " .. sMod .. "]";
+				sEffects = "[" .. Interface.getString("effects_tag") .. " " .. sMod .. "]";
 			else
-				sEffects = "[EFFECTS]";
+				sEffects = "[" .. Interface.getString("effects_tag") .. "]";
 			end
 			table.insert(aAddDesc, sEffects);
 		end
@@ -425,14 +329,15 @@ function modConcentration(rSource, rTarget, rRoll)
 			sActionStat = DataCommon.ability_stol[sModStat];
 		end
 
-		local nBonusStat, nBonusEffects = ActorManager.getAbilityEffectsBonus(rSource, sActionStat);
+		local nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, sActionStat);
 		if nBonusEffects > 0 then
 			rRoll.nMod = rRoll.nMod + nBonusStat;
 
 			if nBonusStat ~= 0 then
-				rRoll.sDesc = string.format("%s [EFFECTS %+d]", rRoll.sDesc, nBonusStat);
+				local sFormat = "%s [" .. Interface.getString("effects_tag") .. " %+d]";
+				rRoll.sDesc = string.format(sFormat, rRoll.sDesc, nBonusStat);
 			else
-				rRoll.sDesc = rRoll.sDesc .. " [EFFECTS]";
+				rRoll.sDesc = rRoll.sDesc .. " [" .. Interface.getString("effects_tag") .. "]";
 			end
 		end
 	end
@@ -441,7 +346,7 @@ end
 function onSpellCast(rSource, rTarget, rRoll)
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.dice = nil;
-	rMessage.icon = "indicator_cast";
+	rMessage.icon = "spell_cast";
 
 	if rTarget then
 		rMessage.text = rMessage.text .. " [at " .. rTarget.sName .. "]";
@@ -450,27 +355,17 @@ function onSpellCast(rSource, rTarget, rRoll)
 	Comm.deliverChatMessage(rMessage);
 end
 
-function onCastAttack(rSource, rTarget, rRoll)
-	if (#(rRoll.aDice) == 0) and (rRoll.nMod == 0) then
-		return;
-	end
-	
-	ActionAttack.onAttack(rSource, rTarget, rRoll);
-end
-
 function onCastCLC(rSource, rTarget, rRoll)
 	if rTarget then
-		local nSR = ActorManager.getSpellDefense(rTarget);
+		local nSR = ActorManager2.getSpellDefense(rTarget);
 		if nSR > 0 then
 			if not string.match(rRoll.sDesc, "%[SR NOT ALLOWED%]") then
-				local rRoll = { sType = "clc", sDesc = rRoll.sDesc, aDice = {"d6","d6","d6"}, nMod = rRoll.nMod };
+				local rRoll = { sType = "clc", sDesc = rRoll.sDesc, aDice = {"d20"}, nMod = rRoll.nMod };
 				ActionsManager.roll(rSource, rTarget, rRoll);
 				return true;
 			end
 		end
 	end
-	
-	return false;
 end
 
 function onCastSave(rSource, rTarget, rRoll)
@@ -479,22 +374,13 @@ function onCastSave(rSource, rTarget, rRoll)
 		if sSaveShort then
 			local sSave = DataCommon.save_stol[sSaveShort];
 			if sSave then
-				notifyApplySave(rSource, rTarget, rRoll.sDesc, rRoll.nMod);
+				notifyApplySave(rSource, rTarget, rRoll.bSecret, rRoll.sDesc, rRoll.nMod, rRoll.bRemoveOnMiss);
 				return true;
 			end
 		end
 	end
 
 	return false;
-end
-
-function onSpellCLC(rSource, rTarget, rRoll)
-	if onCastCLC(rSource, rTarget, rRoll) then
-		return;
-	end
-	
-	local rRoll = { sType = "clc", sDesc = rRoll.sDesc, aDice = {"d6","d6","d6"}, nMod = rRoll.nMod };
-	ActionsManager.roll(rSource, rTarget, rRoll);
 end
 
 function onCLC(rSource, rTarget, rRoll)
@@ -507,7 +393,7 @@ function onCLC(rSource, rTarget, rRoll)
 		rMessage.text = rMessage.text .. " [at " .. rTarget.sName .. "]";
 		
 		if bSRAllowed then
-			local nSR = ActorManager.getSpellDefense(rTarget);
+			local nSR = ActorManager2.getSpellDefense(rTarget);
 			if nSR > 0 then
 				if nTotal >= nSR then
 					rMessage.text = rMessage.text .. " [SUCCESS]";
@@ -517,14 +403,12 @@ function onCLC(rSource, rTarget, rRoll)
 						local bRemoveTarget = false;
 						if OptionsManager.isOption("RMMT", "on") then
 							bRemoveTarget = true;
-						elseif OptionsManager.isOption("RMMT", "multi") then
-							if (string.match(rRoll.sDesc, "%[MULTI%]")) then
-								bRemoveTarget = true;
-							end
+						elseif rRoll.bRemoveOnMiss then
+							bRemoveTarget = true;
 						end
 						
 						if bRemoveTarget then
-							TargetingManager.removeTargetEx(rSource.nodeCT, rTarget.sCTNode);
+							TargetingManager.removeTarget(ActorManager.getCTNodeName(rSource), ActorManager.getCTNodeName(rTarget));
 						end
 					end
 				end
@@ -546,7 +430,7 @@ function onSpellSave(rSource, rTarget, rRoll)
 	Comm.deliverChatMessage(rMessage);
 end
 
-function onSave(rSource, rTarget, rRoll, rCustom)
+function onSave(rSource, rTarget, rRoll)
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	
 	local sSaveDC = string.match(rRoll.sDesc, "%[VS DC (%d+)%]");
@@ -556,15 +440,16 @@ function onSave(rSource, rTarget, rRoll, rCustom)
 		if nTotal >= nSaveDC then
 			rMessage.text = rMessage.text .. " [SUCCESS]";
 
-			if rSource and rCustom and rCustom.sSourceCT then
+			if rSource and rRoll.sSource then
 				local bRemoveTarget = false;
-				if string.match(rRoll.sDesc, "%[RM%]") then
+				if OptionsManager.isOption("RMMT", "on") then
+					bRemoveTarget = true;
+				elseif rRoll.bRemoveOnMiss then
 					bRemoveTarget = true;
 				end
 				
 				if bRemoveTarget then
-					local nodeCT = DB.findNode(rCustom.sSourceCT);
-					TargetingManager.removeTargetEx(nodeCT, rSource.sCTNode);
+					TargetingManager.removeTarget(rRoll.sSource, ActorManager.getCTNodeName(rSource));
 				end
 			end
 		else

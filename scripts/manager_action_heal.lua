@@ -4,29 +4,16 @@
 --
 
 function onInit()
-	ActionsManager.registerActionIcon("heal", "action_heal");
-	ActionsManager.registerTargetingHandler("heal", onTargeting);
 	ActionsManager.registerModHandler("heal", modHeal);
 	ActionsManager.registerResultHandler("heal", onHeal);
 end
 
-function onTargeting(rSource, rRolls)
-	if #rRolls == 1 then
-		if string.match(rRolls[1].sDesc, "%[SELF%]") then
-			return { { rSource } };
-		end
-	end
-	
-	return { TargetingManager.getFullTargets(rSource) };
-end
-
 function getRoll(rActor, rAction)
-	-- Create basic roll
 	local rRoll = {};
+	rRoll.sType = "heal";
 	rRoll.aDice = rAction.dice;
 	rRoll.nMod = rAction.modifier;
 	
-	-- Build the description
 	rRoll.sDesc = "[HEAL";
 	if rAction.order and rAction.order > 1 then
 		rRoll.sDesc = rRoll.sDesc .. " #" .. rAction.order;
@@ -57,10 +44,6 @@ function getRoll(rActor, rAction)
 end
 
 function modHeal(rSource, rTarget, rRoll)
-	if rTarget and rTarget.nOrder then
-		return;
-	end
-	
 	local aAddDesc = {};
 	local aAddDice = {};
 	local nAddMod = 0;
@@ -79,13 +62,13 @@ function modHeal(rSource, rTarget, rRoll)
 		
 		-- DETERMINE EFFECTS
 		local nEffectCount;
-		aAddDice, nAddMod, nEffectCount = EffectsManager.getEffectsBonus(rSource, {"HEAL"});
+		aAddDice, nAddMod, nEffectCount = EffectManager.getEffectsBonus(rSource, {"HEAL"});
 		if (nEffectCount > 0) then
 			bEffects = true;
 		end
 		
 		-- GET STAT MODIFIERS
-		local nBonusStat, nBonusEffects = ActorManager.getAbilityEffectsBonus(rSource, sActionStat);
+		local nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, sActionStat);
 		if nBonusEffects > 0 then
 			bEffects = true;
 			if (nActionStatMax > 0) and (nBonusStat > nActionStatMax) then
@@ -99,9 +82,9 @@ function modHeal(rSource, rTarget, rRoll)
 			local sEffects = "";
 			local sMod = StringManager.convertDiceToString(aAddDice, nAddMod, true);
 			if sMod ~= "" then
-				sEffects = "[EFFECTS " .. sMod .. "]";
+				sEffects = "[" .. Interface.getString("effects_tag") .. " " .. sMod .. "]";
 			else
-				sEffects = "[EFFECTS]";
+				sEffects = "[" .. Interface.getString("effects_tag") .. "]";
 			end
 			table.insert(aAddDesc, sEffects);
 		end
@@ -135,16 +118,8 @@ function onHeal(rSource, rTarget, rRoll)
 	end
 	
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
-	
-	-- Send the chat message
-	local bShowMsg = true;
-	if rTarget and rTarget.nOrder and rTarget.nOrder ~= 1 then
-		bShowMsg = false;
-	end
-	if bShowMsg then
-		Comm.deliverChatMessage(rMessage);
-	end
+	Comm.deliverChatMessage(rMessage);
 	
 	local nTotal = ActionsManager.total(rRoll);
-	ActionDamage.notifyApplyDamage(rSource, rTarget, rMessage.text, nTotal);
+	ActionDamage.notifyApplyDamage(rSource, rTarget, rMessage.secret, rRoll.sType, rMessage.text, nTotal);
 end

@@ -6,19 +6,21 @@
 OOB_MSGTYPE_APPLYEFF = "applyeff";
 OOB_MSGTYPE_EXPIREEFF = "expireeff";
 
-local bLocked = false;
+local nLocked = 0;
 local aUsedActionEffects = {};
 
 function onInit()
 	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_APPLYEFF, handleApplyEffect);
 	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_EXPIREEFF, handleExpireEffect);
+
+	CombatManager.setCustomInitChange(processEffects);
 end
 
 function handleApplyEffect(msgOOB)
 	-- Get the combat tracker node
 	local nodeCTEntry = DB.findNode(msgOOB.sTargetNode);
 	if not nodeCTEntry then
-		ChatManager.SystemMessage("[ERROR] Unable to resolve CT effect application on node = " .. msgOOB.sTargetNode);
+		ChatManager.SystemMessage(Interface.getString("ct_error_effectapplyfail") .. " (" .. msgOOB.sTargetNode .. ")");
 		return;
 	end
 	
@@ -42,12 +44,12 @@ function handleExpireEffect(msgOOB)
 	-- Get the effect and combat tracker node
 	local nodeEffect = DB.findNode(msgOOB.sEffectNode);
 	if not nodeEffect then
-		ChatManager.SystemMessage("[ERROR] Unable to find effect to remove = " .. msgOOB.sEffectNode);
+		ChatManager.SystemMessage(Interface.getString("ct_error_effectdeletefail") .. " (" .. msgOOB.sEffectNode .. ")");
 		return;
 	end
 	local nodeActor = nodeEffect.getChild("...");
 	if not nodeActor then
-		ChatManager.SystemMessage("[ERROR] Unable to find actor to remove effect from = " .. msgOOB.sEffectNode);
+		ChatManager.SystemMessage(Interface.getString("ct_error_effectmissingactor") .. " (" .. msgOOB.sEffectNode .. ")");
 		return;
 	end
 	
@@ -61,7 +63,11 @@ end
 function notifyApply(rEffect, vTargets, sEffectTargetNode)
 	local msgOOB = {};
 	msgOOB.type = OOB_MSGTYPE_APPLYEFF;
-	msgOOB.user = User.getUsername();
+	if User.isHost() then
+		msgOOB.user = "";
+	else
+		msgOOB.user = User.getUsername();
+	end
 	msgOOB.identity = User.getIdentityLabel();
 
 	msgOOB.sName = rEffect.sName or "";
@@ -100,28 +106,56 @@ function notifyExpire(varEffect, nMatch)
 	Comm.deliverOOBMessage(msgOOB, "");
 end
 
+function setEffect(nodeEffect, rEffect)
+	DB.setValue(nodeEffect, "label", "string", rEffect.sName);
+	DB.setValue(nodeEffect, "isgmonly", "number", rEffect.nGMOnly);
+	DB.setValue(nodeEffect, "apply", "string", rEffect.sApply);
+	DB.setValue(nodeEffect, "duration", "number", rEffect.nDuration);
+	if nodeEffect.getChild("unit") then
+		DB.setValue(nodeEffect, "unit", "string", rEffect.sUnits);
+	end
+	if nodeEffect.getChild("source_name") then
+		DB.setValue(nodeEffect, "source_name", "string", rEffect.sSource);
+	end
+	if nodeEffect.getChild("init") then
+		DB.setValue(nodeEffect, "init", "string", rEffect.nInit);
+	end
+end
+
+function getEffect(nodeEffect)
+	return { 
+			sName = DB.getValue(nodeEffect, "label", ""),
+			nGMOnly = DB.getValue(nodeEffect, "isgmonly", 0),
+			sApply = DB.getValue(nodeEffect, "apply", ""),
+			nDuration = DB.getValue(nodeEffect, "duration", 0),
+			sUnits = DB.getValue(nodeEffect, "unit", ""),
+			sSource = DB.getValue(nodeEffect, "source_name", ""),
+			nInit = DB.getValue(nodeEffect, "init", 0),
+			};
+end
+
 --
 -- EFFECTS
 --
 
-function message(sMsg, nodeCTEntry, gmflag, target)
+function message(sMsg, nodeCTEntry, gmflag, sUser)
 	-- ADD NAME OF CT ENTRY TO NOTIFICATION
 	if nodeCTEntry then
 		sMsg = sMsg .. " [on " .. DB.getValue(nodeCTEntry, "name", "") .. "]";
 	end
 
 	-- BUILD MESSAGE OBJECT
-	local msg = {font = "msgfont", icon = "indicator_effect", text = sMsg};
+	local msg = {font = "msgfont", icon = "roll_effect", text = sMsg};
 	
 	-- DELIVER MESSAGE BASED ON TARGET AND GMFLAG
-	if target then
-		if msguser == "" then
+	if sUser then
+		if sUser == "" then
 			Comm.addChatMessage(msg);
 		else
-			Comm.deliverChatMessage(msg, msguser);
+			Comm.deliverChatMessage(msg, sUser);
 		end
 	elseif gmflag then
-		msg.text = "[GM] " .. msg.text;
+		msg.secret = true;
 		if User.isHost() then
 			Comm.addChatMessage(msg);
 		else
@@ -229,7 +263,7 @@ function getEffectsString(nodeCTEntry, bPublicOnly)
 			if bAddEffect then
 				local aAddCompList = {};
 				local bTargeted = false;
-				local aEffectComps = EffectsManager.parseEffect(sLabel);
+				local aEffectComps = EffectManager.parseEffect(sLabel);
 				for _,vComp in ipairs(aEffectComps) do
 					if vComp.remainder[1] == "TRGT" then
 						bTargeted = true;
@@ -280,7 +314,7 @@ function isGMEffect(nodeActor, nodeEffect)
 	end
 	if nodeActor then
 		if (DB.getValue(nodeActor, "friendfoe", "") ~= "friend") and 
-				(DB.getValue(nodeActor, "show_npc", 0) == 0) then
+				(DB.getValue(nodeActor, "tokenvis", 0) == 0) then
 			bGMOnly = true;
 		end
 	end
@@ -347,7 +381,6 @@ function addEffect(sUser, sIdentity, nodeCT, rNewEffect, bShowMsg, sEffectTarget
 	local aNewEffectParse = parseEffect(rNewEffect.sName);
 	
 	-- CHECKS TO IGNORE NEW EFFECT (DUPLICATE, SHORTER, WEAKER)
-	local nodeTargetEffect = nil;
 	for k, v in pairs(nodeEffectsList.getChildren()) do
 		-- CHECK FOR DUPLICATE EFFECT (ONLY IF LABEL, INIT AND DURATION ARE THE SAME)
 		if (DB.getValue(v, "label", "") == rNewEffect.sName) and 
@@ -363,23 +396,8 @@ function addEffect(sUser, sIdentity, nodeCT, rNewEffect, bShowMsg, sEffectTarget
 		end
 	end
 	
-	-- BLANK EFFECT CHECK
-	if not nodeTargetEffect then
-		for k, v in pairs(nodeEffectsList.getChildren()) do
-			if DB.getValue(v, "label", "") == "" then
-				nodeTargetEffect = v;
-				break;
-			end
-		end
-	end
-	if not nodeTargetEffect then
-		nodeTargetEffect = nodeEffectsList.createChild();
-		if not nodeTargetEffect then
-			return;
-		end
-	end
-	
-	-- ADD EFFECT DETAILS
+	-- WRITE EFFECT RECORD
+	local nodeTargetEffect = nodeEffectsList.createChild();
 	DB.setValue(nodeTargetEffect, "label", "string", rNewEffect.sName);
 	DB.setValue(nodeTargetEffect, "duration", "number", rNewEffect.nDuration);
 	DB.setValue(nodeTargetEffect, "init", "number", rNewEffect.nInit);
@@ -387,14 +405,15 @@ function addEffect(sUser, sIdentity, nodeCT, rNewEffect, bShowMsg, sEffectTarget
 	if rNewEffect.sApply then
 		DB.setValue(nodeTargetEffect, "apply", "string", rNewEffect.sApply);
 	end
+	DB.setValue(nodeTargetEffect, "isactive", "number", 1);
 
 	-- HANDLE EFFECT TARGET SETTING
 	if sEffectTargetNode and sEffectTargetNode ~= "" then
-		TargetingManager.addTarget("host", nodeTargetEffect.getNodeName(), sEffectTargetNode);
+		addEffectTarget(nodeTargetEffect, sEffectTargetNode);
 	end
 	
 	-- BUILD MESSAGE
-	local msg = {font = "msgfont", icon = "indicator_effect"};
+	local msg = {font = "msgfont", icon = "roll_effect"};
 	msg.text = "Effect ['" .. rNewEffect.sName .. "'] ";
 	if rNewEffect.nDuration > 0 then
 		msg.text = msg.text .. " [D:" .. rNewEffect.nDuration .. "] ";
@@ -411,7 +430,7 @@ function addEffect(sUser, sIdentity, nodeCT, rNewEffect, bShowMsg, sEffectTarget
 	if bShowMsg then
 		if isGMEffect(nodeCT, nodeTargetEffect) then
 			if sUser == "" then
-				msg.text = "[GM] " .. msg.text;
+				msg.secret = true;
 				Comm.addChatMessage(msg);
 			elseif sUser ~= "" then
 				Comm.addChatMessage(msg);
@@ -419,21 +438,6 @@ function addEffect(sUser, sIdentity, nodeCT, rNewEffect, bShowMsg, sEffectTarget
 			end
 		else
 			Comm.deliverChatMessage(msg);
-		end
-	end
-end
-
--- MAKE SURE AT LEAST ONE EFFECT REMAINS AFTER DELETING
-function deleteEffect(nodeEffect)
-	if not nodeEffect then
-		return;
-	end
-	
-	local nodeEffectList = nodeEffect.getParent();
-	nodeEffect.delete();
-	if nodeEffectList then
-		if nodeEffectList.getChildCount() == 0 then
-			nodeEffectList.createChild();
 		end
 	end
 end
@@ -466,7 +470,7 @@ function expireEffect(nodeActor, nodeEffect, nExpireComponent, bOverride)
 	
 	-- DELETE THE EFFECT
 	sMsg = "Effect ['" .. sEffect .. "'] -> [EXPIRED]";
-	deleteEffect(nodeEffect);
+	nodeEffect.delete();
 
 	-- SEND NOTIFICATION TO THE HOST
 	message(sMsg, nodeActor, bGMOnly);
@@ -481,9 +485,6 @@ function applyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp)
 	
 	-- BUILD MESSAGE
 	local aResults = {};
-	if isGMEffect(nodeActor, nodeEffect) then
-		table.insert(aResults, "[GM]");
-	end
 	if rEffectComp.type == "FHEAL" then
 		-- MAKE SURE AFFECTED ACTOR IS WOUNDED
 		if DB.getValue(nodeActor, "wounds", 0) == 0 and DB.getValue(nodeActor, "nonlethal", 0) == 0 then
@@ -493,9 +494,16 @@ function applyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp)
 		table.insert(aResults, "[FHEAL] Fast Heal");
 
 	elseif rEffectComp.type == "REGEN" then
-		-- MAKE SURE AFFECTED ACTOR HAS NONLETHAL WOUNDS
-		if DB.getValue(nodeActor, "nonlethal", 0) == 0 then
-			return;
+		-- MAKE SURE AFFECTED ACTOR IS WOUNDED
+		local bPFMode = DataCommon.isPFRPG();
+		if bPFMode then
+			if DB.getValue(nodeActor, "wounds", 0) == 0 and DB.getValue(nodeActor, "nonlethal", 0) == 0 then
+				return;
+			end
+		else
+			if DB.getValue(nodeActor, "nonlethal", 0) == 0 then
+				return;
+			end
 		end
 		
 		table.insert(aResults, "[REGEN] Regeneration");
@@ -509,12 +517,15 @@ function applyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp)
 	end
 
 	-- MAKE ROLL AND APPLY RESULTS
-	local rTarget = ActorManager.getActor("ct", nodeActor);
+	local rTarget = ActorManager.getActorFromCT(nodeActor);
 	local rRoll = { sType = "damage", sDesc = table.concat(aResults, " "), aDice = rEffectComp.dice, nMod = rEffectComp.mod };
+	if isGMEffect(nodeActor, nodeEffect) then
+		rRoll.bSecret = true;
+	end
 	ActionsManager.roll(nil, rTarget, rRoll);
 end
 
-function processEffects(nodeActorList, nodeCurrentActor, nodeNewActor)
+function processEffects(nodeCurrentActor, nodeNewActor)
 	-- SETUP CURRENT AND NEW INITIATIVE VALUES
 	local nCurrentInit = 10000;
 	if nodeCurrentActor then
@@ -526,7 +537,7 @@ function processEffects(nodeActorList, nodeCurrentActor, nodeNewActor)
 	end
 	
 	-- ITERATE THROUGH EACH ACTOR
-	for _,nodeActor in pairs(DB.getChildren(nodeActorList, "")) do
+	for _,nodeActor in pairs(DB.getChildren(CombatManager.CT_LIST)) do
 		-- ITERATE THROUGH EACH EFFECT
 		for _,nodeEffect in pairs(DB.getChildren(nodeActor, "effects")) do
 			-- MAKE SURE THE EFFECT IS ACTIVE
@@ -541,7 +552,7 @@ function processEffects(nodeActorList, nodeCurrentActor, nodeNewActor)
 						if rEffectComp.type == "IFT" then
 							break;
 						elseif rEffectComp.type == "IF" then
-							local rActor = ActorManager.getActor("ct", nodeActor);
+							local rActor = ActorManager.getActorFromCT(nodeActor);
 							if not checkConditional(rActor, nodeEffect, rEffectComp.remainder) then
 								break;
 							end
@@ -583,19 +594,19 @@ function evalAbilityHelper(rActor, sEffectAbility)
 	-- FIGURE OUT WHICH ABILITY
 	local nAbility = nil;
 	if sShortAbility == "STR" then
-		nAbility = ActorManager.getAbilityBonus(rActor, "strength");
+		nAbility = ActorManager2.getAbilityBonus(rActor, "strength");
 	elseif sShortAbility == "DEX" then
-		nAbility = ActorManager.getAbilityBonus(rActor, "dexterity");
+		nAbility = ActorManager2.getAbilityBonus(rActor, "dexterity");
 	elseif sShortAbility == "CON" then
-		nAbility = ActorManager.getAbilityBonus(rActor, "constitution");
+		nAbility = ActorManager2.getAbilityBonus(rActor, "constitution");
 	elseif sShortAbility == "INT" then
-		nAbility = ActorManager.getAbilityBonus(rActor, "intelligence");
+		nAbility = ActorManager2.getAbilityBonus(rActor, "intelligence");
 	elseif sShortAbility == "WIS" then
-		nAbility = ActorManager.getAbilityBonus(rActor, "wisdom");
+		nAbility = ActorManager2.getAbilityBonus(rActor, "wisdom");
 	elseif sShortAbility == "CHA" then
-		nAbility = ActorManager.getAbilityBonus(rActor, "charisma");
+		nAbility = ActorManager2.getAbilityBonus(rActor, "charisma");
 	elseif sShortAbility == "LVL" then
-		nAbility = ActorManager.getAbilityBonus(rActor, "level");
+		nAbility = ActorManager2.getAbilityBonus(rActor, "level");
 	end
 	
 	-- IF VALID SHORT ABILITY, THEN APPLY SIGN AND MODIFIERS
@@ -701,14 +712,14 @@ function getEffectsByType(rActor, sEffectType, aFilter, rFilterActor, bTargetedO
 	local bTargetSupport = StringManager.isWord(sEffectType, DataCommon.targetableeffectcomps);
 	
 	-- ITERATE THROUGH EFFECTS
-	for _,v in pairs(DB.getChildren(rActor.nodeCT, "effects")) do
+	for _,v in pairs(DB.getChildren(ActorManager.getCTNode(rActor), "effects")) do
 		-- MAKE SURE EFFECT IS ACTIVE
 		local nActive = DB.getValue(v, "isactive", 0);
 		if (nActive ~= 0) then
 			-- PARSE EFFECT
 			local sLabel = DB.getValue(v, "label", "");
 			local sApply = DB.getValue(v, "apply", "");
-			local effect_list = EffectsManager.parseEffect(sLabel);
+			local effect_list = EffectManager.parseEffect(sLabel);
 
 			-- IF COMPONENT WE ARE LOOKING FOR SUPPORTS TARGETS, THEN CHECK AGAINST OUR TARGET
 			local bTargeted = isTargetedEffect(v);
@@ -819,7 +830,7 @@ function getEffectsByType(rActor, sEffectType, aFilter, rFilterActor, bTargetedO
 						DB.setValue(v, "isactive", "number", 1);
 					else
 						if sApply == "action" then
-							if bLocked then
+							if nLocked > 0 then
 								table.insert(aUsedActionEffects, v.getNodeName());
 							else
 								notifyExpire(v, 0);
@@ -841,7 +852,7 @@ end
 
 function getEffectsBonusByType(rActor, aEffectType, bAddEmptyBonus, aFilter, rFilterActor, bTargetedOnly)
 	-- VALIDATE
-	if not rActor or not rActor.nodeCT or not aEffectType then
+	if not rActor or not aEffectType then
 		return {}, 0;
 	end
 	
@@ -945,7 +956,7 @@ end
 
 function getEffectsBonus(rActor, aEffectType, bModOnly, aFilter, rFilterActor, bTargetedOnly)
 	-- VALIDATE
-	if not rActor or not rActor.nodeCT or not aEffectType then
+	if not rActor or not aEffectType then
 		if bModOnly then
 			return 0, 0;
 		end
@@ -1012,10 +1023,10 @@ end
 function isEffectTarget(nodeEffect, rTarget)
 	local bMatch = false;
 	
-	if rTarget and rTarget.nodeCT then
-		local sTargetNodeName = rTarget.nodeCT.getNodeName();
+	local sTargetCT = ActorManager.getCTNodeName(rTarget);
+	if sTargetCT ~= "" then
 		for _,v in pairs(DB.getChildren(nodeEffect, "targets")) do
-			if DB.getValue(v, "noderef", "") == sTargetNodeName then
+			if DB.getValue(v, "noderef", "") == sTargetCT then
 				bMatch = true;
 				break;
 			end
@@ -1037,13 +1048,13 @@ function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bIgnoreEffectTargets
 	local sLowerEffect = string.lower(sEffect);
 	-- Iterate through each effect
 	local aMatch = {};
-	for _,v in pairs(DB.getChildren(rActor.nodeCT, "effects")) do
+	for _,v in pairs(DB.getChildren(ActorManager.getCTNode(rActor), "effects")) do
 		local nActive = DB.getValue(v, "isactive", 0);
 		if nActive ~= 0 then
 			-- Parse each effect label
 			local sLabel = DB.getValue(v, "label", "");
-			local bTargeted = EffectsManager.isTargetedEffect(v);
-			local effect_list = EffectsManager.parseEffect(sLabel);
+			local bTargeted = EffectManager.isTargetedEffect(v);
+			local effect_list = EffectManager.parseEffect(sLabel);
 
 			-- Iterate through each effect component looking for a type match
 			local nMatch = 0;
@@ -1082,7 +1093,7 @@ function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bIgnoreEffectTargets
 					table.insert(aMatch, v);
 					local sApply = DB.getValue(v, "apply", "");
 					if sApply == "action" then
-						if bLocked then
+						if nLocked > 0 then
 							table.insert(aUsedActionEffects, v.getNodeName());
 						else
 							notifyExpire(v, 0);
@@ -1115,7 +1126,7 @@ function checkConditional(rActor, nodeEffect, aConditions, rTarget, aIgnore)
 	for _,v in ipairs(aConditions) do
 		local sLower = v:lower();
 		if sLower == "bloodied" then
-			local nPercentWounded = ActorManager.getPercentWounded("ct", rActor.nodeCT);
+			local nPercentWounded = ActorManager2.getPercentWounded("ct", ActorManager.getCTNode(rActor));
 			if nPercentWounded < .5 then
 				bReturn = false;
 			end
@@ -1138,13 +1149,13 @@ function checkConditionalHelper(rActor, sEffect, rTarget, aIgnore)
 	
 	local bReturn = false;
 	
-	for _,v in pairs(DB.getChildren(rActor.nodeCT, "effects")) do
+	for _,v in pairs(DB.getChildren(ActorManager.getCTNode(rActor), "effects")) do
 		local nActive = DB.getValue(v, "isactive", 0);
 		if nActive ~= 0 and not StringManager.contains(aIgnore, v.getNodeName()) then
 			-- Parse each effect label
 			local sLabel = DB.getValue(v, "label", "");
-			local bTargeted = EffectsManager.isTargetedEffect(v);
-			local aEffectComps = EffectsManager.parseEffect(sLabel);
+			local bTargeted = EffectManager.isTargetedEffect(v);
+			local aEffectComps = EffectManager.parseEffect(sLabel);
 
 			-- Iterate through each effect component looking for a type match
 			local nMatch = 0;
@@ -1188,20 +1199,78 @@ end
 --
 
 function lock()
-	bLocked = true;
+	nLocked = nLocked + 1;
 end
 
 function unlock()
-	bLocked = false;
+	nLocked = nLocked - 1;
+	if nLocked < 0 then
+		nLocked = 0;
+	end
 
-	local aExpired = {};
-	
-	for _,v in ipairs(aUsedActionEffects) do
-		if not aExpired[v] then
-			notifyExpire(v, 0);
-			aExpired[v] = true;
+	if nLocked == 0 then
+		local aExpired = {};
+		
+		for _,v in ipairs(aUsedActionEffects) do
+			if not aExpired[v] then
+				notifyExpire(v, 0);
+				aExpired[v] = true;
+			end
 		end
+	
+		aUsedActionEffects = {};
+	end
+end
+
+--
+-- EFFECT TARGETING
+--
+
+function addEffectTarget(vEffect, sTargetNode)
+	local nodeTargetList = nil;
+	if type(vEffect) == "string" then
+		nodeTargetList = DB.findNode(vEffect .. ".targets");
+	elseif type(vEffect) == "databasenode" then
+		nodeTargetList = vEffect.getChild("targets");
+	end
+	if not nodeTargetList then
+		return;
 	end
 	
-	aUsedActionEffects = {};
+	for _,nodeTarget in pairs(nodeTargetList.getChildren()) do
+		if (DB.getValue(nodeTarget, "noderef", "") == sTargetNode) then
+			return;
+		end
+	end
+
+	local nodeNewTarget = nodeTargetList.createChild();
+	if nodeNewTarget then
+		DB.setValue(nodeNewTarget, "noderef", "string", sTargetNode);
+	end
+end
+
+function setEffectFactionTargets(nodeEffect, sFaction, bNegated)
+	if not nodeEffect then
+		return;
+	end
+	
+	clearEffectTargets(nodeEffect);
+	
+	for _,nodeCT in pairs(DB.getChildren(CombatManager.CT_LIST)) do
+		if bNegated then
+			if DB.getValue(nodeCT, "friendfoe", "") ~= sFaction then
+				addEffectTarget(nodeEffect, nodeCT.getNodeName());
+			end
+		else
+			if DB.getValue(nodeCT, "friendfoe", "") == sFaction then
+				addEffectTarget(nodeEffect, nodeCT.getNodeName());
+			end
+		end
+	end
+end
+
+function clearEffectTargets(nodeEffect)
+	for _,nodeTarget in pairs(DB.getChildren(nodeEffect, "targets")) do
+		nodeTarget.delete();
+	end
 end

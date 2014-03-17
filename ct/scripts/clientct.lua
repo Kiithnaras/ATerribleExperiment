@@ -13,47 +13,30 @@ end
 
 function onOptionWNDCChanged()
 	for _,v in pairs(getWindows()) do
-		v.onWoundsChanged();
+		v.onHealthChanged();
 	end
 end
 
 function onSortCompare(w1, w2)
-	return not CTManager.sortfunc(w1.getDatabaseNode(), w2.getDatabaseNode());
+	return CombatManager.onSortCompare(w1.getDatabaseNode(), w2.getDatabaseNode());
 end
 
 function onFilter(w)
-	if w.friendfoe.getValue() == "friend" then
+	if w.friendfoe.getStringValue() == "friend" then
 		return true;
 	end
-	if w.show_npc.getValue() ~= 0 then
+	if w.tokenvis.getValue() ~= 0 then
 		return true;
 	end
 	return false;
 end
 
 function onDrop(x, y, draginfo)
-	local wnd = getWindowAt(x,y);
-	if wnd then
-		local nodeWin = wnd.getDatabaseNode();
+	local w = getWindowAt(x,y);
+	if w then
+		local nodeWin = w.getDatabaseNode();
 		if nodeWin then
-			return CTManager.onDrop("ct", nodeWin.getNodeName(), draginfo);
+			return CombatManager.onDrop("ct", nodeWin.getNodeName(), draginfo);
 		end
-	end
-end
-
-function onClickDown(button, x, y)
-	if Input.isShiftPressed() then
-		return true;
-	end
-end
-
-function onClickRelease(button, x, y)
-	if Input.isShiftPressed() then
-		local wnd = getWindowAt(x, y);
-		if wnd then
-			TokenManager.toggleClientTarget(wnd.getDatabaseNode());
-		end
-
-		return true;
 	end
 end

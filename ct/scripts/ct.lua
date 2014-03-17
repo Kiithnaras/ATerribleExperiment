@@ -3,35 +3,16 @@
 -- attribution and copyright information.
 --
 
-enableglobaltoggle = true;
-enablevisibilitytoggle = true;
-
-aHostTargeting = {};
+local enableglobaltoggle = true;
+local enablevisibilitytoggle = true;
 
 function onInit()
 	Interface.onHotkeyActivated = onHotkey;
 	
-	-- Make sure all the clients can see the combat tracker
-	for k,v in ipairs(User.getActiveUsers()) do
-		DB.addHolder("combattracker", v);
-		DB.addHolder("combattracker_props", v);
-	end
-	
-	-- Create a blank window if one doesn't exist already
-	if not getNextWindow(nil) then
-		addEntry(true);
-	end
-	
-	-- Register callback for option changes
 	OptionsManager.registerCallback("WNDC", onOptionWNDCChanged);
 	
-	-- Register a menu item to create a CT entry
-	registerMenuItem("Create Item", "insert", 5);
+	registerMenuItem(Interface.getString("list_menu_createitem"), "insert", 5);
 
-	-- Rebuild targeting information
-	TargetingManager.rebuildClientTargeting();
-
-	-- Initialize global buttons
 	onVisibilityToggle();
 	onEntrySectionToggle();
 end
@@ -42,16 +23,16 @@ end
 
 function onOptionWNDCChanged()
 	for _,v in pairs(getWindows()) do
-		v.onWoundsChanged();
+		v.onHealthChanged();
 	end
 end
 
 function addEntry(bFocus)
-	local win = NodeManager.createWindow(self);
-	if bFocus and win then
-		win.name.setFocus();
+	local w = createWindow();
+	if bFocus and w then
+		w.name.setFocus();
 	end
-	return win;
+	return w;
 end
 
 function onMenuSelection(selection)
@@ -61,22 +42,18 @@ function onMenuSelection(selection)
 end
 
 function onSortCompare(w1, w2)
-	return not CTManager.sortfunc(w1.getDatabaseNode(), w2.getDatabaseNode());
+	return CombatManager.onSortCompare(w1.getDatabaseNode(), w2.getDatabaseNode());
 end
 
 function onHotkey(draginfo)
 	local sDragType = draginfo.getType();
 	if sDragType == "combattrackernextactor" then
-		CTManager.nextActor();
+		CombatManager.nextActor();
 		return true;
 	elseif sDragType == "combattrackernextround" then
-		CTManager.nextRound(1);
+		CombatManager.nextRound(1);
 		return true;
 	end
-end
-
-function deleteTarget(sNode)
-	TargetingManager.removeTargetFromAllEntries("host", sNode);
 end
 
 function toggleVisibility()
@@ -84,24 +61,10 @@ function toggleVisibility()
 		return;
 	end
 	
-	local visibilityon = window.button_global_visibility.getState();
-	for k,v in pairs(getWindows()) do
-		if visibilityon ~= v.show_npc.getState() then
-			v.show_npc.setState(visibilityon);
-		end
-	end
-end
-
-function toggleTargeting()
-	if not enableglobaltoggle then
-		return;
-	end
-	
-	local targetingon = window.button_global_targeting.getValue();
-	for k,v in pairs(getWindows()) do
-		if targetingon ~= v.activatetargeting.getValue() then
-			v.activatetargeting.setValue(targetingon);
-			v.setTargetingVisible(v.activatetargeting.getValue());
+	local visibilityon = window.button_global_visibility.getValue();
+	for _,v in pairs(getWindows()) do
+		if visibilityon ~= v.tokenvis.getValue() then
+			v.tokenvis.setValue(visibilityon);
 		end
 	end
 end
@@ -112,10 +75,9 @@ function toggleActive()
 	end
 	
 	local activeon = window.button_global_active.getValue();
-	for k,v in pairs(getWindows()) do
+	for _,v in pairs(getWindows()) do
 		if activeon ~= v.activateactive.getValue() then
 			v.activateactive.setValue(activeon);
-			v.setActiveVisible(v.activateactive.getValue());
 		end
 	end
 end
@@ -126,10 +88,9 @@ function toggleDefensive()
 	end
 	
 	local defensiveon = window.button_global_defensive.getValue();
-	for k,v in pairs(getWindows()) do
+	for _,v in pairs(getWindows()) do
 		if defensiveon ~= v.activatedefensive.getValue() then
 			v.activatedefensive.setValue(defensiveon);
-			v.setDefensiveVisible(v.activatedefensive.getValue());
 		end
 	end
 end
@@ -140,10 +101,9 @@ function toggleSpacing()
 	end
 	
 	local spacingon = window.button_global_spacing.getValue();
-	for k,v in pairs(getWindows()) do
+	for _,v in pairs(getWindows()) do
 		if spacingon ~= v.activatespacing.getValue() then
 			v.activatespacing.setValue(spacingon);
-			v.setSpacingVisible(v.activatespacing.getValue());
 		end
 	end
 end
@@ -154,54 +114,48 @@ function toggleEffects()
 	end
 	
 	local effectson = window.button_global_effects.getValue();
-	for k,v in pairs(getWindows()) do
+	for _,v in pairs(getWindows()) do
 		if effectson ~= v.activateeffects.getValue() then
 			v.activateeffects.setValue(effectson);
-			v.setEffectsVisible(v.activateeffects.getValue());
 		end
 	end
 end
 
 function onVisibilityToggle()
-	local anyVisible = false;
+	local anyVisible = 0;
 	for _,v in pairs(getWindows()) do
-		if v.friendfoe.getStringValue() ~= "friend" and v.show_npc.getState() then
-			anyVisible = true;
+		if (v.friendfoe.getStringValue() ~= "friend") and (v.tokenvis.getValue() == 1) then
+			anyVisible = 1;
 		end
 	end
 	
 	enablevisibilitytoggle = false;
-	window.button_global_visibility.setState(anyVisible);
+	window.button_global_visibility.setValue(anyVisible);
 	enablevisibilitytoggle = true;
 end
 
 function onEntrySectionToggle()
-	local anyTargeting = false;
-	local anyActive = false;
-	local anyDefensive = false;
-	local anySpacing = false;
-	local anyEffects = false;
+	local anyActive = 0;
+	local anyDefensive = 0;
+	local anySpacing = 0;
+	local anyEffects = 0;
 
-	for k,v in pairs(getWindows()) do
-		if v.activatetargeting.getValue() then
-			anyTargeting = true;
+	for _,v in pairs(getWindows()) do
+		if v.activatespacing.getValue() == 1 then
+			anySpacing = 1;
 		end
-		if v.activatespacing.getValue() then
-			anySpacing = true;
+		if v.activatedefensive.getValue() == 1 then
+			anyDefensive = 1;
 		end
-		if v.activatedefensive.getValue() then
-			anyDefensive = true;
+		if v.activateactive.getValue() == 1 then
+			anyActive = 1;
 		end
-		if v.activateactive.getValue() then
-			anyActive = true;
-		end
-		if v.activateeffects.getValue() then
-			anyEffects = true;
+		if v.activateeffects.getValue() == 1 then
+			anyEffects = 1;
 		end
 	end
 
 	enableglobaltoggle = false;
-	window.button_global_targeting.setValue(anyTargeting);
 	window.button_global_active.setValue(anyActive);
 	window.button_global_defensive.setValue(anyDefensive);
 	window.button_global_spacing.setValue(anySpacing);
@@ -210,39 +164,16 @@ function onEntrySectionToggle()
 end
 
 function onDrop(x, y, draginfo)
-	-- Capture certain drag types meant for the host only
-	local sDragType = draginfo.getType();
-
-	-- PC
-	if sDragType == "playercharacter" then
-		CTManager.addPc(draginfo.getDatabaseNode());
-		return true;
+	if draginfo.isType("shortcut") then
+		return CampaignDataManager.handleDrop("combattracker", draginfo);
 	end
-
-	if sDragType == "shortcut" then
-		local sClass = draginfo.getShortcutData();
-
-		-- NPC
-		if sClass == "npc" then
-			CTManager.addNpc(draginfo.getDatabaseNode());
-			applySort();
-			return true;
-		end
-
-		-- ENCOUNTER
-		if sClass == "battle" then
-			CTManager.addBattle(draginfo.getDatabaseNode());
-			applySort();
-			return true;
-		end
-	end
-
+	
 	-- Capture any drops meant for specific CT entries
 	local win = getWindowAt(x,y);
 	if win then
 		local nodeWin = win.getDatabaseNode();
 		if nodeWin then
-			return CTManager.onDrop("ct", nodeWin.getNodeName(), draginfo);
+			return CombatManager.onDrop("ct", nodeWin.getNodeName(), draginfo);
 		end
 	end
 end
