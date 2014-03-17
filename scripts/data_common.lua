@@ -374,21 +374,18 @@ naturaldmgtypes = {
 
 -- Skill properties
 sensesdata = {
-	["Listen"] = {
-			stat = "wisdom"
-		},
-	["Spot"] = {
+	["Notice"] = {
 			stat = "wisdom"
 		},
 }
 
 skilldata = {
-	["Appraise"] = {
-			stat = "intelligence"
-		},
-	["Balance"] = {
+	["Acrobatics"] = {
 			stat = "dexterity",
 			armorcheckmultiplier = 1
+		},
+	["Appraise"] = {
+			stat = "intelligence"
 		},
 	["Bluff"] = {
 			stat = "charisma"
@@ -397,17 +394,12 @@ skilldata = {
 			stat = "strength",
 			armorcheckmultiplier = 1
 		},
-	["Concentration"] = {
-			stat = "constitution"
-		},
 	["Craft"] = {
 			sublabeling = true,
 			stat = "intelligence"
 		},
-	["Decipher Script"] = {
-			stat = "intelligence",
-			trainedonly = 1
-		},
+	["Concentration"] = {
+		},--Would love to have a toggle-able ability cycler here instead of a static one. Specifically, casting-ability-specific ones.
 	["Diplomacy"] = {
 			stat = "charisma"
 		},
@@ -422,8 +414,9 @@ skilldata = {
 			stat = "dexterity",
 			armorcheckmultiplier = 1
 		},
-	["Forgery"] = {
-			stat = "intelligence"
+	["Fly"] = {
+			stat = "dexterity",
+			armorcheckmultiplier = 2
 		},
 	["Gather Information"] = {
 			stat = "charisma"
@@ -434,10 +427,6 @@ skilldata = {
 		},
 	["Heal"] = {
 			stat = "wisdom"
-		},
-	["Hide"] = {
-			stat = "dexterity",
-			armorcheckmultiplier = 1
 		},
 	["Intimidate"] = {
 			stat = "charisma"
@@ -451,15 +440,8 @@ skilldata = {
 			stat = "intelligence",
 			trainedonly = 1
 		},
-	["Listen"] = {
-			stat = "wisdom"
-		},
-	["Move Silently"] = {
-			stat = "dexterity",
-			armorcheckmultiplier = 1
-		},
-	["Open Lock"] = {
-			stat = "dexterity",
+	["Linguistics"] = {
+			stat = "intelligence",
 			trainedonly = 1
 		},
 	["Perform"] = {
@@ -491,8 +473,9 @@ skilldata = {
 			stat = "intelligence",
 			trainedonly = 1
 		},
-	["Spot"] = {
-			stat = "wisdom"
+	["Stealth"] = {
+			stat = "dexterity",
+			armorcheckmultiplier = 1
 		},
 	["Survival"] = {
 			stat = "wisdom"
@@ -501,18 +484,10 @@ skilldata = {
 			stat = "strength",
 			armorcheckmultiplier = 2
 		},
-	["Tumble"] = {
-			stat = "dexterity",
-			armorcheckmultiplier = 1,
-			trainedonly = 1
-		},
 	["Use Magic Device"] = {
 			stat = "charisma",
 			trainedonly = 1
 		},
-	["Use Rope"] = {
-			stat = "dexterity"
-		}
 }
 
 -- Coin labels
@@ -535,12 +510,12 @@ pssavedata = {
 };
 
 psskilldata = {
+	"Acrobatics",
 	"Bluff",
 	"Climb",
 	"Diplomacy",
 	"Gather Information",
 	"Heal",
-	"Hide",
 	"Jump",
 	"Intimidate",
 	"Knowledge (Arcana)",
@@ -549,9 +524,9 @@ psskilldata = {
 	"Knowledge (Nature)",
 	"Knowledge (Planes)",
 	"Knowledge (Religion)",
-	"Listen",
-	"Move Silently",
+	"Notice",
 	"Search",
-	"Spot",
+	"Sense Motive",
+	"Stealth",
 	"Survival"
 };
