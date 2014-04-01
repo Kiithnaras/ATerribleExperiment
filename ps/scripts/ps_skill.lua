@@ -24,19 +24,13 @@ end
 function onSystemChanged()
 	local bPFMode = DataCommon.isPFRPG();
 	
-	spotlabel.setVisible(not bPFMode);
-	listenlabel.setVisible(not bPFMode);
-	searchlabel.setVisible(not bPFMode);
-	perceptionlabel.setVisible(bPFMode);
-	smlabel.setVisible(bPFMode);
+	noticelabel.setVisible(true);
+	searchlabel.setVisible(true);
+	smlabel.setVisible(true);
+		
+	acrobaticslabel.setVisible(true);
+	heallabel.setVisible(true);
+	jumplabel.setVisible(true);
 	
-	gatherinfolabel.setVisible(not bPFMode);
-	
-	acrobaticslabel.setVisible(bPFMode);
-	heallabel.setVisible(bPFMode);
-	jumplabel.setVisible(not bPFMode);
-	
-	hidelabel.setVisible(not bPFMode);
-	movesilentlabel.setVisible(not bPFMode);
-	stealthlabel.setVisible(bPFMode);
+	stealthlabel.setVisible(true);
 end

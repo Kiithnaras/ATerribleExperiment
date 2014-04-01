@@ -93,29 +93,23 @@ end
 function getStabilizationRoll(rActor)
 	local rRoll = { sType = "stabilization", sDesc = "[STABILIZATION]" };
 	
-	if DataCommon.isPFRPG() then
-		rRoll.aDice = { "d20" };
-		rRoll.nMod = ActorManager2.getAbilityBonus(rActor, "constitution");
-		
-		local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
-		local nHP = 0;
-		local nWounds = 0;
-		if sType == "pc" then
-			nHP = DB.getValue(nodeActor, "hp.total", 0);
-			nWounds = DB.getValue(nodeActor, "hp.wounds", 0);
-		else
-			nHP = DB.getValue(nodeActor, "hp", 0);
-			nWounds = DB.getValue(nodeActor, "wounds", 0);
-		end
-			
-		if nHP > 0 and nWounds > nHP then
-			rRoll.sDesc = string.format("%s [at %+d]", rRoll.sDesc, (nHP - nWounds));
-			rRoll.nMod = rRoll.nMod + (nHP - nWounds);
-		end
+	rRoll.aDice = { "d6","d6","d6" };
+	rRoll.nMod = ActorManager2.getAbilityBonus(rActor, "constitution");
 	
+	local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
+	local nHP = 0;
+	local nWounds = 0;
+	if sType == "pc" then
+		nHP = DB.getValue(nodeActor, "hp.total", 0);
+		nWounds = DB.getValue(nodeActor, "hp.wounds", 0);
 	else
-		rRoll.aDice = { "d100", "d10" };
-		rRoll.nMod = 0;
+		nHP = DB.getValue(nodeActor, "hp", 0);
+		nWounds = DB.getValue(nodeActor, "wounds", 0);
+	end
+		
+	if nHP > 0 and nWounds > nHP then
+		rRoll.sDesc = string.format("%s [at %+d]", rRoll.sDesc, (nHP - nWounds));
+		rRoll.nMod = rRoll.nMod + (nHP - nWounds);
 	end
 	
 	return rRoll;
@@ -132,19 +126,13 @@ function getStabilizationResult(rRoll)
 	
 	local nTotal = ActionsManager.total(rRoll);
 
-	if DataCommon.isPFRPG() then
-		local nFirstDie = 0;
-		if #(rRoll.aDice) > 0 then
-			nFirstDie = rRoll.aDice[1].result or 0;
-		end
-		
-		if nFirstDie >= 20 or nTotal >= 10 then
-			bSuccess = true;
-		end
-	else
-		if nTotal <= 10 then
-			bSuccess = true;
-		end
+	local nFirstDie = 0;
+	if #(rRoll.aDice) > 0 then
+		nFirstDie = (rRoll.aDice[1].result + rRoll.aDice[2].result + rRoll.aDice[3].result) or 0;
+	end
+	
+	if nFirstDie >= 18 or nTotal >= 10 then
+		bSuccess = true;
 	end
 	
 	return bSuccess;

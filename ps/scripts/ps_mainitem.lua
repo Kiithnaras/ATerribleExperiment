@@ -10,7 +10,7 @@ end
 
 function onSystemChanged()
 	local bPFMode = DataCommon.isPFRPG();
-	cmd.setVisible(bPFMode);
+	cmd.setVisible(true);
 end
 
 function onHealthChanged()

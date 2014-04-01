@@ -10,19 +10,13 @@ end
 function onSystemChanged()
 	local bPFMode = DataCommon.isPFRPG();
 
-	spot.setVisible(not bPFMode);
-	listen.setVisible(not bPFMode);
-	search.setVisible(not bPFMode);
-	perception.setVisible(bPFMode);
-	sensemotive.setVisible(bPFMode);
+	notice.setVisible(true);
+	search.setVisible(true);
+	sensemotive.setVisible(true);
 	
-	gatherinfo.setVisible(not bPFMode);
+	acrobatics.setVisible(true);
+	heal.setVisible(true);
+	jump.setVisible(true);
 	
-	acrobatics.setVisible(bPFMode);
-	heal.setVisible(bPFMode);
-	jump.setVisible(not bPFMode);
-	
-	hide.setVisible(not bPFMode);
-	movesilent.setVisible(not bPFMode);
-	stealth.setVisible(bPFMode);
+	stealth.setVisible(true);
 end
