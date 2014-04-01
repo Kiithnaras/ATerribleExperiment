@@ -476,11 +476,11 @@ function onAttack(rSource, rTarget, rRoll)
 				table.insert(rAction.aMessages, "[HIT]");
 			end
 		else
-			rAction.sResult = "miss";
+			rAction.sResult = "glance";
 			if rRoll.sType == "critconfirm" then
 				table.insert(rAction.aMessages, "[CRIT NOT CONFIRMED]");
 			else
-				table.insert(rAction.aMessages, "[MISS]");
+				table.insert(rAction.aMessages, "[GLANCING]");
 			end
 		end
 	elseif rRoll.sType == "critconfirm" then
@@ -627,6 +627,8 @@ function applyAttack(rSource, rTarget, bSecret, sAttackType, sDesc, nTotal, sRes
 		msgLong.icon = "roll_attack_miss";
 	elseif string.match(sResults, "CRITICAL THREAT%]") then
 		msgLong.icon = "roll_attack_hit";
+	elseif string.match(sResults, "GLANCING%]") then
+		msgLong.icon = "roll_attack_glance";
 	else
 		msgLong.icon = "roll_attack";
 	end
