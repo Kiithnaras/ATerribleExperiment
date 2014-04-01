@@ -8,7 +8,6 @@ function onInit()
 end
 
 function onSystemChanged()
-	local bPFMode = DataCommon.isPFRPG();
 
 	notice.setVisible(true);
 	search.setVisible(true);

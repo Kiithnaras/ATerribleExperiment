@@ -25,17 +25,9 @@ function update()
 	if babgrp_label then
 		if sType == "Vehicle" then
 			babgrp_label.setValue(Interface.getString("npc_label_cm"));
-			if bPFMode then
-				updateControl("babgrp", bReadOnly);
-			else
-				updateControl("babgrp", bReadOnly, true);
-			end
+			updateControl("babgrp", bReadOnly);
 		else
-			if bPFMode then
-				babgrp_label.setValue(Interface.getString("npc_label_babcm"));
-			else
-				babgrp_label.setValue(Interface.getString("npc_label_babgrp"));
-			end
+			babgrp_label.setValue(Interface.getString("npc_label_babcm"));
 		end
 	end
 

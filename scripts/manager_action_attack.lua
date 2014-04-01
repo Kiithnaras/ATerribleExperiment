@@ -150,11 +150,7 @@ function getGrappleRoll(rActor, rAction)
 	rRoll.aDice = { "d6","d6","d6" };
 	rRoll.nMod = rAction.modifier or 0;
 	
-	if DataCommon.isPFRPG() then
-		rRoll.sDesc = "[CMB]";
-	else
-		rRoll.sDesc = "[GRAPPLE]";
-	end
+	rRoll.sDesc = "[CMB]";
 	if rAction.label and rAction.label ~= "" then
 		rRoll.sDesc = rRoll.sDesc .. " " .. rAction.label;
 	end
@@ -290,11 +286,9 @@ function modAttack(rSource, rTarget, rRoll)
 			bEffects = true;
 			table.insert(aAddDesc, "[BLINDED]");
 		end
-		if not DataCommon.isPFRPG() then
-			if EffectManager.hasEffect(rSource, "Incorporeal") and sAttackType == "M" and not string.match(string.lower(rRoll.sDesc), "incorporeal touch") then
-				bEffects = true;
-				table.insert(aAddDesc, "[INCORPOREAL]");
-			end
+		if EffectManager.hasEffect(rSource, "Incorporeal") and sAttackType == "M" and not string.match(string.lower(rRoll.sDesc), "incorporeal touch") then
+			bEffects = true;
+			table.insert(aAddDesc, "[INCORPOREAL]");
 		end
 		if EffectManager.hasEffectCondition(rSource, "Dazzled") then
 			bEffects = true;

@@ -9,7 +9,6 @@ function onInit()
 end
 
 function onSystemChanged()
-	local bPFMode = DataCommon.isPFRPG();
 	cmd.setVisible(true);
 end
 

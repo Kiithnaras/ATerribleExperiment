@@ -22,7 +22,6 @@ function update()
 end
 
 function onSystemChanged()
-	local bPFMode = DataCommon.isPFRPG();
 	
 	noticelabel.setVisible(true);
 	searchlabel.setVisible(true);

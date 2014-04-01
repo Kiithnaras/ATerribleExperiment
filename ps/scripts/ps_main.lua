@@ -22,8 +22,7 @@ function update()
 end
 
 function onSystemChanged()
-	local bPFMode = DataCommon.isPFRPG();
-	cmdlabel.setVisible(bPFMode);
+	cmdlabel.setVisible(true);
 end
 
 function onSubwindowInstantiated()

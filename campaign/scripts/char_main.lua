@@ -19,30 +19,19 @@ function onLevelChanged()
 end
 
 function onSystemChanged()
-	local bPFMode = DataCommon.isPFRPG();
 	
-	cmd.setVisible(bPFMode);
-	label_cmd.setVisible(bPFMode);
+	cmd.setVisible(true);
+	label_cmd.setVisible(true);
 	
 	if label_grapple then
-		if bPFMode then
-			label_grapple.setValue(Interface.getString("cmb"));
-		elseif minisheet then
-			label_grapple.setValue(Interface.getString("grp"));
-		else
-			label_grapple.setValue(Interface.getString("grapple"));
-		end
+		label_grapple.setValue(Interface.getString("cmb"));
 	end
 	
-	spot.setVisible(not bPFMode);
-	label_spot.setVisible(not bPFMode);
-	listen.setVisible(not bPFMode);
-	label_listen.setVisible(not bPFMode);
-	search.setVisible(not bPFMode);
-	label_search.setVisible(not bPFMode);
+	search.setVisible(true);
+	label_search.setVisible(true);
 
-	perception.setVisible(bPFMode);
-	label_perception.setVisible(bPFMode);
+	perception.setVisible(true);
+	label_perception.setVisible(true);
 end
 
 function onHealthChanged()
