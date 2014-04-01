@@ -866,10 +866,8 @@
 			<state icon="char_weapon_ranged" tooltipres="char_tooltip_weapontyperanged" />
 			<script>
 				function onInit()
-					if DataCommon.isPFRPG() then
-						setStateIcons(2, "char_weapon_cm");
-						setStateTooltipText(2, Interface.getString("char_tooltip_weapontypecm"));
-					end
+					setStateIcons(2, "char_weapon_cm");
+					setStateTooltipText(2, Interface.getString("char_tooltip_weapontypecm"));
 				end
 				
 				function onValueChanged()

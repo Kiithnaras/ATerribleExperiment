@@ -184,7 +184,7 @@ function getAbilityEffectsBonus(rActor, sAbility)
 			nEffectMod = nEffectMod - 4;
 			nAbilityEffects = nAbilityEffects + 1;
 		end
-		if DataCommon.isPFRPG() and EffectManager.hasEffectCondition(rActor, "Grappled") then
+		if EffectManager.hasEffectCondition(rActor, "Grappled") then
 			nEffectMod = nEffectMod - 4;
 			nAbilityEffects = nAbilityEffects + 1;
 		end
