@@ -399,6 +399,7 @@ skilldata = {
 			stat = "intelligence"
 		},
 	["Concentration"] = {
+			stat = "wisdom"
 		},--Would love to have a toggle-able ability cycler here instead of a static one. Specifically, casting-ability-specific ones.
 	["Diplomacy"] = {
 			stat = "charisma"
