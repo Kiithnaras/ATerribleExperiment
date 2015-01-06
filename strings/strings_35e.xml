@@ -315,6 +315,8 @@
 	<string name="char_label_speedspecial">Special Movement</string>
 	<string name="char_label_melee">Melee</string>
 	<string name="char_label_ranged">Ranged</string>
+	<string name="char_label_EP">EP</string>
+	<string name="char_label_EPspent">EP Spent</string>
 	
 	<string name="char_tooltip_wounds">Wounds</string>
 	<string name="char_tooltip_hptemp">Temporary HP</string>

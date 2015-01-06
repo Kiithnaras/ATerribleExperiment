@@ -149,7 +149,7 @@
 
 			<!-- Health -->
 			<frame_char name="hpframe">
-				<bounds>15,200,240,100</bounds>
+				<bounds>15,200,240,150</bounds>
 			</frame_char>
 			<number_dropadd name="hp" source="hp.total">
 				<anchored to="hpframe" position="insidetopleft" offset="20,27" width="40" height="28" />
@@ -202,8 +202,24 @@
 				<static textres="char_label_nonlethal" />
 			</label_fieldtop>
 			
+			<number_dropadd name="epoints" source="energy.total">
+				<anchored to="hp" position="below" offset="0,20" width="40" height="28"/>
+			</number_dropadd>
+			<label_fieldtop>
+				<anchored to="epoints" />
+				<static textres="char_label_EP" />
+			</label_fieldtop>
+			
+			<number_dropadd name="epspent" source="energy.spent">
+				<anchored to="epoints" position="right" offset="10,0" width="40"/>
+			</number_dropadd>
+			<label_fieldtop>
+				<anchored to="epspent" />
+				<static textres="char_label_EPspent" />
+			</label_fieldtop>
+				
 			<string_labeled name="dr" source="defenses.damagereduction">
-				<anchored to="hpframe" position="insidetopleft" offset="20,63" width="200" height="20" />
+				<anchored to="hpframe" position="insidetopleft" offset="20,113" width="200" height="20" />
 				<labelres>char_label_dr</labelres>
 			</string_labeled>
 
@@ -308,7 +324,7 @@
 						
 			<!-- Speed -->
 			<frame_char name="speedframe">
-				<bounds>15,300,385,50</bounds>
+				<bounds>15,350,385,50</bounds>
 			</frame_char>
 			<number_charspeed name="speedfinal" source="speed.final">
 				<anchored to="speedframe" position="insidetopleft" offset="80,15" width="45" height="20" />
@@ -325,7 +341,7 @@
 
 			<!-- Senses -->
 			<frame_char name="sensesframe">
-				<bounds>15,350,385,60</bounds>
+				<bounds>15,400,385,60</bounds>
 			</frame_char>
 			<genericcontrol name="anchor_charmainskill">
 				<anchored to="sensesframe" position="insidetopleft" offset="5,24" width="0" height="20" />
@@ -371,7 +387,7 @@
 
 			<!-- Attacks -->
 			<frame_char name="combatframe">
-				<bounds>15,410,385,70</bounds>
+				<bounds>15,460,385,70</bounds>
 			</frame_char>
 			<number_charinit name="initiative" source="initiative.total">
 				<anchored to="combatframe" position="insidetopleft" offset="39,27" width="50" height="28" />

@@ -22,6 +22,7 @@ function onMenuSelection(selection, subselection)
 		
 		if subselection == 8 then
 			ChatManager.Message(Interface.getString("message_restshort"), true, ActorManager.getActor("pc", nodeChar));
+			CharManager.lightrest(nodeChar);
 		elseif subselection == 6 then
 			ChatManager.Message(Interface.getString("message_restovernight"), true, ActorManager.getActor("pc", nodeChar));
 			CharManager.rest(nodeChar);

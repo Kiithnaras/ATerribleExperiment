@@ -515,6 +515,19 @@ end
 -- ACTIONS
 --
 
+-- Added actual function for short resting. Restores 10% of total energy
+function lightrest(nodeChar)
+	local nEnergy = DB.getValue(nodeChar, "energy.spent", 0);
+	local nETotal = DB.getValue(nodeChar, "energy.total", 0);
+	if nEnergy > 0 then
+		local nSREP = math.max( math.floor( nETotal / 10 ), 1);
+		nEnergy = nEnergy - nSREP;
+		if nEnergy < 0 then nEnergy = 0;
+		end
+	end
+	DB.setValue(nodeChar, "energy.spent", "number", nEnergy)
+end
+
 function rest(nodeChar)
 	SpellManager.resetSpells(nodeChar);
 	resetHealth(nodeChar);
@@ -556,6 +569,11 @@ function resetHealth(nodeChar)
 			DB.setValue(nodeChar, "abilities." .. vAbility .. ".damage", "number", nAbilityDamage - 1);
 		end
 	end
+	
+	-- Restore Energy Points
+	local nEnergy = DB.getValue(nodeChar, "energy.spent", 0);
+	nEnergy = 0;
+	DB.setValue(nodeChar, "energy.spent", "number", nEnergy);
 end
 
 --
