@@ -581,6 +581,14 @@ function onMissChance(rSource, rTarget, rRoll)
 		else
 			rMessage.icon = "roll_attack";
 		end
+	--Differentiate glancing results vs true hits. NOT WORKING *grump*
+	--[[elseif string.find(rMessage.text, "GLANCING") then 
+		rMessage.text = rMessage.text .. " [GLANCING]";
+		if rTarget then
+			rMessage.icon = "roll_attack_glance";
+		else
+			rMessage.icon = "roll_attack";
+		end  ]]
 	else
 		rMessage.text = rMessage.text .. " [HIT]";
 		if rTarget then
