@@ -275,13 +275,12 @@
 	<string name="skill_value_knownature">Nature</string>
 	<string name="skill_value_knowplanes">Planes</string>
 	<string name="skill_value_knowreligion">Religion</string>
-	<string name="skill_value_listen">Listen</string>
+	<string name="skill_value_notice">Notice</string>
 	<string name="skill_value_perception">Perception</string>
 	<string name="skill_value_perform">Perform</string>
 	<string name="skill_value_profession">Profession</string>
 	<string name="skill_value_search">Search</string>
 	<string name="skill_value_sensemotive">Sense Motive</string>
-	<string name="skill_value_spot">Spot</string>
 
 	<!-- Character - Mini -->
 	<string name="char_label_fullsheet">Full Sheet</string>
@@ -343,10 +342,9 @@
 	<string name="char_tooltip_xpneeded">XP Needed</string>
 	<string name="char_tooltip_speed">Speed</string>
 
-	<string name="char_label_skillspot">Spot</string>
-	<string name="char_label_skilllisten">Listen</string>
+	<string name="char_label_skillnotice">Notice</string>
 	<string name="char_label_skillsearch">Search</string>
-	<string name="char_label_skillperception">Percept.</string>
+	<string name="char_label_skillstealth">Stealth</string>
 	<string name="char_label_senses">Senses</string>
 	<string name="char_tooltip_skillcheck">Check</string>
 	

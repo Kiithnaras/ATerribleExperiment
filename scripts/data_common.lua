@@ -445,6 +445,9 @@ skilldata = {
 			stat = "intelligence",
 			trainedonly = 1
 		},
+	["Notice"] = {
+			stat = "wisdom"
+		},
 	["Perform"] = {
 			sublabeling = true,
 			stat = "charisma"

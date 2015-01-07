@@ -29,9 +29,6 @@ function onSystemChanged()
 	
 	search.setVisible(true);
 	label_search.setVisible(true);
-
-	perception.setVisible(true);
-	label_perception.setVisible(true);
 end
 
 function onHealthChanged()
