@@ -571,8 +571,7 @@ function resetHealth(nodeChar)
 	end
 	
 	-- Restore Energy Points
-	local nEnergy = DB.getValue(nodeChar, "energy.spent", 0);
-	nEnergy = 0;
+	local nEnergy = 0;
 	DB.setValue(nodeChar, "energy.spent", "number", nEnergy);
 end
 
