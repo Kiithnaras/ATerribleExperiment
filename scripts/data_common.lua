@@ -384,9 +384,6 @@ skilldata = {
 			stat = "dexterity",
 			armorcheckmultiplier = 1
 		},
-	["Appraise"] = {
-			stat = "intelligence"
-		},
 	["Bluff"] = {
 			stat = "charisma"
 		},
@@ -419,8 +416,8 @@ skilldata = {
 			stat = "dexterity",
 			armorcheckmultiplier = 2
 		},
-	["Gather Information"] = {
-			stat = "charisma"
+	["Investigate"] = {
+			stat = "intelligence"
 		},
 	["Handle Animal"] = {
 			stat = "charisma",
@@ -471,8 +468,6 @@ skilldata = {
 			armorcheckmultiplier = 1,
 			trainedonly = 1
 		},
-	["Speak Language"] = {
-		},
 	["Spellcraft"] = {
 			stat = "intelligence",
 			trainedonly = 1
@@ -487,10 +482,6 @@ skilldata = {
 	["Swim"] = {
 			stat = "strength",
 			armorcheckmultiplier = 2
-		},
-	["Use Magic Device"] = {
-			stat = "charisma",
-			trainedonly = 1
 		},
 }
 
