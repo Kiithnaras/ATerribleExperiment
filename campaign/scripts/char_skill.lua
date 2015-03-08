@@ -16,7 +16,7 @@ end
 function updateWindow()
 	local sLabel = label.getValue();
 	local t = DataCommon.skilldata[sLabel];
-	if t then
+	if t and not t.custom then
 		setCustom(false);
 		
 		if t.stat then
