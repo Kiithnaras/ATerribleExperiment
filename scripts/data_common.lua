@@ -396,8 +396,12 @@ skilldata = {
 			stat = "intelligence"
 		},
 	["Concentration"] = {
-			stat = "wisdom"
-		},--Would love to have a toggle-able ability cycler here instead of a static one. Specifically, casting-ability-specific ones.
+			stat = "charisma",
+			-- 'custom' set to true will allow the skill used for
+			-- bonuses to cycle instead of being static. It will
+			-- start with charisma.
+			custom = true
+		},
 	["Diplomacy"] = {
 			stat = "charisma"
 		},
