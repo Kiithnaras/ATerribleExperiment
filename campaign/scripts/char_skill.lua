@@ -16,7 +16,7 @@ end
 function updateWindow()
 	local sLabel = label.getValue();
 	local t = DataCommon.skilldata[sLabel];
-	if t and not t.custom then
+	if t then
 		setCustom(false);
 		
 		if t.stat then
@@ -24,8 +24,11 @@ function updateWindow()
 		else
 			statname.setStringValue("");
 		end
-		statname.setReadOnly(true);
-
+		
+		if not t.custom then
+			statname.setReadOnly(true);
+		end
+			
 		if t.sublabeling then
 			sublabel.setVisible(true);
 		end
@@ -82,8 +85,8 @@ function setCustom(state)
 		label.setEnabled(false);
 		label.setLine(false);
 		
-		statname.setStateFrame("hover", nil);
-		statname.setReadOnly(true);
+		statname.setStateFrame("hover", "sheetfocus", 5, 5, 5, 5);
+		statname.setReadOnly(false);
 	end
 	
 	updateMenu();
