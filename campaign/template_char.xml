@@ -759,13 +759,11 @@
 						end
 						return 0;
 					elseif sourcename == "state" then
-						if DataCommon.isPFRPG() then
-							local nodeWin = window.getDatabaseNode();
-							if DB.getValue(nodeWin, "state", 0) == 1 then
-								local nRanks = DB.getValue(nodeWin, "ranks", 0);
-								if nRanks > 0 then
-									return 3;
-								end
+						local nodeWin = window.getDatabaseNode();
+						if DB.getValue(nodeWin, "state", 0) == 1 then
+							local nRanks = DB.getValue(nodeWin, "ranks", 0);
+							if nRanks > 0 then
+								return 2;
 							end
 						end
 						return 0;

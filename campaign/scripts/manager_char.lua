@@ -726,11 +726,7 @@ function updateSkillPoints(nodeChar)
 	local nSpent;
 	for _,vNode in pairs(DB.getChildren(nodeChar, "skilllist")) do
 		nSpent = DB.getValue(vNode, "ranks", 0);
-		if nSpent > 0 then
-			if not bPFMode and DB.getValue(vNode, "state", 0) == 0 then
-				nSpent = nSpent * 2;
-			end
-			
+		if nSpent > 0 then			
 			nSpentTotal = nSpentTotal + nSpent;
 		end
 	end
