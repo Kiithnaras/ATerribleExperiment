@@ -396,7 +396,7 @@ skilldata = {
 			stat = "intelligence"
 		},
 	["Concentration"] = {
-			stat = "charisma",
+			stat = "wisdom",
 			-- 'custom' set to true will allow the skill used for
 			-- bonuses to cycle instead of being static. It will
 			-- start with charisma.
@@ -418,10 +418,7 @@ skilldata = {
 		},
 	["Fly"] = {
 			stat = "dexterity",
-			armorcheckmultiplier = 2
-		},
-	["Investigate"] = {
-			stat = "intelligence"
+			armorcheckmultiplier = 4
 		},
 	["Handle Animal"] = {
 			stat = "charisma",
@@ -432,10 +429,6 @@ skilldata = {
 		},
 	["Intimidate"] = {
 			stat = "charisma"
-		},
-	["Jump"] = {
-			stat = "strength",
-			armorcheckmultiplier = 1
 		},
 	["Knowledge"] = {
 			sublabeling = true,
@@ -474,7 +467,8 @@ skilldata = {
 		},
 	["Spellcraft"] = {
 			stat = "intelligence",
-			trainedonly = 1
+			trainedonly = 1,
+			custom = true
 		},
 	["Stealth"] = {
 			stat = "dexterity",
