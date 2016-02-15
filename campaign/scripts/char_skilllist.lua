@@ -10,14 +10,22 @@ function onInit()
 	CharManager.updateSkillPoints(window.getDatabaseNode());
 
 	local nodeChar = getDatabaseNode().getParent();
-	local sChar = nodeChar.getNodeName();
-	DB.addHandler(sChar ..  ".abilities", "onChildUpdate", onStatUpdate);
+	DB.addHandler(DB.getPath(nodeChar, "abilities"), "onChildUpdate", onStatUpdate);
+	
+	DB.addHandler(DB.getPath(nodeChar, "skilllist"), "onChildAdded", onSkillDataUpdate);
+	DB.addHandler(DB.getPath(nodeChar, "skilllist"), "onChildDeleted", onSkillDataUpdate);
 end
 
 function onClose()
 	local nodeChar = getDatabaseNode().getParent();
-	local sChar = nodeChar.getNodeName();
-	DB.removeHandler(sChar ..  ".abilities", "onChildUpdate", onStatUpdate);
+	DB.removeHandler(DB.getPath(nodeChar, "abilities"), "onChildUpdate", onStatUpdate);
+	
+	DB.removeHandler(DB.getPath(nodeChar, "skilllist"), "onChildAdded", onSkillDataUpdate);
+	DB.removeHandler(DB.getPath(nodeChar, "skilllist"), "onChildDeleted", onSkillDataUpdate);
+end
+
+function onSkillDataUpdate()
+	CharManager.updateSkillPoints(window.getDatabaseNode());
 end
 
 function onListChanged()
@@ -39,10 +47,10 @@ function update()
 		
 		if bAllowDelete then
 			w.idelete_spacer.setVisible(false);
-			w.idelete.setVisible(bEditMode);
+			w.idelete.setVisibility(bEditMode);
 		else
 			w.idelete_spacer.setVisible(bEditMode);
-			w.idelete.setVisible(false);
+			w.idelete.setVisibility(false);
 		end
 	end
 end

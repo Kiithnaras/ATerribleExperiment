@@ -36,6 +36,7 @@ function action()
 		sSkillLookup = sSkill;
 	end
 	
+	ModifierStack.lock();
 	for _,v in pairs(aParty) do
 		local nValue, bUntrained = CharManager.getSkillValue(v, sSkillLookup, sSubSkill);
 		if bUntrained then
@@ -48,9 +49,10 @@ function action()
 				Comm.deliverChatMessage(rMessage);
 			end
 		else
-			ActionSkill.performRoll(nil, v, sSkill, nValue, nil, nTargetDC, bSecretRoll);
+			ActionSkill.performRoll(nil, v, sSkill, nValue, nil, nTargetDC, bSecretRoll, nil, nMod);
 		end
 	end
+	ModifierStack.unlock(true);
 	
 	return true;
 end

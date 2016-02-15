@@ -7,10 +7,6 @@ local aFieldMap = {};
 
 function onInit()
 	if User.isHost() then
-		for _,v in pairs(DB.getChildren("partysheet.encounters")) do	
-			linkEncounterFields(v);
-		end
-
 		DB.addHandler("charsheet.*.classes", "onChildUpdate", linkPCClasses);
 		DB.addHandler("charsheet.*.skilllist", "onChildUpdate", linkPCSkills);
 		DB.addHandler("charsheet.*.languagelist", "onChildUpdate", linkPCLanguages);
@@ -195,21 +191,6 @@ function linkPCFields(nodePS)
 	linkPCLanguages(nodeChar.getChild("languagelist"));
 end
 
-function linkEncounterFields(nodePSEnc)
-	local sClass, sRecord = DB.getValue(nodePSEnc, "shortcut", "", "");
-	if sRecord == "" then
-		return;
-	end
-	local nodeEnc = DB.findNode(sRecord);
-	if not nodeEnc then
-		return;
-	end
-	
-	PartyManager.linkRecordField(nodeEnc, nodePSEnc, "name", "string");
-	PartyManager.linkRecordField(nodeEnc, nodePSEnc, "level", "number");
-	PartyManager.linkRecordField(nodeEnc, nodePSEnc, "exp", "number", "xp");
-end
-
 --
 -- DROP HANDLING
 --
@@ -218,18 +199,18 @@ function addEncounter(nodeEnc)
 	if not nodeEnc then
 		return;
 	end
-	local sEnc = nodeEnc.getNodeName();
-
-	for _,v in pairs(DB.getChildren("partysheet.encounters")) do
-		local sClass, sRecord = DB.getValue(v, "shortcut", "", "");
-		if sRecord == sEnc then
-			return;
-		end
-	end
 	
 	local nodePSEnc = DB.createChild("partysheet.encounters");
-	DB.setValue(nodePSEnc, "shortcut", "windowreference", "battle", nodeEnc.getNodeName());
-	linkEncounterFields(nodePSEnc);
+	DB.copyNode(nodeEnc, nodePSEnc);
+end
+
+function addQuest(nodeQuest)
+	if not nodeQuest then
+		return;
+	end
+	
+	local nodePSQuest = DB.createChild("partysheet.quests");
+	DB.copyNode(nodeQuest, nodePSQuest);
 end
 
 --
@@ -260,13 +241,13 @@ function awardEncountersToParty(nodeEntry)
 	local nXP = 0;
 	if nodeEntry then
 		if DB.getValue(nodeEntry, "xpawarded", 0) == 0 then
-			nXP = DB.getValue(nodeEntry, "xp", 0);
+			nXP = DB.getValue(nodeEntry, "exp", 0);
 			DB.setValue(nodeEntry, "xpawarded", "number", 1);
 		end
 	else
 		for _,v in pairs(DB.getChildren("partysheet.encounters")) do
 			if DB.getValue(v, "xpawarded", 0) == 0 then
-				nXP = nXP + DB.getValue(v, "xp", 0);
+				nXP = nXP + DB.getValue(v, "exp", 0);
 				DB.setValue(v, "xpawarded", "number", 1);
 			end
 		end

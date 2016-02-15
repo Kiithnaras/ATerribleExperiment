@@ -18,14 +18,12 @@
 		<tooltip field="value" />
 		<script>
 			function onInit()
-				local sNode = getDatabaseNode().getNodeName();
-				DB.addHandler(sNode .. ".locked", "onUpdate", onLockChanged);
 				onLockChanged();
+				DB.addHandler(DB.getPath(getDatabaseNode(), "locked"), "onUpdate", onLockChanged);
 			end
 
 			function onClose()
-				local sNode = getDatabaseNode().getNodeName();
-				DB.removeHandler(sNode .. ".locked", "onUpdate", onLockChanged);
+				DB.removeHandler(DB.getPath(getDatabaseNode(), "locked"), "onUpdate", onLockChanged);
 			end
 
 			function onLockChanged()
@@ -42,18 +40,12 @@
 				<class>ability_header</class>
 			</sub_record_header>
 
-			<stringfield name="description">
-				<anchored>
-					<top parent="header" anchor="bottom" offset="15" />
-					<left offset="35" />
-					<right offset="-40" />
-					<bottom offset="-35" />
-				</anchored>
-				<frame name="groupbox" offset="15,15,20,15" />
-				<font>reference-r</font>
-				<selectioncolor>FFD296</selectioncolor>
+			<frame_record_content name="contentframe" />
+
+			<simplestring name="description">
+				<anchored to="contentframe" position="over" />
 				<multilinespacing>20</multilinespacing>
-			</stringfield>
+			</simplestring>
 			<scrollbar>
 				<anchored to="description" position="right" offset="-5,-5" />
 				<target>description</target>
@@ -89,12 +81,9 @@
 				</anchored>
 			</string_record_name>
 
-			<icon_record_locked name="hardlocked">
-				<bounds>-25,5,20,20</bounds>
-			</icon_record_locked>
-			<button_record_locked name="locked">
-				<bounds>-25,5,20,20</bounds>
-			</button_record_locked>
+			<anchor_record_header_right />
+			<icon_record_locked />
+			<button_record_locked />
 		</sheetdata>
 	</windowclass>
 </root>

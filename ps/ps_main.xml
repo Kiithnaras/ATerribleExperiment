@@ -9,28 +9,25 @@
 	<windowclass name="ps_main">
 		<script file="ps/scripts/ps_main.lua" />
 		<sheetdata>
-			<genericcontrol name="sheetframe">
-				<bounds>10,35,-20,-15</bounds>
-				<disabled />
-			</genericcontrol>
+			<anchor_partysheet_main_header />
 			
 			<label name="namelabel">
-				<anchored to="sheetframe" position="insidetopleft" offset="70,8" width="180" />
+				<anchored to="headeranchor" position="insidetopleft" offset="55,0" width="180" />
 				<static textres="ps_label_name" />
 				<center />
 			</label>
 			<label name="classlabel">
-				<anchored to="sheetframe" position="insidetopleft" offset="70,25" width="180" />
+				<anchored to="headeranchor" position="insidetopleft" offset="55,17" width="180" />
 				<static textres="ps_label_class" />
 				<center />
 			</label>			
 			<label name="hplabel">
-				<anchored to="sheetframe" position="insidetopleft" offset="250,8" width="30" />
+				<anchored to="headeranchor" position="insidetopleft" offset="235,0" width="30" />
 				<static textres="hp" />
 				<center />
 			</label>
 			<label name="abilitieslabel">
-				<anchored to="sheetframe" position="insidetopleft" offset="280,8" width="190" />
+				<anchored to="headeranchor" position="insidetopleft" offset="265,0" width="190" />
 				<static textres="ps_label_abilities" />
 				<center />
 			</label>
@@ -112,40 +109,19 @@
 				<center />
 			</label>
 
-			<list_psmain name="list">
-				<anchored to="sheetframe">
-					<top offset="55" />
-					<left offset="15" />
-					<right offset="-25" />
-					<bottom offset="-50" />
-				</anchored>
-				<frame name="groupbox" offset="10,10,20,10" />
-				<datasource>.partyinformation</datasource>
-				<class>ps_mainitem</class>
-				<sortby><control>name</control></sortby>
-				<allowdelete />
-				<empty font="list-empty" textres="ps_emptylist" />
-				<script>
-					function onListChanged()
-						super.onListChanged();
-						for _,v in pairs(getWindows()) do
-							if v.hpbar then
-								v.hpbar.update();
-							end
-						end
-					end
-				</script>
-			</list_psmain>
-			<scrollbar_list />
-
 			<button_iedit name="list_iedit">
-				<anchored to="list" position="aboveright" offset="10,25" />
+				<anchored to="headeranchor" position="insidebottomright" offset="10,10" />
 				<target>list</target>
 				<gmvisibleonly />
 			</button_iedit>
 			
+			<list_psmain />
+			<scrollbar_list />
+
+			<anchor_partysheet_main_footer />
+			
 			<genericcontrol name="leftanchor">
-				<anchored to="sheetframe" position="insidebottomleft" offset="5,10" height="20" width="0" />
+				<anchored to="footeranchor" position="insidetopleft" width="0" height="20" />
 				<gmvisibleonly />
 			</genericcontrol>
 			
@@ -178,14 +154,9 @@
 				<static textres="ps_label_groupability" />
 				<gmvisibleonly />
 			</label>
-			<string_dropdown name="abilityselected">
+			<combobox name="abilityselected">
 				<anchored to="abilitylabel" position="righthigh" offset="10,0" width="90" height="20" />
 				<default textres="ps_default_groupability" />
-				<gmvisibleonly />
-			</string_dropdown>
-			<dropdown name="abilitydropdown">
-				<target>abilityselected</target>
-				<position>0,4</position>
 				<gmvisibleonly />
 				<script>
 					function onInit()
@@ -193,7 +164,7 @@
 						addItems(DataCommon.psabilitydata);
 					end
 				</script>
-			</dropdown>
+			</combobox>
 			<label name="abilitydclabel">
 				<anchored to="abilityselected" position="righthigh" offset="10,0" />
 				<static textres="dc" />
@@ -219,14 +190,9 @@
 				<static textres="save" />
 				<gmvisibleonly />
 			</label>
-			<string_dropdown name="saveselected">
+			<combobox name="saveselected">
 				<anchored to="savelabel" position="righthigh" offset="10,0" width="75" height="20" />
 				<default textres="ps_default_groupsave" />
-				<gmvisibleonly />
-			</string_dropdown>
-			<dropdown name="savedropdown">
-				<target>saveselected</target>
-				<position>0,4</position>
 				<gmvisibleonly />
 				<script>
 					function onInit()
@@ -234,7 +200,7 @@
 						addItems(DataCommon.pssavedata);
 					end
 				</script>
-			</dropdown>
+			</combobox>
 			<label name="savedclabel">
 				<anchored to="saveselected" position="righthigh" offset="10,0" />
 				<static textres="dc" />

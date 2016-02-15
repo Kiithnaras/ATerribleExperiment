@@ -25,13 +25,14 @@ actions = {
 	-- PF SPECIFIC
 	["concentration"] = { bUseModStack = true },
 	-- TRIGGERED
-	["critconfirm"] = { },
+	["critconfirm"] = { sIcon = "action_attack" },
 	["misschance"] = { },
 	["stabilization"] = { },
 };
 
 targetactions = {
 	"attack",
+	"critconfirm",
 	"grapple",
 	"damage",
 	"spdamage",
@@ -43,12 +44,49 @@ targetactions = {
 };
 
 currencies = { "PP", "GP", "SP", "CP" };
+currencyDefault = "GP";
+
+function onInit()
+	-- Languages
+	languages = {
+		[Interface.getString("language_value_abyssal")] = "Infernal",
+		[Interface.getString("language_value_aquan")] = "Elven",
+		[Interface.getString("language_value_auran")] = "Draconic",
+		[Interface.getString("language_value_celestial")] = "Celestial",
+		[Interface.getString("language_value_common")] = "",
+		[Interface.getString("language_value_draconic")] = "Draconic",
+		[Interface.getString("language_value_druidic")] = "Elven",
+		[Interface.getString("language_value_dwarven")] = "Dwarven",
+		[Interface.getString("language_value_elven")] = "Elven",
+		[Interface.getString("language_value_giant")] = "Dwarven",
+		[Interface.getString("language_value_gnoll")] = "",
+		[Interface.getString("language_value_gnome")] = "Dwarven",
+		[Interface.getString("language_value_goblin")] = "Dwarven",
+		[Interface.getString("language_value_ignan")] = "Draconic",
+		[Interface.getString("language_value_infernal")] = "Infernal",
+		[Interface.getString("language_value_orc")] = "Dwarven",
+		[Interface.getString("language_value_sylvan")] = "Elven",
+		[Interface.getString("language_value_terran")] = "Dwarven",
+		[Interface.getString("language_value_undercommon")] = "Elven",
+	}
+	languagefonts = {
+		[Interface.getString("language_value_celestial")] = "Celestial",
+		[Interface.getString("language_value_draconic")] = "Draconic",
+		[Interface.getString("language_value_dwarven")] = "Dwarven",
+		[Interface.getString("language_value_elven")] = "Elven",
+		[Interface.getString("language_value_infernal")] = "Infernal",
+	}
+
+	if DataCommon.isPFRPG() then
+		languages[Interface.getString("language_value_aklo")] = "";
+	end
+end
 
 function getCharSelectDetailHost(nodeChar)
 	local sValue = "";
 	local nLevel = DB.getValue(nodeChar, "level", 0);
 	if nLevel > 0 then
-		sValue = "Level " .. nLevel;
+		sValue = "Level " .. math.floor(nLevel*100)*0.01;
 	end
 	return sValue;
 end
@@ -58,7 +96,7 @@ function requestCharSelectDetailClient()
 end
 
 function receiveCharSelectDetailClient(vDetails)
-	return vDetails[1], "Level " .. vDetails[2];
+	return vDetails[1], "Level " .. math.floor(vDetails[2]*100)*0.01;
 end
 
 function getCharSelectDetailLocal(nodeLocal)
@@ -95,7 +133,7 @@ function getStabilizationRoll(rActor)
 	
 	rRoll.aDice = { "d6","d6","d6" };
 	rRoll.nMod = ActorManager2.getAbilityBonus(rActor, "constitution");
-	
+
 	local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
 	local nHP = 0;
 	local nWounds = 0;
@@ -139,54 +177,33 @@ function getStabilizationResult(rRoll)
 end
 
 function performConcentrationCheck(draginfo, rActor, nodeSpellClass)
-	if DataCommon.isPFRPG() then
-		local rRoll = { sType = "concentration", sDesc = "[CONCENTRATION]", aDice = { "d20" } };
-	
-		local sAbility = DB.getValue(nodeSpellClass, "dc.ability", "");
-		local sAbilityEffect = DataCommon.ability_ltos[sAbility];
-		if sAbilityEffect then
-			rRoll.sDesc = rRoll.sDesc .. " [MOD:" .. sAbilityEffect .. "]";
-		end
+	local sSkill = "Concentration";
+	local nValue = 0;
 
-		local nCL = DB.getValue(nodeSpellClass, "cl", 0);
-		rRoll.nMod = nCL + ActorManager2.getAbilityBonus(rActor, sAbility);
-		
-		local nCCMisc = DB.getValue(nodeSpellClass, "cc.misc", 0);
-		if nCCMisc ~= 0 then
-			rRoll.nMod = rRoll.nMod + nCCMisc;
-			rRoll.sDesc = string.format("%s (Spell Class %+d)", rRoll.sDesc, nCCMisc);
-		end
-		
-		ActionsManager.performAction(draginfo, rActor, rRoll);
+	local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
+	if sType == "pc" then
+		nValue = CharManager.getSkillValue(rActor, sSkill);
 	else
-		local sSkill = "Concentration";
-		local nValue = 0;
-
-		local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
-		if sType == "pc" then
-			nValue = CharManager.getSkillValue(rActor, sSkill);
-		else
-			local sSkills = DB.getValue(nodeActor, "skills", "");
-			local aSkillClauses = StringManager.split(sSkills, ",;\r", true);
-			for i = 1, #aSkillClauses do
-				local nStarts, nEnds, sLabel, sSign, sMod = string.find(aSkillClauses[i], "([%w%s\(\)]*[%w\(\)]+)%s*([%+%-–]?)(%d*)");
-				if nStarts and string.lower(sSkill) == string.lower(sLabel) and sMod ~= "" then
-					nValue = tonumber(sMod) or 0;
-					if sSign == "-" or sSign == "–" then
-						nValue = 0 - nValue;
-					end
-					break;
+		local sSkills = DB.getValue(nodeActor, "skills", "");
+		local aSkillClauses = StringManager.split(sSkills, ",;\r", true);
+		for i = 1, #aSkillClauses do
+			local nStarts, nEnds, sLabel, sSign, sMod = string.find(aSkillClauses[i], "([%w%s\(\)]*[%w\(\)]+)%s*([%+%-–]?)(%d*)");
+			if nStarts and string.lower(sSkill) == string.lower(sLabel) and sMod ~= "" then
+				nValue = tonumber(sMod) or 0;
+				if sSign == "-" or sSign == "–" then
+					nValue = 0 - nValue;
 				end
+				break;
 			end
 		end
-		
-		local sExtra = nil;
-		local nCCMisc = DB.getValue(nodeSpellClass, "cc.misc", 0);
-		if nCCMisc ~= 0 then
-			nValue = nValue + nCCMisc;
-			sExtra = string.format("(Spell Class %+d)", nCCMisc);
-		end
-		
-		ActionSkill.performRoll(draginfo, rActor, sSkill, nValue, nil, nil, false, sExtra);
 	end
+	
+	local sExtra = nil;
+	local nCCMisc = DB.getValue(nodeSpellClass, "cc.misc", 0);
+	if nCCMisc ~= 0 then
+		nValue = nValue + nCCMisc;
+		sExtra = string.format("(Spell Class %+d)", nCCMisc);
+	end
+	
+	ActionSkill.performRoll(draginfo, rActor, sSkill, nValue, nil, nil, false, sExtra);
 end

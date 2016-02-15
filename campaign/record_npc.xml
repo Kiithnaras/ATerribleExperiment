@@ -28,15 +28,11 @@
 				<class>npc_header</class>
 			</sub_record_header>
 
-			<genericcontrol name="contentframe">
+			<frame_record_content_tabbed name="contentframe">
 				<anchored>
-					<top parent="header" anchor="bottom" offset="15" />
-					<left offset="30" />
-					<right offset="-45" />
 					<bottom offset="-65" />
 				</anchored>
-				<frame name="groupbox" offset="20,17,24,17" />
-			</genericcontrol>
+			</frame_record_content_tabbed>
 
 			<subwindow_record name="main_creature">
 				<class>npc_combat_creature</class>
@@ -328,7 +324,7 @@
 			</number_npc_save>
 			<label_fieldtop name="willsave_label">
 				<anchored to="willsave" />
-				<static textres="will" />
+				<static textres="will_long" />
 			</label_fieldtop>
 
 			<label_column name="specialqualities_label">

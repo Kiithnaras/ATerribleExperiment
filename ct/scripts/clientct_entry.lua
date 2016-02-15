@@ -6,23 +6,21 @@
 function onInit()
 	onFactionChanged();
 	onHealthChanged();
-	
-	DB.addHandler(getDatabaseNode().getNodeName() .. ".effects", "onChildUpdate", onEffectsChanged);
-	onEffectsChanged();
-end
-
-function onClose()
-	DB.removeHandler(getDatabaseNode().getNodeName() .. ".effects", "onChildUpdate", onEffectsChanged);
 end
 
 function updateDisplay()
+	local sFaction = friendfoe.getStringValue();
+
+	local sOptCTSI = OptionsManager.getOption("CTSI");
+	local bShowInit = ((sOptCTSI == "friend") and (sFaction == "friend")) or (sOptCTSI == "on");
+	initresult.setVisible(bShowInit);
+	
 	if active.getValue() == 1 then
 		name.setFont("sheetlabel");
 
 		active_spacer_top.setVisible(true);
 		active_spacer_bottom.setVisible(true);
 		
-		local sFaction = friendfoe.getStringValue();
 		if sFaction == "friend" then
 			setFrame("ctentrybox_friend_active");
 		elseif sFaction == "neutral" then
@@ -40,7 +38,6 @@ function updateDisplay()
 		active_spacer_top.setVisible(false);
 		active_spacer_bottom.setVisible(false);
 		
-		local sFaction = friendfoe.getStringValue();
 		if sFaction == "friend" then
 			setFrame("ctentrybox_friend");
 		elseif sFaction == "neutral" then
@@ -62,10 +59,6 @@ function onFactionChanged()
 	updateDisplay();
 end
 
-function onTypeChanged()
-	updateHealthDisplay();
-end
-
 function onHealthChanged()
 	local sColor = ActorManager2.getWoundColor("ct", getDatabaseNode());
 	
@@ -74,43 +67,34 @@ function onHealthChanged()
 	status.setColor(sColor);
 end
 
-function onEffectsChanged()
-	local affectedby = EffectManager.getEffectsString(getDatabaseNode());
-	if affectedby == "" then
-		effects_label.setVisible(false);
-		effects_str.setVisible(false);
-	else
-		effects_label.setVisible(true);
-		effects_str.setVisible(true);
-	end
-	effects_str.setValue(affectedby);
-end
-
 function updateHealthDisplay()
-	local sOption = OptionsManager.getOption("SHPH");
-	
-	local bShowHealth = false;
-	if sOption == "all" then
-		bShowHealth = true;
-	elseif sOption == "pc" then
-		if friendfoe.getStringValue() == "friend" then
-			bShowHealth = true;
-		end
+	local sOption;
+	if friendfoe.getStringValue() == "friend" then
+		sOption = OptionsManager.getOption("SHPC");
+	else
+		sOption = OptionsManager.getOption("SHNPC");
 	end
 	
-	if bShowHealth then
+	if sOption == "detailed" then
 		hp.setVisible(true);
 		hptemp.setVisible(true);
 		nonlethal.setVisible(true);
 		wounds.setVisible(true);
 
 		status.setVisible(false);
-	else
+	elseif sOption == "status" then
 		hp.setVisible(false);
 		hptemp.setVisible(false);
 		nonlethal.setVisible(false);
 		wounds.setVisible(false);
 
 		status.setVisible(true);
+	else
+		hp.setVisible(false);
+		hptemp.setVisible(false);
+		nonlethal.setVisible(false);
+		wounds.setVisible(false);
+
+		status.setVisible(false);
 	end
 end

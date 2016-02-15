@@ -79,16 +79,15 @@
 				<columns width="25" fillwidth="true" />
 			</windowlist>
 
-			<stringfield name="name">
+			<simplestring name="name">
 				<anchored>
 					<top offset="2" />
 					<left parent="hanchor" anchor="right" relation="relative" offset="5" />
 					<right parent="actions" anchor="left" offset="-5" />
 				</anchored>
 				<multilinespacing>20</multilinespacing>
-				<font>sheettext</font>
 				<readonly />
-			</stringfield>
+			</simplestring>
 		</sheetdata>
 	</windowclass>
 	

@@ -22,6 +22,7 @@
 				<class>ref_feat_header</class>
 			</sub_ref_header>
 
+			<frame_ref_content />
 			<sub_ref_content name="content">
 				<class>ref_feat_stats</class>
 			</sub_ref_content>

@@ -45,7 +45,7 @@
 			</frame_char>
 			<label_frametop>
 				<anchored to="appearanceframe" />
-				<static texres="char_label_appearance" />
+				<static textres="char_label_appearance" />
 			</label_frametop>
 			<stringu name="appearance">
 				<anchored to="appearanceframe">

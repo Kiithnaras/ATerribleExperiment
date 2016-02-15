@@ -21,16 +21,43 @@ end
 
 -- NOTE: Lua sort function expects the opposite boolean value compared to built-in FG sorting
 function sortfunc(node1, node2)
-	local nValue1 = DB.getValue(node1, "initresult", 0);
-	local nValue2 = DB.getValue(node2, "initresult", 0);
-	if nValue1 ~= nValue2 then
-		return nValue1 > nValue2;
-	end
+	local bHost = User.isHost();
+	local sOptCTSI = OptionsManager.getOption("CTSI");
 	
-	nValue1 = DB.getValue(node1, "init", 0);
-	nValue2 = DB.getValue(node2, "init", 0);
-	if nValue1 ~= nValue2 then
-		return nValue1 > nValue2;
+	local sFaction1 = DB.getValue(node1, "friendfoe", "");
+	local sFaction2 = DB.getValue(node2, "friendfoe", "");
+	
+	local bShowInit1 = bHost or ((sOptCTSI == "friend") and (sFaction1 == "friend")) or (sOptCTSI == "on");
+	local bShowInit2 = bHost or ((sOptCTSI == "friend") and (sFaction2 == "friend")) or (sOptCTSI == "on");
+	
+	if bShowInit1 ~= bShowInit2 then
+		if bShowInit1 then
+			return true;
+		elseif bShowInit2 then
+			return false;
+		end
+	else
+		if bShowInit1 then
+			local nValue1 = DB.getValue(node1, "initresult", 0);
+			local nValue2 = DB.getValue(node2, "initresult", 0);
+			if nValue1 ~= nValue2 then
+				return nValue1 > nValue2;
+			end
+			
+			nValue1 = DB.getValue(node1, "init", 0);
+			nValue2 = DB.getValue(node2, "init", 0);
+			if nValue1 ~= nValue2 then
+				return nValue1 > nValue2;
+			end
+		else
+			if sFaction1 ~= sFaction2 then
+				if sFaction1 == "friend" then
+					return true;
+				elseif sFaction2 == "friend" then
+					return false;
+				end
+			end
+		end
 	end
 	
 	local sValue1 = DB.getValue(node1, "name", "");
@@ -85,15 +112,15 @@ function onDrop(rSource, rTarget, draginfo)
 	local sDragType = draginfo.getType();
 
 	-- Effect targeting
-	if sDragType == "targeting" then
+	if sDragType == "effect_targeting" then
 		if User.isHost() then
-			onTargetingDrop(rSource, rTarget, draginfo);
+			onEffectTargetingDrop(rSource, rTarget, draginfo);
 			return true;
 		end
 	end
 end
 
-function onTargetingDrop(rSource, rTarget, draginfo)
+function onEffectTargetingDrop(rSource, rTarget, draginfo)
 	local sTargetCT = ActorManager.getCTNodeName(rTarget);
 	if sTargetCT ~= "" then
 		local sRefClass, sEffectNode = draginfo.getShortcutData();
@@ -129,10 +156,12 @@ function addNPC(sClass, nodeNPC, sName)
 	-- HP
 	local sOptHRNH = OptionsManager.getOption("HRNH");
 	local nHP = DB.getValue(nodeNPC, "hp", 0);
-	if sOptHRNH == "max" then
-		nHP = StringManager.evalDiceString(DB.getValue(nodeNPC, "hd", ""), true, true);
-	elseif sOptHRNH == "random" then
-		nHP = StringManager.evalDiceString(DB.getValue(nodeNPC, "hd", ""), true);
+
+	local sHD = StringManager.trim(DB.getValue(nodeNPC, "hd", ""));
+	if sOptHRNH == "max" and sHD ~= "" then
+		nHP = StringManager.evalDiceString(sHD, true, true);
+	elseif sOptHRNH == "random" and sHD ~= "" then
+		nHP = StringManager.evalDiceString(sHD, true);
 	end
 	DB.setValue(nodeEntry, "hp", "number", nHP);
 
@@ -210,6 +239,7 @@ function addNPC(sClass, nodeNPC, sName)
 	if not sCreatureType then
 		sCreatureType = sType;
 	end
+	local aTypes = StringManager.split(sCreatureType, " ", true);
 	local aSubTypes = {};
 	if sSubTypes then
 		aSubTypes = StringManager.split(sSubTypes, ",", true);
@@ -226,6 +256,73 @@ function addNPC(sClass, nodeNPC, sName)
 	end
 	if StringManager.contains(aSubTypes, "evil") then
 		table.insert(aAddDamageTypes, "evil");
+	end
+	
+	local bImmuneNonlethal = false;
+	local bImmuneCritical = false;
+	local bImmunePrecision = false;
+	if bPFMode then
+		if StringManager.contains(aTypes, "construct") then
+			table.insert(aEffects, "Construct traits");
+			bImmuneNonlethal = true;
+		elseif StringManager.contains(aTypes, "elemental") then
+			bImmunePrecision = true;
+		elseif StringManager.contains(aTypes, "ooze") then
+			table.insert(aEffects, "Ooze traits");
+			bImmuneCritical = true;
+			bImmunePrecision = true;
+		elseif StringManager.contains(aTypes, "undead") then
+			table.insert(aEffects, "Undead traits");
+			bImmuneNonlethal = true;
+		end
+		
+		if StringManager.contains(aSubTypes, "aeon") then
+			table.insert(aEffects, "Aeon traits");
+			bImmuneCritical = true;
+		end
+		if StringManager.contains(aSubTypes, "elemental") then
+			table.insert(aEffects, "Elemental traits");
+			bImmuneCritical = true;
+		end
+		if StringManager.contains(aSubTypes, "incorporeal") then
+			bImmunePrecision = true;
+		end
+		if StringManager.contains(aSubTypes, "swarm") then
+			table.insert(aEffects, "Swarm traits");
+			bImmuneCritical = true;
+		end
+	else
+		if StringManager.contains(aTypes, "construct") then
+			table.insert(aEffects, "Construct traits");
+			bImmuneNonlethal = true;
+			bImmuneCritical = true;
+		elseif StringManager.contains(aTypes, "elemental") then
+			table.insert(aEffects, "Elemental traits");
+			bImmuneCritical = true;
+		elseif StringManager.contains(aTypes, "ooze") then
+			table.insert(aEffects, "Ooze traits");
+			bImmuneCritical = true;
+		elseif StringManager.contains(aTypes, "plant") then
+			table.insert(aEffects, "Plant traits");
+			bImmuneCritical = true;
+		elseif StringManager.contains(aTypes, "undead") then
+			table.insert(aEffects, "Undead traits");
+			bImmuneNonlethal = true;
+			bImmuneCritical = true;
+		end
+		if StringManager.contains(aSubTypes, "swarm") then
+			table.insert(aEffects, "Swarm traits");
+			bImmuneCritical = true;
+		end
+	end
+	if bImmuneNonlethal then
+		table.insert(aEffects, "IMMUNE: nonlethal");
+	end
+	if bImmuneCritical then
+		table.insert(aEffects, "IMMUNE: critical");
+	end
+	if bImmunePrecision then
+		table.insert(aEffects, "IMMUNE: precision");
 	end
 
 	-- DECODE SPECIAL QUALITIES
@@ -311,6 +408,7 @@ function addNPC(sClass, nodeNPC, sName)
 
 					i = i + 1;
 				end
+				i = i - 1;
 				
 				local sRegenEffect = "REGEN: " .. sRegenAmount;
 				if #aRegenTypes > 0 then
@@ -409,14 +507,6 @@ function addNPC(sClass, nodeNPC, sName)
 		-- TRAITS
 		elseif StringManager.isWord(aSQWords[i], "incorporeal") then
 			table.insert(aEffects, "Incorporeal");
-		elseif StringManager.isWord(aSQWords[i], "traits") then
-			if StringManager.isWord(aSQWords[i-1], "construct") then
-				table.insert(aEffects, "Construct traits");
-			elseif StringManager.isWord(aSQWords[i-1], "undead") then
-				table.insert(aEffects, "Undead traits");
-			elseif StringManager.isWord(aSQWords[i-1], "swarm") then
-				table.insert(aEffects, "Swarm traits");
-			end
 		end
 	
 		-- ITERATE SPECIAL QUALITIES DECODE
@@ -638,6 +728,15 @@ function parseAttackLine(rActor, sLine)
 			-- Look for the right patterns
 			nStarts, nEnds, sAll, sAttackCount, sAttackLabel, sAttackModifier, sAttackType, nDamageStart, sDamage, nDamageEnd 
 					= string.find(sAND, '((%+?%d*) ?([%w%s,%[%]%(%)%+%-]*) ([%+%-%d][%+%-%d/]+)([^%(]*)%(()([^%)]*)()%))');
+			if not nStarts then
+				nStarts, nEnds, sAll, sAttackLabel, nDamageStart, sDamage, nDamageEnd 
+						= sAND:find('(([%w%s,%[%]%(%)%+%-]*)%(()([^%)]*)()%))');
+				if nStarts then
+					sAttackCount = "";
+					sAttackModifier = "+0";
+					sAttackType = "";
+				end
+			end
 			
 			-- Make sure we got a match
 			if nStarts then
@@ -720,7 +819,7 @@ function parseAttackLine(rActor, sLine)
 
 				rAttack.label = sAttackLabel;
 				rAttack.count = nAttackCount;
-				rAttack.modifier = sAttackModifier;
+				rAttack.modifier = sAttackModifier or 0;
 				
 				rDamage.label = sAttackLabel;
 				
@@ -739,14 +838,10 @@ function parseAttackLine(rActor, sLine)
 					rAttack.range = "R";
 					rDamage.range = "R";
 					rAttack.stat = "dexterity";
-					rDamage.stat = "strength";
-					rDamage.statmult = 0;
 				else
 					rAttack.range = "M";
 					rDamage.range = "M";
 					rAttack.stat = "strength";
-					rDamage.stat = "strength";
-					rDamage.statmult = 1;
 				end
 
 				-- Determine critical information
@@ -815,6 +910,10 @@ function parseAttackLine(rActor, sLine)
 								rDamageClause.mult = 1;
 							end
 							rDamageClause.mult = tonumber(sCrit) or rDamageClause.mult;
+							
+							if not bRanged then
+								rDamageClause.stat = "strength";
+							end
 
 							local aDamageType = ActionDamage.getDamageTypesFromString(table.concat(aWordType, ","));
 							if #aDamageType == 0 then

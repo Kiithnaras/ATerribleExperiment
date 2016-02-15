@@ -51,10 +51,10 @@ function onHoverUpdate(x, y)
 	
 	for i = 1, #rDamageRolls do
 		if rDamageRolls[i].startpos < nMouseIndex and rDamageRolls[i].endpos > nMouseIndex then
+			hoverDamage = i;			
 			setCursorPosition(rDamageRolls[i].startpos);
 			setSelectionPosition(rDamageRolls[i].endpos);
 
-			hoverDamage = i;			
 			setHoverCursor("hand");
 			return;
 		end
@@ -65,10 +65,10 @@ function onHoverUpdate(x, y)
 		local nLast = rAttackCombos[i][#(rAttackCombos[i])];
 		
 		if rAttackRolls[nFirst].startpos < nMouseIndex and rAttackRolls[nLast].endpos > nMouseIndex then
+			hoverAttack = i;
 			setCursorPosition(rAttackRolls[nFirst].startpos);
 			setSelectionPosition(rAttackRolls[nLast].endpos);
 
-			hoverAttack = i;
 			setHoverCursor("hand");
 			return;
 		end

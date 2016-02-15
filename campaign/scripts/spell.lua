@@ -43,7 +43,7 @@ function update(bEditMode)
 		return;
 	end
 	
-	idelete.setVisible(bEditMode);
+	idelete.setVisibility(bEditMode);
 end
 
 function onDisplayChanged()
@@ -61,10 +61,6 @@ function onDisplayChanged()
 		header.subwindow.actionsmini.setVisible(false);
 	end
 end
-
-function getActorType()
-	return windowlist.window.getActorType();
-end	
 
 function onHover(bOver)
 	if minisheet then
@@ -137,35 +133,31 @@ end
 function activatePower()
 	local nodeSpell = getDatabaseNode();
 	if nodeSpell then
-		ChatManager.Message(getDescription(), true, ActorManager.getActor(getActorType(), nodeSpell.getChild(".......")));
+		ChatManager.Message(getDescription(), true, ActorManager.getActor("", nodeSpell.getChild(".......")));
 	end
 end
 
 function usePower()
 	local nodeSpell = getDatabaseNode();
 	local nodeSpellClass = nodeSpell.getChild(".....");
+	local rActor = ActorManager.getActor("", nodeSpell.getChild("......."))
 
-	local sCasterType = DB.getValue(nodeSpellClass, "castertype", "");
-	if sCasterType == "points" then
+	local sMessage;
+	if DB.getValue(nodeSpellClass, "castertype", "") == "points" then
 		local nPP = DB.getValue(nodeSpell, ".....points", 0);
 		local nPPUsed = DB.getValue(nodeSpell, ".....pointsused", 0);
 		local nCost = DB.getValue(nodeSpell, "cost", 0);
 		
-		local sMessage = DB.getValue(nodeSpell, "name", "") .. " [" .. nCost .. " PP]";
+		sMessage = DB.getValue(nodeSpell, "name", "") .. " [" .. nCost .. " PP]";
 		if (nPP - nPPUsed) < nCost then
 			sMessage = sMessage .. " [INSUFFICIENT PP AVAILABLE]";
 		else
 			nPPUsed = nPPUsed + nCost;
 			DB.setValue(nodeSpell, ".....pointsused", "number", nPPUsed);
 		end
-
-		local sActorType = getActorType();
-		ChatManager.Message(sMessage, (sActorType == "pc"), ActorManager.getActor(sActorType, nodeSpell.getChild(".......")));
-		
 	else
-		local sName = DB.getValue(nodeSpell, "name", "");
-		
-		local sActorType = getActorType();
-		ChatManager.Message(sName, (sActorType == "pc"), ActorManager.getActor(sActorType, nodeSpell.getChild(".......")));
+		sMessage = DB.getValue(nodeSpell, "name", "");
 	end
+
+	ChatManager.Message(sMessage, ActorManager.isPC(rActor), rActor);
 end

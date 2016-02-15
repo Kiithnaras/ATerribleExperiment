@@ -7,20 +7,20 @@ function onInit()
 	registerMenuItem(Interface.getString("menu_addweapon"), "insert", 3);
 	registerMenuItem(Interface.getString("menu_addspellclass"), "insert", 5);
 	
-	local sNode = getDatabaseNode().getNodeName()
-	DB.addHandler(sNode .. ".abilities", "onChildUpdate", updateAbility);
 	updateAbility();
-	
-	DB.addHandler(sNode .. ".weaponlist", "onChildUpdate", update);
-	DB.addHandler(sNode .. ".spellset", "onChildUpdate", update);
 	update();
+
+	local node = getDatabaseNode();
+	DB.addHandler(DB.getPath(node, "abilities"), "onChildUpdate", updateAbility);
+	DB.addHandler(DB.getPath(node, "weaponlist"), "onChildUpdate", updateAbility);
+	DB.addHandler(DB.getPath(node, "spellset"), "onChildUpdate", updateAbility);
 end
 
 function onClose()
-	local sNode = getDatabaseNode().getNodeName()
-	DB.removeHandler(sNode .. ".abilities", "onChildUpdate", updateAbility);
-	DB.removeHandler(sNode .. ".weaponlist", "onChildUpdate", update);
-	DB.removeHandler(sNode .. ".spellset", "onChildUpdate", update);
+	local node = getDatabaseNode();
+	DB.removeHandler(DB.getPath(node, "abilities"), "onChildUpdate", updateAbility);
+	DB.removeHandler(DB.getPath(node, "weaponlist"), "onChildUpdate", updateAbility);
+	DB.removeHandler(DB.getPath(node, "spellset"), "onChildUpdate", updateAbility);
 end
 
 function onMenuSelection(selection)
@@ -47,10 +47,19 @@ function addWeapon()
 	end
 end
 
+local bUpdateLock = false;
 function updateAbility()
+	if bUpdateLock then
+		return;
+	end
+	bUpdateLock = true;
+	for _,v in pairs(weaponlist.getWindows()) do
+		v.onDataChanged();
+	end
 	for _,v in pairs(spellclasslist.getWindows()) do
 		v.onStatUpdate();
 	end
+	bUpdateLock = false;
 end
 
 function update()

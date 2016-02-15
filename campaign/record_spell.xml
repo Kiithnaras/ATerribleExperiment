@@ -18,163 +18,52 @@
 				<anchored position="insidetopleft" offset="2,2" />
 			</button_spellaction>
 			<label name="castlabel">
-				<anchored to="castbutton" position="righthigh" offset="5,0" width="40" />
+				<anchored to="castbutton" position="righthigh" offset="3,0" />
 				<static textres="spell_label_cast" />
 			</label>
-			
 			<button_spellaction name="attackbutton">
-				<anchored to="castlabel" position="righthigh" offset="100,0" />
+				<anchored to="castlabel" position="righthigh" offset="15,0" />
 				<icon normal="button_action_attack" pressed="button_action_attack_down" />
 				<subroll>atk</subroll>
 			</button_spellaction>
 			<label name="attackviewlabel">
-				<anchored to="attackbutton" position="righthigh" offset="5,0" width="55" />
+				<anchored to="attackbutton" position="righthigh" offset="3,0" />
 				<static textres="spell_label_atk" />
 			</label>
 			<string_spellactionview name="attackview">
-				<anchored to="attackviewlabel" position="righthigh" offset="10,0" width="90" />
+				<anchored to="attackviewlabel" position="righthigh" offset="7,0" width="80" />
 				<subroll>atk</subroll>
 			</string_spellactionview>
-			<button_spellactiontoggle name="toggle_attack">
-				<anchored to="attackview" />
-			</button_spellactiontoggle>
-
 			<button_spellaction name="levelcheckbutton">
-				<anchored to="castbutton">
-					<top anchor="bottom" relation="relative" offset="5" />
-					<left />
-				</anchored>
+				<anchored to="attackview" position="righthigh" offset="15,0" />
 				<subroll>clc</subroll>
 			</button_spellaction>
 			<label name="levelcheckviewlabel">
-				<anchored to="levelcheckbutton" position="righthigh" offset="5,0" width="40" />
+				<anchored to="levelcheckbutton" position="righthigh" offset="3,0" />
 				<static textres="clc" />
 				<tooltip textres="casterlevelcheck" />
 			</label>
 			<string_spellactionview name="levelcheckview">
-				<anchored to="levelcheckviewlabel" position="righthigh" offset="10,0" width="25" />
+				<anchored to="levelcheckviewlabel" position="righthigh" offset="7,0" width="25" />
 				<subroll>clc</subroll>
 			</string_spellactionview>
-			<button_spellactiontoggle name="toggle_levelcheck">
-				<anchored to="levelcheckview" />
-			</button_spellactiontoggle>
-
 			<button_spellaction name="savebutton">
-				<anchored to="levelcheckviewlabel" position="righthigh" offset="100,0" />
+				<anchored to="levelcheckview" position="righthigh" offset="15,0" />
 				<subroll>save</subroll>
 			</button_spellaction>
 			<label name="saveviewlabel">
-				<anchored to="savebutton" position="righthigh" offset="5,0" width="55" />
+				<anchored to="savebutton" position="righthigh" offset="3,0" />
 				<static textres="save" />
 			</label>
 			<string_spellactionview name="saveview">
-				<anchored to="saveviewlabel" position="righthigh" offset="10,0" width="80" />
+				<anchored to="saveviewlabel" position="righthigh" offset="7,0" width="60" />
 				<subroll>save</subroll>
 			</string_spellactionview>
-			<button_spellactiontoggle name="toggle_save">
-				<anchored to="saveview" />
-			</button_spellactiontoggle>
+			<button_poweractioneditor name="castdetail">
+				<anchored to="castbutton" />
+				<editor>power_cast_editor</editor>
+			</button_poweractioneditor>
 
-			<label name="atklabel">
-				<anchored to="castbutton" width="60">
-					<top anchor="bottom" relation="relative" offset="10" />
-					<left />
-				</anchored>
-				<static textres="spell_label_atkdetail" />
-			</label>
-			<button_stringcycler name="atktype">
-				<anchored to="atklabel" position="righthigh" offset="5,0" width="70" />
-				<parameters>
-					<defaultlabelres>spell_label_atktypenone</defaultlabelres>
-					<labelsres>spell_label_atktypemelee|spell_label_atktyperanged|spell_label_atktypemtouch|spell_label_atktypertouch|spell_label_atktypegrapple</labelsres>
-					<values>melee|ranged|mtouch|rtouch|cm</values>
-				</parameters>
-			</button_stringcycler>
-			<label name="atkplus">
-				<anchored to="atktype" position="righthigh" offset="5,0" width="10" />
-				<static>+</static>
-			</label>
-			<basicnumber name="atkmod">
-				<anchored to="atkplus" position="right" offset="5,0" width="25" />
-				<hideonvalue value="0" />
-			</basicnumber>
-			
-			<label name="clclabel">
-				<anchored to="castbutton" width="60">
-					<top anchor="bottom" relation="relative" offset="10" />
-					<left />
-				</anchored>
-				<static textres="spell_label_clcdetail" />
-			</label>
-			<number_linked name="clcbase">
-				<anchored to="clclabel" position="right" offset="5,0" width="25" />
-				<font>sheetnumber</font>
-				<source>
-					<name>.......cl</name>
-					<op>+</op>
-				</source>
-				<source>
-					<name>.......sp</name>
-					<op>+</op>
-				</source>
-			</number_linked>
-			<label name="clcplus">
-				<anchored to="clcbase" position="righthigh" offset="0,0" width="10" />
-				<static>+</static>
-			</label>
-			<basicnumber name="clcmod">
-				<anchored to="clcplus" position="right" offset="5,0" width="25" />
-				<hideonvalue value="0" />
-			</basicnumber>
-			<label name="srlabel">
-				<anchored to="clclabel" position="righthigh" offset="100,0" />
-				<static textres="spell_label_srnotallowed" />
-			</label>
-			<button_checkbox name="srnotallowed">
-				<anchored to="srlabel" position="right" offset="5,0" width="16" />
-			</button_checkbox>
-			
-			<label name="savelabel">
-				<anchored to="castbutton" width="60">
-					<top anchor="bottom" relation="relative" offset="10" />
-					<left />
-				</anchored>
-				<static textres="save" />
-			</label>
-			<button_stringcycler name="savetype">
-				<anchored to="savelabel" position="righthigh" offset="5,0" width="50" />
-				<parameters>
-					<defaultlabelres>spell_label_savetypenone</defaultlabelres>
-					<labelsres>spell_label_savetypefort|spell_label_savetyperef|spell_label_savetypewill</labelsres>
-					<values>fortitude|reflex|will</values>
-				</parameters>
-			</button_stringcycler>
-			<label name="savedclabel">
-				<anchored to="savetype" position="righthigh" offset="8,0" />
-				<static textres="dc" />
-			</label>
-			<number_linked name="savedcbase">
-				<anchored to="savedclabel" position="righthigh" offset="0,0" width="25" height="20" />
-				<font>sheetnumber</font>
-				<source>
-					<name>.......dc.total</name>
-					<op>+</op>
-				</source>
-				<source>
-					<name>.....level</name>
-					<op>+</op>
-				</source>
-			</number_linked>
-			<label name="saveplus">
-				<anchored to="savedcbase" position="righthigh" offset="0,0" width="10" />
-				<font>sheettext</font>
-				<static>+</static>
-			</label>
-			<basicnumber name="savedcmod">
-				<anchored to="saveplus" position="righthigh" offset="5,0" width="25" height="20" />
-				<hideonvalue value="0" />
-			</basicnumber>
-	
 			<!-- DAMAGE -->
 			<button_spellaction name="damagebutton">
 				<anchored position="insidetopleft" offset="2,2" />
@@ -185,148 +74,14 @@
 				<static textres="spell_label_dmg" />
 			</label>
 			<string_spellactionview name="damageview">
-				<anchored to="damagelabel" position="righthigh" offset="10,0" width="260" />
+				<anchored to="damagelabel" position="righthigh" offset="10,0">
+					<right parent="" offset="-40" />
+				</anchored>
 			</string_spellactionview>
-			<button_spellactiontoggle name="toggle_damage">
-				<anchored to="damageview" />
-			</button_spellactiontoggle>
-
-			<label name="dmglabel">
-				<anchored to="damagebutton" width="80">
-					<top anchor="bottom" relation="relative" offset="10" />
-					<left />
-				</anchored>
-				<static textres="spell_label_dmgdetail" />
-			</label>
-			<dice_spell_action name="dmgdice">
-				<anchored to="dmglabel" position="right" offset="5,0" width="50" />
-			</dice_spell_action>
-			<button_stringcycler name="dmgdicemult">
-				<anchored to="dmgdice" position="righthigh" offset="10,0" width="70" />
-				<parameters>
-					<defaultlabelres>dash</defaultlabelres>
-					<labelsres>cl|evencl|oddcl</labelsres>
-					<values>cl|halfcl|oddcl</values>
-				</parameters>
-			</button_stringcycler>
-			<stringcontrol name="dmgdicemultmaxparen">
-				<anchored to="dmgdicemult" position="right" offset="5,0" />
-				<font>sheettext</font>
-				<static>(</static>
-			</stringcontrol>
-			<basicnumber name="dmgdicemultmax">
-				<anchored to="dmgdicemultmaxparen" position="right" offset="5,0" width="25" />
-				<hideonvalue value="0" />
-				<tooltip textres="spell_tooltip_dicemax" />
-			</basicnumber>
-			<stringcontrol name="dmgdicemultmaxparen2">
-				<anchored to="dmgdicemultmax" position="right" offset="5,0" />
-				<font>sheettext</font>
-				<static>)</static>
-			</stringcontrol>
-			<stringcontrol name="dmgplus">
-				<anchored width="10" height="20">
-					<top parent="damagebutton" anchor="bottom" relation="relative" offset="5" />
-					<left parent="dmgdice" />
-				</anchored>
-				<font>sheettext</font>
-				<static>+</static>
-			</stringcontrol>
-			<basicnumber name="dmgstatmult">
-				<anchored to="dmgplus" position="right" offset="3,0" width="25" />
-				<default>1</default>
-				<min>1</min>
-				<hideonvalue value="0" />
-				<tooltip textres="spell_tooltip_abilitymult" />
-			</basicnumber>
-			<stringcontrol name="dmgstatmultx">
-				<anchored to="dmgstatmult" position="right" offset="5,0" />
-				<font>sheettext</font>
-				<static>x</static>
-			</stringcontrol>
-			<cycler_ability name="dmgstat">
-				<anchored to="dmgstatmultx" position="righthigh" offset="5,0" width="70" />
-				<parameters>
-					<defaultlabelres>dash</defaultlabelres>
-					<labelsres>cl|evencl|oddcl|str|dex|con|int|wis|cha</labelsres>
-					<values>cl|halfcl|oddcl|strength|dexterity|constitution|intelligence|wisdom|charisma</values>
-				</parameters>
-			</cycler_ability>
-			<stringcontrol name="dmgmaxparen">
-				<anchored to="dmgstat" position="right" offset="5,0" />
-				<font>sheettext</font>
-				<static>(</static>
-			</stringcontrol>
-			<basicnumber name="dmgmaxstat">
-				<anchored to="dmgmaxparen" position="right" offset="5,0" width="25" />
-				<hideonvalue value="0" />
-				<tooltip textres="spell_tooltip_abilitymax" />
-			</basicnumber>
-			<stringcontrol name="dmgmaxparen2">
-				<anchored to="dmgmaxstat" position="right" offset="5,0" />
-				<font>sheettext</font>
-				<static>)</static>
-			</stringcontrol>
-			<stringcontrol name="dmgplus2">
-				<anchored to="dmgmaxparen2" position="right" offset="5,0" width="10" />
-				<font>sheettext</font>
-				<static>+</static>
-			</stringcontrol>
-			<basicnumber name="dmgmod">
-				<anchored to="dmgplus2" position="right" offset="5,0" width="25" />
-				<hideonvalue value="0" />
-			</basicnumber>
-			
-			<label name="dmgtypelabel">
-				<anchored to="damagebutton" width="80">
-					<top anchor="bottom" relation="relative" offset="10" />
-					<left />
-				</anchored>
-				<static textres="spell_label_dmgtype" />
-			</label>
-			<string_spell name="dmgtype">
-				<anchored to="dmgtypelabel" position="right" offset="5,0" width="120" />
-			</string_spell>
-			<stringcontrol name="dmgspelltype_label">
-				<anchored to="dmgtype" position="right" offset="10,0" />
-				<font>sheettext</font>
-				<static textres="spell_label_dmgspell" />
-			</stringcontrol>
-			<buttonc_checkbox name="dmgspelltype">
-				<anchored to="dmgspelltype_label" position="righthigh" offset="5,0" width="12" height="20"/>
-				<script>
-					function onInit()
-						if DB.getValue(window.getDatabaseNode(), "dmgnotspell", 0) == 1 then
-							setValue(0);
-						else
-							setValue(1);
-						end
-					end
-					
-					function onValueChanged()
-						if getValue() == 0 then
-							DB.setValue(window.getDatabaseNode(), "dmgnotspell", "number", 1);
-						else
-							DB.setValue(window.getDatabaseNode(), "dmgnotspell", "number", 0);
-						end
-					end
-				</script>
-			</buttonc_checkbox>
-			<label name="dmgmetalabel">
-				<anchored to="damagebutton" width="80">
-					<top anchor="bottom" relation="relative" offset="10" />
-					<left />
-				</anchored>
-				<static textres="spell_label_metamagic" />
-			</label>
-			<button_stringcycler name="dmgmeta">
-				<anchored to="dmgmetalabel" position="righthigh" offset="5,0" width="80" />
-				<parameters>
-					<defaultlabelres>dash</defaultlabelres>
-					<labelsres>spell_label_metamagicempower|spell_label_metamagicmaximize</labelsres>
-					<values>empower|maximize</values>
-				</parameters>
-			</button_stringcycler>
+			<button_poweractioneditor name="damagedetail">
+				<anchored to="damagebutton" />
+				<editor>power_damage_editor</editor>
+			</button_poweractioneditor>
 
 			<!-- HEAL -->
 			<button_spellaction name="healbutton">
@@ -338,126 +93,27 @@
 				<static textres="spell_label_heal" />
 			</label>
 			<string_spellactionview name="healview">
-				<anchored to="heallabel" position="righthigh" offset="10,0" width="160" />
+				<anchored to="heallabel" position="righthigh" offset="10,0">
+					<right parent="" offset="-140" />
+				</anchored>
 			</string_spellactionview>
-			<button_spellactiontoggle name="toggle_heal">
-				<anchored to="healview" />
-			</button_spellactiontoggle>
-
 			<label name="healtypelabel">
-				<anchored to="healview" position="righthigh" offset="35,0" />
-				<static textres="spell_label_healtype" />
+				<anchored position="insidetopright" offset="90,2" />
+				<static textres="power_label_healtype" />
 			</label>
 			<button_stringcycler name="healtype">
-				<anchored to="healtypelabel" position="righthigh" offset="10,0" width="40" />
+				<anchored position="insidetopright" offset="40,2" width="40" />
 				<parameters>
-					<defaultlabelres>spell_label_healtypenormal</defaultlabelres>
-					<labelsres>spell_label_healtypetemp</labelsres>
+					<defaultlabelres>power_label_healtypenormal</defaultlabelres>
+					<labelsres>power_label_healtypetemp</labelsres>
 					<values>temp</values>
 				</parameters>
 			</button_stringcycler>
+			<button_poweractioneditor name="healdetail">
+				<anchored to="healbutton" />
+				<editor>power_heal_editor</editor>
+			</button_poweractioneditor>
 
-			<label name="hlabel">
-				<anchored to="healbutton" width="80">
-					<top anchor="bottom" relation="relative" offset="10" />
-					<left />
-				</anchored>
-				<static textres="spell_label_healdetail" />
-			</label>
-			<dice_spell_action name="hdice">
-				<anchored to="hlabel" position="right" offset="5,0" width="50" />
-			</dice_spell_action>
-			<button_stringcycler name="hdicemult">
-				<anchored to="hdice" position="righthigh" offset="10,0" width="70" />
-				<parameters>
-					<defaultlabelres>dash</defaultlabelres>
-					<labelsres>cl|evencl|oddcl</labelsres>
-					<values>cl|halfcl|oddcl</values>
-				</parameters>
-			</button_stringcycler>
-			<stringcontrol name="hdicemultmaxparen">
-				<anchored to="hdicemult" position="right" offset="5,0" />
-				<font>sheettext</font>
-				<static>(</static>
-			</stringcontrol>
-			<basicnumber name="hdicemultmax">
-				<anchored to="hdicemultmaxparen" position="right" offset="5,0" width="25" />
-				<hideonvalue value="0" />
-				<tooltip textres="spell_tooltip_dicemax" />
-			</basicnumber>
-			<stringcontrol name="hdicemultmaxparen2">
-				<anchored to="hdicemultmax" position="right" offset="5,0" />
-				<font>sheettext</font>
-				<static>)</static>
-			</stringcontrol>
-			<stringcontrol name="hplus">
-				<anchored width="10" height="20">
-					<top parent="healbutton" anchor="bottom" relation="relative" offset="5" />
-					<left parent="hdice" />
-				</anchored>
-				<font>sheettext</font>
-				<static>+</static>
-			</stringcontrol>
-			<basicnumber name="hstatmult">
-				<anchored to="hplus" position="right" offset="3,0" width="25" />
-				<default>1</default>
-				<min>1</min>
-				<hideonvalue value="0" />
-				<tooltip textres="spell_tooltip_abilitymult" />
-			</basicnumber>
-			<stringcontrol name="hstatmultx">
-				<anchored to="hstatmult" position="right" offset="5,0" />
-				<font>sheettext</font>
-				<static>x</static>
-			</stringcontrol>
-			<cycler_ability name="hstat">
-				<anchored to="hstatmultx" position="righthigh" offset="5,0" width="70" />
-				<parameters>
-					<defaultlabelres>dash</defaultlabelres>
-					<labelsres>cl|evencl|oddcl|str|dex|con|int|wis|cha</labelsres>
-					<values>cl|halfcl|oddcl|strength|dexterity|constitution|intelligence|wisdom|charisma</values>
-				</parameters>
-			</cycler_ability>
-			<stringcontrol name="hmaxparen">
-				<anchored to="hstat" position="right" offset="5,0" />
-				<font>sheettext</font>
-				<static>(</static>
-			</stringcontrol>
-			<basicnumber name="hmaxstat">
-				<anchored to="hmaxparen" position="right" offset="5,0" width="25" />
-				<hideonvalue value="0" />
-				<tooltip textres="spell_tooltip_abilitymax" />
-			</basicnumber>
-			<stringcontrol name="hmaxparen2">
-				<anchored to="hmaxstat" position="right" offset="5,0" />
-				<font>sheettext</font>
-				<static>)</static>
-			</stringcontrol>
-			<stringcontrol name="hplus2">
-				<anchored to="hmaxparen2" position="right" offset="5,0" width="10" />
-				<font>sheettext</font>
-				<static>+</static>
-			</stringcontrol>
-			<basicnumber name="hmod">
-				<anchored to="hplus2" position="right" offset="5,0" width="25" />
-				<hideonvalue value="0" />
-			</basicnumber>
-			<label name="healmetalabel">
-				<anchored to="healbutton" width="80">
-					<top anchor="bottom" relation="relative" offset="10" />
-					<left />
-				</anchored>
-				<static textres="spell_label_metamagic" />
-			</label>
-			<button_stringcycler name="healmeta">
-				<anchored to="healmetalabel" position="righthigh" offset="5,0" width="80" />
-				<parameters>
-					<defaultlabelres>dash</defaultlabelres>
-					<labelsres>spell_label_metamagicempower|spell_label_metamagicmaximize</labelsres>
-					<values>empower|maximize</values>
-				</parameters>
-			</button_stringcycler>
-			
 			<!-- EFFECT -->
 			<button_spellaction name="effectbutton">
 				<anchored position="insidetopleft" offset="2,2" />
@@ -468,9 +124,9 @@
 				<parameters>
 					<icons>button_toggle_self</icons>
 					<values>self</values>
-					<tooltipsres>spell_tooltip_targetself</tooltipsres>
+					<tooltipsres>power_tooltip_targetself</tooltipsres>
 					<defaulticon>button_toggle_trgt</defaulticon>
-					<defaulttooltipres>spell_tooltip_targetother</defaulttooltipres>
+					<defaulttooltipres>power_tooltip_targetnormal</defaulttooltipres>
 				</parameters>
 			</button_iconcycler>
 			<button_iconcycler name="apply">
@@ -483,34 +139,16 @@
 					<defaulttooltipres>effect_tooltip_applyall</defaulttooltipres>
 				</parameters>
 			</button_iconcycler>
-			
-			<stringcontrol name="durationview">
-				<anchored width="90" height="20">
-					<top offset="5" />
-					<right offset="-20" />
-				</anchored>
-				<frame name="fieldlight" offset="7,5,7,5" />
-				<font>sheettext</font>
-				<center />
-				<nodrag />
-				<readonly />
-			</stringcontrol>
-			<button_spellactiontoggle name="toggle_duration">
-				<anchored to="durationview" />
-			</button_spellactiontoggle>
-			
 			<stringu name="label">
 				<anchored height="20">
 					<top offset="5" />
 					<left parent="apply" anchor="right" offset="6" />
-					<right parent="durationview" anchor="left" offset="-10" />
+					<right offset="-130" />
 				</anchored>
 				<cursor hover="hand" />
 				<script>
 					function action(draginfo)
-						local nodeAction = window.getDatabaseNode();
-						local rActor = ActorManager.getActor(window.getActorType(), nodeAction.getChild("........."));
-						SpellManager.onSpellAction(rActor, nodeAction, draginfo);
+						SpellManager.onSpellAction(draginfo, window.getDatabaseNode());
 					end
 					
 					function onDoubleClick(x, y)
@@ -524,70 +162,20 @@
 					end
 				</script>
 			</stringu>
-
-			<label name="durlabel">
-				<anchored to="effectbutton" width="80">
-					<top anchor="bottom" relation="relative" offset="10" />
-					<left />
+			<simplestringc name="durationview">
+				<anchored width="80" height="20">
+					<top offset="5" />
+					<right offset="-40" />
 				</anchored>
-				<static textres="spell_label_duration" />
-			</label>
-			<basicnumber name="durmult">
-				<anchored to="durlabel" position="right" offset="5,0" width="25" />
-				<hideonvalue value="0" />
-				<tooltip textres="spell_tooltip_durabilitymult" />
-			</basicnumber>
-			<cycler_ability name="durstat">
-				<anchored to="durmult" position="righthigh" offset="10,0" width="70" />
-				<parameters>
-					<defaultlabelres>dash</defaultlabelres>
-					<labelsres>cl|evencl|oddcl|str|dex|con|int|wis|cha</labelsres>
-					<values>cl|halfcl|oddcl|strength|dexterity|constitution|intelligence|wisdom|charisma</values>
-				</parameters>
-			</cycler_ability>
-			<stringcontrol name="dmaxparen">
-				<anchored to="durstat" position="right" offset="5,0" />
-				<font>sheettext</font>
-				<static>(</static>
-			</stringcontrol>
-			<basicnumber name="dmaxstat">
-				<anchored to="dmaxparen" position="right" offset="5,0" width="25" />
-				<hideonvalue value="0" />
-				<tooltip textres="spell_tooltip_durabilitymax" />
-			</basicnumber>
-			<stringcontrol name="dmaxparen2">
-				<anchored to="dmaxstat" position="right" offset="5,0" />
-				<font>sheettext</font>
-				<static>)</static>
-			</stringcontrol>
-			<stringcontrol name="durplus">
-				<anchored to="effectbutton" width="10" height="20">
-					<top anchor="bottom" relation="relative" offset="5" />
-					<left parent="durmult" />
-				</anchored>
-				<font>sheettext</font>
-				<static>+</static>
-			</stringcontrol>
-			<dice_spell_action name="durdice">
-				<anchored to="durplus" position="right" offset="5,0" width="50" />
-			</dice_spell_action>
-			<stringcontrol name="durplus2">
-				<anchored to="durdice" position="right" offset="5,0" width="10" />
-				<font>sheettext</font>
-				<static>+</static>
-			</stringcontrol>
-			<basicnumber name="durmod">
-				<anchored to="durplus2" position="right" offset="5,0" width="25" />
-				<hideonvalue value="0" />
-			</basicnumber>
-			<cycler_ability name="durunit">
-				<anchored to="durmod" position="righthigh" offset="15,0" width="35" />
-				<parameters>
-					<defaultlabelres>effect_label_durunitrnd</defaultlabelres>
-					<labelsres>effect_label_durunitmin|effect_label_durunithr|effect_label_durunitday</labelsres>
-					<values>minute|hour|day</values>
-				</parameters>
-			</cycler_ability>
+				<frame name="fieldlight" offset="7,5,7,5" />
+				<center />
+				<nodrag />
+				<readonly />
+			</simplestringc>
+			<button_poweractioneditor name="effectdetail">
+				<anchored to="label" />
+				<editor>power_effect_editor</editor>
+			</button_poweractioneditor>
 		</sheetdata>
 	</windowclass>
 
@@ -595,7 +183,7 @@
 		<margins control="0,0,0,2" />
 		<script>
 			function onInit()
-				if parentcontrol.window.getActorType() == "npc" then
+				if not ActorManager.isPC(getDatabaseNode().getChild(".......")) then
 					shortdescription.setVisible(false);
 					actionsmini.setVisible(true);
 				end
@@ -758,7 +346,7 @@
 				<anchored>
 					<top parent="header" anchor="bottom" relation="relative" offset="5" />
 					<left offset="10" />
-					<right offset="-10" />
+					<right />
 				</anchored>
 				<noscroll />
 				<datasource>.actions</datasource>

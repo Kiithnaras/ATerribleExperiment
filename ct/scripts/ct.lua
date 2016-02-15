@@ -9,21 +9,45 @@ local enablevisibilitytoggle = true;
 function onInit()
 	Interface.onHotkeyActivated = onHotkey;
 	
-	OptionsManager.registerCallback("WNDC", onOptionWNDCChanged);
-	
 	registerMenuItem(Interface.getString("list_menu_createitem"), "insert", 5);
 
 	onVisibilityToggle();
 	onEntrySectionToggle();
+
+	OptionsManager.registerCallback("WNDC", onOptionWNDCChanged);
+	
+	local node = getDatabaseNode();
+	DB.addHandler(DB.getPath(node, "*.name"), "onUpdate", onNameOrTokenUpdated);
+	DB.addHandler(DB.getPath(node, "*.token"), "onUpdate", onNameOrTokenUpdated);
 end
 
 function onClose()
 	OptionsManager.unregisterCallback("WNDC", onOptionWNDCChanged);
+
+	local node = getDatabaseNode();
+	DB.removeHandler(DB.getPath(node, "*.name"), "onUpdate", onNameOrTokenUpdated);
+	DB.removeHandler(DB.getPath(node, "*.token"), "onUpdate", onNameOrTokenUpdated);
 end
 
 function onOptionWNDCChanged()
 	for _,v in pairs(getWindows()) do
 		v.onHealthChanged();
+	end
+end
+
+function onNameOrTokenUpdated(vNode)
+	for _,w in pairs(getWindows()) do
+		w.target_summary.onTargetsChanged();
+		
+		if w.sub_targeting.subwindow then
+			for _,wTarget in pairs(w.sub_targeting.subwindow.targets.getWindows()) do
+				wTarget.onRefChanged();
+			end
+		end
+		
+		for _,wEffect in pairs(w.effects.getWindows()) do
+			wEffect.target_summary.onTargetsChanged();
+		end
 	end
 end
 
@@ -66,6 +90,17 @@ function toggleVisibility()
 		if visibilityon ~= v.tokenvis.getValue() then
 			v.tokenvis.setValue(visibilityon);
 		end
+	end
+end
+
+function toggleTargeting()
+	if not enableglobaltoggle then
+		return;
+	end
+	
+	local targetingon = window.button_global_targeting.getValue();
+	for _,v in pairs(getWindows()) do
+		v.activatetargeting.setValue(targetingon);
 	end
 end
 
@@ -135,12 +170,16 @@ function onVisibilityToggle()
 end
 
 function onEntrySectionToggle()
+	local anyTargeting = 0;
 	local anyActive = 0;
 	local anyDefensive = 0;
 	local anySpacing = 0;
 	local anyEffects = 0;
 
 	for _,v in pairs(getWindows()) do
+		if v.activatetargeting.getValue() == 1 then
+			anyTargeting = 1;
+		end
 		if v.activatespacing.getValue() == 1 then
 			anySpacing = 1;
 		end
@@ -156,6 +195,7 @@ function onEntrySectionToggle()
 	end
 
 	enableglobaltoggle = false;
+	window.button_global_targeting.setValue(anyTargeting);
 	window.button_global_active.setValue(anyActive);
 	window.button_global_defensive.setValue(anyDefensive);
 	window.button_global_spacing.setValue(anySpacing);

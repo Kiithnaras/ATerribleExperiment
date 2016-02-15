@@ -77,31 +77,26 @@
 		<tooltip field="description" />
 		<nodelete />
 		<sheetdata>
-			<windowtitlebar>
+			<windowtitlebar name="reftitle">
 				<field>description</field>
 			</windowtitlebar>
+			<anchor_reftitle name="contentanchor" />
 
-			<windowlist name="grouplist">
-				<bounds>35,60,-40,-70</bounds>
-				<frame name="groupbox" offset="15,15,20,15" />
+			<list_reftablegroup name="grouplist">
 				<datasource>.groups</datasource>
 				<class>reference_spellgroup</class>
-				<readonly />
-			</windowlist>
+			</list_reftablegroup>
 			<scrollbar_reftablegroup />
 			
 			<filter_reftable name="filter">
-				<bounds>125,-45,-35,20</bounds>
 				<target>grouplist,spelllist</target>
 			</filter_reftable>
-			<button_expand>
-				<bounds>30,-45,20,20</bounds>
+			<button_reftable_expand>
 				<target>grouplist,spelllist</target>
-			</button_expand>
-			<button_collapse>
-				<bounds>60,-45,20,20</bounds>
+			</button_reftable_expand>
+			<button_reftable_collapse>
 				<target>grouplist,spelllist</target>
-			</button_collapse>
+			</button_reftable_collapse>
 			
 			<resize_referencelist />
 			<close_referencelist />
@@ -145,31 +140,26 @@
 		<tooltip field="description" />
 		<nodelete />
 		<sheetdata>
-			<windowtitlebar>
+			<windowtitlebar name="reftitle">
 				<field>description</field>
 			</windowtitlebar>
+			<anchor_reftitle name="contentanchor" />
 
-			<windowlist name="grouplist">
-				<bounds>35,60,-40,-70</bounds>
-				<frame name="groupbox" offset="15,15,20,15" />
+			<list_reftablegroup name="grouplist">
 				<datasource>.schools</datasource>
 				<class>reference_spellschoolitem</class>
-				<readonly />
-			</windowlist>
+			</list_reftablegroup>
 			<scrollbar_reftablegroup />
 			
 			<filter_reftable name="filter">
-				<bounds>125,-45,-35,20</bounds>
 				<target>grouplist,list,spelllist</target>
 			</filter_reftable>
-			<button_expand>
-				<bounds>30,-45,20,20</bounds>
+			<button_reftable_expand>
 				<target>grouplist,list,spelllist</target>
-			</button_expand>
-			<button_collapse>
-				<bounds>60,-45,20,20</bounds>
+			</button_reftable_expand>
+			<button_reftable_collapse>
 				<target>grouplist,list,spelllist</target>
-			</button_collapse>
+			</button_reftable_collapse>
 			
 			<resize_referencelist />
 			<close_referencelist />
@@ -252,31 +242,26 @@
 		<tooltip field="description" />
 		<nodelete />
 		<sheetdata>
-			<windowtitlebar>
+			<windowtitlebar name="reftitle">
 				<field>description</field>
 			</windowtitlebar>
+			<anchor_reftitle name="contentanchor" />
 
-			<windowlist name="grouplist">
-				<bounds>35,60,-40,-70</bounds>
-				<frame name="groupbox" offset="15,15,20,15" />
+			<list_reftablegroup name="grouplist">
 				<datasource>.domains</datasource>
 				<class>reference_domain</class>
-				<readonly />
-			</windowlist>
+			</list_reftablegroup>
 			<scrollbar_reftablegroup />
 			
 			<filter_reftable name="filter">
-				<bounds>125,-45,-35,20</bounds>
 				<target>grouplist,domainspells</target>
 			</filter_reftable>
-			<button_expand>
-				<bounds>30,-45,20,20</bounds>
+			<button_reftable_expand>
 				<target>grouplist,domainspells</target>
-			</button_expand>
-			<button_collapse>
-				<bounds>60,-45,20,20</bounds>
+			</button_reftable_expand>
+			<button_reftable_collapse>
 				<target>grouplist,domainspells</target>
-			</button_collapse>
+			</button_reftable_collapse>
 			
 			<resize_referencelist />
 			<close_referencelist />
@@ -300,6 +285,7 @@
 				<class>spelldesc_header</class>
 			</sub_ref_header>
 
+			<frame_ref_content />
 			<sub_ref_content name="content">
 				<class>spelldesc_stats</class>
 			</sub_ref_content>
@@ -443,6 +429,7 @@
 				<class>spelldesc2_header</class>
 			</sub_ref_header>
 
+			<frame_ref_content />
 			<sub_ref_content name="content">
 				<class>spelldesc2_stats</class>
 			</sub_ref_content>

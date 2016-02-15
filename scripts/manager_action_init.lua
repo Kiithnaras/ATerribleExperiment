@@ -92,7 +92,11 @@ function modRoll(rSource, rTarget, rRoll)
 		if nEffectCount > 0 then
 			bEffects = true;
 			for _,vDie in ipairs(aAddDice) do
-				table.insert(rRoll.aDice, "p" .. string.sub(vDie, 2));
+				if vDie:sub(1,1) == "-" then
+					table.insert(rRoll.aDice, "-p" .. vDie:sub(3));
+				else
+					table.insert(rRoll.aDice, "p" .. vDie:sub(2));
+				end
 			end
 			rRoll.nMod = rRoll.nMod + nAddMod;
 		end

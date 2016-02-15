@@ -33,9 +33,7 @@
 			<bounds>1,1,20,20</bounds>
 			<script>
 				function action(draginfo)
-					local nodeAction = window.getDatabaseNode();
-					local rActor = ActorManager.getActor(window.getActorType(), nodeAction.getChild("........."));
-					SpellManager.onSpellAction(rActor, nodeAction, draginfo);
+					SpellManager.onSpellAction(draginfo, window.getDatabaseNode());
 				end
 				
 				function onButtonPress()
@@ -55,8 +53,7 @@
 			<script>
 				function action(draginfo)
 					local nodeSpellClass = window.getDatabaseNode();
-					local rActor = ActorManager.getActor(window.getActorType(), nodeSpellClass.getChild("..."));
-
+					local rActor = ActorManager.getActor("", nodeSpellClass.getChild("..."));
 					GameSystem.performConcentrationCheck(draginfo, rActor, nodeSpellClass);
 				end
 				
@@ -81,9 +78,7 @@
 						sSubRoll = subroll[1];
 					end
 					
-					local nodeAction = window.getDatabaseNode();
-					local rActor = ActorManager.getActor(window.getActorType(), nodeAction.getChild("........."));
-					SpellManager.onSpellAction(rActor, nodeAction, draginfo, sSubRoll);
+					SpellManager.onSpellAction(draginfo, window.getDatabaseNode(), sSubRoll);
 				end
 
 				function onButtonPress()
@@ -98,10 +93,9 @@
 		</button_roll>
 	</template>
 	<template name="string_spellactionview">
-		<stringcontrol>
+		<simplestringc>
 			<anchored height="20" />
 			<frame name="fieldlight" offset="7,5,7,5" />
-			<font>sheettext</font>
 			<center />
 			<nodrag />
 			<readonly />
@@ -113,9 +107,7 @@
 						sSubRoll = subroll[1];
 					end
 					
-					local nodeAction = window.getDatabaseNode();
-					local rActor = ActorManager.getActor(window.getActorType(), nodeAction.getChild("........."));
-					SpellManager.onSpellAction(rActor, nodeAction, draginfo, sSubRoll);
+					SpellManager.onSpellAction(draginfo, window.getDatabaseNode(), sSubRoll);
 				end
 
 				function onDoubleClick(x, y)
@@ -128,17 +120,19 @@
 					return true;
 				end
 			</script>
-		</stringcontrol>
+		</simplestringc>
 	</template>
-	<template name="button_spellactiontoggle">
+	<template name="button_poweractioneditor">
 		<buttoncontrol>
-			<anchored position="rightlow" offset="4,0" width="15" height="15" />
-			<state icon="expand" />
-			<state icon="expand_down" />
-			<tooltip textres="spell_tooltip_toggle" />
+			<anchored width="20" height="20">
+				<top />
+				<right parent="" offset="-5" />
+			</anchored>
+			<state icon="details" pressed="details_down" />
 			<script>
-				function onValueChanged()
-					window.updateDisplay();
+				function onButtonPress()
+					local w = Interface.openWindow(editor[1], window.getDatabaseNode());
+					w.main.subwindow.name.setValue(DB.getValue(window.getDatabaseNode(), "...name", ""));
 				end
 			</script>
 		</buttoncontrol>

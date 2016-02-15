@@ -12,26 +12,6 @@
 		<topleft rect="0,0,65,72" />
 	</framedef>
 
-	<!-- Headers -->
-	<framedef name="headerblack">
-		<bitmap file="graphics/frames/headerblack.png" />
-		<middle rect="0,0,128,128" />
-	</framedef>
-	<framedef name="headerref">
-		<bitmap file="graphics/frames/headerref.png" />
-		<middle rect="0,0,128,128" />
-	</framedef>
-
-	<!-- Drop down list -->
-	<framedef name="control_white">
-		<bitmap file="graphics/frames/control_white.png"/>
-		<offset>1,1,1,1</offset>
-	</framedef>
-	<framedef name="control_grey">
-		<bitmap file="graphics/frames/control_grey.png"/>
-		<offset>1,1,1,1</offset>
-	</framedef>
-
 	<!-- Utility -->
 	<framedef name="groupbox2">
 		<bitmap file="graphics/frames/groupbox2.png" />
@@ -83,12 +63,6 @@
 	<framedef name="collector">
 		<bitmap file="graphics/frames/collector.png" />
 		<offset>7,7,3,3</offset>
-	</framedef>
-
-	<!-- Party Sheet -->
-	<framedef name="border">
-		<bitmap file="graphics/frames/border.png" />
-		<offset>3,3,3,3</offset>
 	</framedef>
 
 	<!-- Override CoreRPG ruleset graphics -->

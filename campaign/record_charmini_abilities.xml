@@ -50,16 +50,15 @@
 			<number_charskilltotal name="total">
 				<bounds>-35,2,30,20</bounds>
 			</number_charskilltotal>
-			<stringcontrol name="name">
+			<simplestringc name="name">
 				<anchored height="20">
 					<top offset="2" />
 					<left offset="5" />
 					<right offset="-45" />
 				</anchored>
-				<font>sheettext</font>
 				<lineoffset default="on" mergerule="resetandadd">1</lineoffset>
 				<readonly />
-			</stringcontrol>
+			</simplestringc>
 		</sheetdata>
 	</windowclass>
 

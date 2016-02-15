@@ -24,9 +24,11 @@ function action(draginfo)
 	
 	local bSecretRoll = (window.hiderollresults.getValue() == 1);
 	
+	ModifierStack.lock();
 	for _,v in pairs(aParty) do
 		ActionSpell.performSaveRoll(nil, v, sSave, nTargetDC, bSecretRoll)
 	end
+	ModifierStack.unlock(true);
 
 	return true;
 end

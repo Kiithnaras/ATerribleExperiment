@@ -21,16 +21,9 @@
 				<bounds>-41,30,23,22</bounds>
 			</button_charactivate>
 		
-			<tokenfield name="token">
+			<token_char name="token">
 				<bounds>-86,23,40,40</bounds>
-				<empty>token_empty</empty>
-				<tooltip textres="char_tooltip_token" />
-				<script>
-					function onDoubleClick(x, y)
-						CombatManager.openMap(window.getDatabaseNode());
-					end
-				</script>
-			</tokenfield>
+			</token_char>
 			
 			<genericcontrol>
 				<bounds>-137,21,45,45</bounds>

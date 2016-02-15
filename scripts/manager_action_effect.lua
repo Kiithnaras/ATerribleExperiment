@@ -85,7 +85,6 @@ function onEffect(rSource, rTarget, rRoll)
 		rEffect.sSource = nil;
 		rEffect.nInit = nil;
 		rRoll.sDesc = encodeEffectAsText(rEffect);
-		rRoll.nMod = rEffect.nDuration or 0;
 
 		-- Report effect to chat window
 		local rMessage = ActionsManager.createActionMessage(nil, rRoll);
@@ -124,7 +123,7 @@ function onEffect(rSource, rTarget, rRoll)
 		
 		if sSourceCT ~= "" then
 			rEffect.sSource = sSourceCT;
-			rEffect.nInit = DB.getValue(sSourceCT .. ".initresult", 0);
+			rEffect.nInit = DB.getValue(DB.findNode(sSourceCT), "initresult", 0);
 		end
 	end
 	
@@ -133,17 +132,9 @@ function onEffect(rSource, rTarget, rRoll)
 		rEffect.sSource = "";
 	end
 	
-	-- If target is NPC and source is not PC, then effect should be GM only
-	local sTargetType = ActorManager.getType(rTarget);
-	if sTargetType == "npc" then
-		if rSource then
-			local sSourceType = ActorManager.getType(rSource);
-			if sSourceType ~= "pc" then
-				rEffect.nGMOnly = 1;
-			end
-		else
-			rEffect.nGMOnly = 1;
-		end
+	-- If source is non-friendly faction and target does not exist or is non-friendly, then effect should be GM only
+	if (rSource and ActorManager.getFaction(rSource) ~= "friend") and (not rTarget or ActorManager.getFaction(rTarget) ~= "friend") then
+		rEffect.nGMOnly = 1;
 	end
 	
 	-- Resolve
@@ -262,8 +253,17 @@ end
 function decodeEffectFromText(sEffect, bSecret)
 	local rEffect = nil;
 
-	local sEffectName = string.match(sEffect, "%[EFFECT%] ([^[]+)");
-	if sEffectName then
+	local sEffectName = sEffect:gsub("^%[EFFECT%] ", "");
+	sEffectName = sEffectName:gsub("%[by ([^]]+)%]", "");
+	sEffectName = sEffectName:gsub("%[INIT (%d+)%]", "");
+	sEffectName = sEffectName:gsub("%[SELF%]", "");
+	sEffectName = sEffectName:gsub("%[ACTION%]", "");
+	sEffectName = sEffectName:gsub("%[ROLL%]", "");
+	sEffectName = sEffectName:gsub("%[SINGLE%]", "");
+	sEffectName = sEffectName:gsub("%[UNITS ([^]]+)]", "");
+	sEffectName = StringManager.trim(sEffectName);
+	
+	if sEffectName ~= "" then
 		rEffect = {};
 		
 		if bSecret then

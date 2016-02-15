@@ -3,6 +3,9 @@
 -- attribution and copyright information.
 --
 
+COLOR_HEALTH_UNCONSCIOUS = "6C2DC7";
+COLOR_TOKEN_HEALTH_UNCONSCIOUS = "8C3BFF";
+
 function getPercentWounded(sNodeType, node)
 	local nHP = 0;
 	local nTemp = 0;
@@ -28,140 +31,83 @@ function getPercentWounded(sNodeType, node)
 		nPercentNonlethal = (nWounds + nNonlethal) / (nHP + nTemp);
 	end
 	
+	local rActor = ActorManager.getActor(sNodeType, node);
+	local bDiesAtZero = false;
+	if isCreatureType(rActor, "construct") or isCreatureType(rActor, "undead") or isCreatureType(rActor, "swarm") then
+		bDiesAtZero = true;
+	end
+
 	local sStatus;
-	if OptionsManager.isOption("WNDC", "detailed") then
-		if nPercentWounded > 1 then
-			local rActor = ActorManager.getActor(sNodeType, node);
-			local nDying = GameSystem.getDeathThreshold(rActor);
-			
-			if (nWounds - nHP) < nDying then
-				sStatus = "Dying";
-			else
-				sStatus = "Dead";
-			end
-		elseif nPercentNonlethal > 1 then
-			sStatus = "Unconscious";
-		elseif nPercentWounded == 1 then
-			sStatus = "Disabled";
-		elseif nPercentNonlethal == 1 then
-			sStatus = "Staggered";
-		elseif nPercentNonlethal >= .75 then
-			sStatus = "Critical";
-		elseif nPercentNonlethal >= .5 then
-			sStatus = "Heavy";
-		elseif nPercentNonlethal >= .25 then
-			sStatus = "Moderate";
-		elseif nPercentNonlethal > 0 then
-			sStatus = "Light";
+	if bDiesAtZero and nPercentWounded >= 1 then
+		sStatus = "Dead";
+	elseif nPercentWounded > 1 then
+		local nDying = GameSystem.getDeathThreshold(rActor);
+
+		if (nWounds - nHP) < nDying then
+			sStatus = "Dying";
 		else
-			sStatus = "Healthy";
+			sStatus = "Dead";
+		end
+	elseif nPercentNonlethal > 1 then
+		sStatus = "Unconscious";
+	elseif nPercentWounded == 1 then
+		sStatus = "Disabled";
+	elseif nPercentNonlethal == 1 then
+		sStatus = "Staggered";
+	elseif nPercentNonlethal > 0 then
+		local bDetailedStatus = OptionsManager.isOption("WNDC", "detailed");
+	
+		if bDetailedStatus then
+			if nPercentNonlethal >= .75 then
+				sStatus = "Critical";
+			elseif nPercentNonlethal >= .5 then
+				sStatus = "Heavy";
+			elseif nPercentNonlethal >= .25 then
+				sStatus = "Moderate";
+			else
+				sStatus = "Light";
+			end
+		else
+			if nPercentNonlethal >= .5 then
+				sStatus = "Heavy";
+			else
+				sStatus = "Wounded";
+			end
 		end
 	else
-		if nPercentWounded > 1 then
-			local rActor = ActorManager.getActor(sNodeType, node);
-			local nDying = GameSystem.getDeathThreshold(rActor);
-			
-			if (nWounds - nHP) < nDying then
-				sStatus = "Dying";
-			else
-				sStatus = "Dead";
-			end
-		elseif nPercentNonlethal > 1 then
-			sStatus = "Unconscious";
-		elseif nPercentWounded == 1 then
-			sStatus = "Disabled";
-		elseif nPercentNonlethal == 1 then
-			sStatus = "Staggered";
-		elseif nPercentNonlethal >= .5 then
-			sStatus = "Heavy";
-		elseif nPercentNonlethal > 0 then
-			sStatus = "Wounded";
-		else
-			sStatus = "Healthy";
-		end
+		sStatus = "Healthy";
 	end
 	
 	return nPercentWounded, nPercentNonlethal, sStatus;
 end
 
+-- Based on the percent wounded, change the font color for the Wounds field
 function getWoundColor(sNodeType, node)
 	local nPercentWounded, nPercentNonlethal, sStatus = getPercentWounded(sNodeType, node);
 	
-	-- Based on the percent wounded, change the font color for the Wounds field
 	local sColor;
-	if OptionsManager.isOption("WNDC", "detailed") then
-		if nPercentWounded > 1 then
-			sColor = "404040";
-		elseif nPercentNonlethal > 1 then
-			sColor = "6C2DC7";
-		elseif nPercentWounded == 1 then
-			sColor = "C11B17";
-		elseif nPercentNonlethal == 1 then
-			sColor = "C11B17";
-		elseif nPercentNonlethal >= 0.75 then
-			sColor = "C11B17";
-		elseif nPercentNonlethal >= 0.5 then
-			sColor = "E56717";
-		elseif nPercentNonlethal >= 0.25 then
-			sColor = "AF7817";
-		elseif nPercentNonlethal > 0 then
-			sColor = "408000";
-		else
-			sColor = "006600";
-		end
+	if sStatus == "Unconscious" then
+		sColor = COLOR_HEALTH_UNCONSCIOUS;
+	elseif sStatus == "Disabled" or sStatus == "Staggered" then
+		sColor = ColorManager.COLOR_HEALTH_SIMPLE_BLOODIED;
 	else
-		if nPercentWounded > 1 then
-			sColor = "404040";
-		elseif nPercentNonlethal > 1 then
-			sColor = "6C2DC7";
-		elseif nPercentWounded == 1 then
-			sColor = "C11B17";
-		elseif nPercentNonlethal == 1 then
-			sColor = "C11B17";
-		elseif nPercentNonlethal >= 0.5 then
-			sColor = "C11B17";
-		elseif nPercentNonlethal > 0 then
-			sColor = "408000";
-		else
-			sColor = "006600";
-		end
+		sColor = ColorManager.getHealthColor(nPercentNonlethal, false);
 	end
 
 	return sColor, nPercentWounded, nPercentNonlethal, sStatus;
 end
 
+-- Based on the percent wounded, change the token health bar color
 function getWoundBarColor(sNodeType, node)
 	local nPercentWounded, nPercentNonlethal, sStatus = getPercentWounded(sNodeType, node);
 	
-	local nRedR = 255;
-	local nRedG = 0;
-	local nRedB = 0;
-	local nYellowR = 255;
-	local nYellowG = 191;
-	local nYellowB = 0;
-	local nGreenR = 0;
-	local nGreenG = 255;
-	local nGreenB = 0;
-	
 	local sColor;
-	if nPercentWounded > 1 then
-		sColor = "C0C0C0";
-	elseif nPercentNonlethal > 1 then
-		sColor = "8C3BFF";
+	if sStatus == "Unconscious" then
+		sColor = COLOR_TOKEN_HEALTH_UNCONSCIOUS;
+	elseif sStatus == "Disabled" or sStatus == "Staggered" then
+		sColor = ColorManager.COLOR_TOKEN_HEALTH_SIMPLE_BLOODIED;
 	else
-		local nBarR, nBarG, nBarB;
-		if nPercentNonlethal >= 0.5 then
-			local nPercentGrade = (nPercentNonlethal - 0.5) * 2;
-			nBarR = math.floor((nRedR * nPercentGrade) + (nYellowR * (1.0 - nPercentGrade)) + 0.5);
-			nBarG = math.floor((nRedG * nPercentGrade) + (nYellowG * (1.0 - nPercentGrade)) + 0.5);
-			nBarB = math.floor((nRedB * nPercentGrade) + (nYellowB * (1.0 - nPercentGrade)) + 0.5);
-		else
-			local nPercentGrade = nPercentNonlethal * 2;
-			nBarR = math.floor((nYellowR * nPercentGrade) + (nGreenR * (1.0 - nPercentGrade)) + 0.5);
-			nBarG = math.floor((nYellowG * nPercentGrade) + (nGreenG * (1.0 - nPercentGrade)) + 0.5);
-			nBarB = math.floor((nYellowB * nPercentGrade) + (nGreenB * (1.0 - nPercentGrade)) + 0.5);
-		end
-		sColor = string.format("%02X%02X%02X", nBarR, nBarG, nBarB);
+		sColor = ColorManager.getTokenHealthColor(nPercentNonlethal, true);
 	end
 
 	return sColor, nPercentWounded, nPercentNonlethal, sStatus;
@@ -199,22 +145,24 @@ function getAbilityEffectsBonus(rActor, sAbility)
 		end
 	end
 	
+	local nEffectBonusMod = 0;
+	if nEffectMod > 0 then
+		nEffectBonusMod = math.floor(nEffectMod / 2);
+	else
+		nEffectBonusMod = math.ceil(nEffectMod / 2);
+	end
+
 	local nAbilityMod = 0;
 	local nAbilityScore = getAbilityScore(rActor, sAbility);
 	if nAbilityScore > 0 and not DataCommon.isPFRPG() then
 		local nAbilityDamage = getAbilityDamage(rActor, sAbility);
-		local nAffectedScore = math.max(nAbilityScore - nAbilityDamage + nEffectMod, 0);
 		
-		local nCurrentBonus = math.floor((nAbilityScore - 10) / 2);
-		local nAffectedBonus = math.floor((nAffectedScore - 10) / 2);
+		local nCurrentBonus = math.floor(nAbilityScore - nAbilityDamage - 10 / 2);
+		local nAffectedBonus = math.floor(nAbilityScore - nAbilityDamage + nEffectMod - 10 / 2);
 		
 		nAbilityMod = nAffectedBonus - nCurrentBonus;
 	else
-		if nEffectMod > 0 then
-			nAbilityMod = math.floor(nEffectMod / 2);
-		else
-			nAbilityMod = math.ceil(nEffectMod / 2);
-		end
+		nAbilityMod = nEffectBonusMod;
 	end
 
 	return nAbilityMod, nAbilityEffects;
@@ -272,6 +220,8 @@ function getAbilityScore(rActor, sAbility)
 			nStatScore = DB.getValue(nodeActor, "level", 0);
 		elseif sShort == "bab" then
 			nStatScore = DB.getValue(nodeActor, "attackbonus.base", 0);
+		elseif sShort == "cmb" then
+			nStatScore = DB.getValue(nodeActor, "attackbonus.base", 0);
 		elseif sShort == "str" then
 			nStatScore = DB.getValue(nodeActor, "abilities.strength.score", 0);
 		elseif sShort == "dex" then
@@ -292,7 +242,18 @@ function getAbilityScore(rActor, sAbility)
 			nStatScore = 0;
 
 			local sBABGrp = DB.getValue(nodeActor, "babgrp", "");
-			local sBAB = string.match(sBABGrp, "[+-]?%d+");
+			local sBAB = sBABGrp:match("[+-]?%d+");
+			if sBAB then
+				nStatScore = tonumber(sBAB) or 0;
+			end
+		elseif sShort == "cmb" then
+			nStatScore = 0;
+
+			local sBABGrp = DB.getValue(nodeActor, "babgrp", "");
+			local sBAB = sBABGrp:match("CMB ([+-]?%d+)");
+			if not sBAB then
+				sBAB = sBABGrp:match("[+-]?%d+");
+			end
 			if sBAB then
 				nStatScore = tonumber(sBAB) or 0;
 			end
@@ -346,11 +307,20 @@ function getAbilityBonus(rActor, sAbility)
 	end
 	
 	if StringManager.contains(DataCommon.abilities, sStat) then
-		nStatVal = math.floor((nStatScore - 10) / 2);
 		if sActorType == "pc" then
 			nStatVal = nStatVal + DB.getValue(nodeActor, "abilities." .. sStat .. ".bonusmodifier", 0);
-			nStatVal = nStatVal - math.floor(DB.getValue(nodeActor, "abilities." .. sStat .. ".damage", 0) / 2);
+			
+			local nAbilityDamage = DB.getValue(nodeActor, "abilities." .. sStat .. ".damage", 0);
+			if DataCommon.isPFRPG() then
+				if nAbilityDamage >= 0 then
+					nAbilityDamage = math.floor(nAbilityDamage / 2) * 2;
+				else
+					nAbilityDamage = math.ceil(nAbilityDamage / 2) * 2;
+				end
+			end
+			nStatScore = nStatScore - nAbilityDamage;
 		end
+		nStatVal = nStatVal + math.floor((nStatScore - 10) / 2);
 	else
 		nStatVal = nStatScore;
 	end
@@ -389,6 +359,92 @@ function getSpellDefense(rActor)
 	end
 	
 	return nSR;
+end
+
+function getArmorComps(rActor)
+	local aComps = {};
+	
+	local sActorType, nodeActor = ActorManager.getTypeAndNode(rActor);
+	if not nodeActor then
+		return aComps;
+	end
+
+	if sActorType == "pc" then
+		local nACBonusComp = DB.getValue(nodeActor, "ac.sources.armor", 0);
+		if nACBonusComp ~= 0 then
+			aComps["armor"] = nACBonusComp;
+		end
+		nACBonusComp = DB.getValue(nodeActor, "ac.sources.shield", 0);
+		if nACBonusComp ~= 0 then
+			aComps["shield"] = nACBonusComp;
+		end
+		local sAbility = DB.getValue(nodeActor, "ac.sources.ability", "");
+		if DataCommon.ability_ltos[sAbility] then
+			aComps[DataCommon.ability_ltos[sAbility]] = getAbilityBonus(rActor, sAbility);
+		end
+		local sAbility2 = DB.getValue(nodeActor, "ac.sources.ability2", "");
+		if DataCommon.ability_ltos[sAbility2] then
+			aComps[DataCommon.ability_ltos[sAbility2]] = getAbilityBonus(rActor, sAbility2);
+		end
+		nACBonusComp = DB.getValue(nodeActor, "ac.sources.size", 0);
+		if nACBonusComp ~= 0 then
+			aComps["size"] = nACBonusComp;
+		end
+		nACBonusComp = DB.getValue(nodeActor, "ac.sources.natural", 0);
+		if nACBonusComp ~= 0 then
+			aComps["natural"] = nACBonusComp;
+		end
+		nACBonusComp = DB.getValue(nodeActor, "ac.sources.deflection", 0);
+		if nACBonusComp ~= 0 then
+			aComps["deflection"] = nACBonusComp;
+		end
+		nACBonusComp = DB.getValue(nodeActor, "ac.sources.dodge", 0);
+		if nACBonusComp ~= 0 then
+			aComps["dodge"] = nACBonusComp;
+		end
+		nACBonusComp = DB.getValue(nodeActor, "ac.sources.misc", 0);
+		if nACBonusComp ~= 0 then
+			aComps["misc"] = nACBonusComp;
+		end
+	else
+		local sAC = DB.getValue(nodeActor, "ac", ""):lower();
+		local nAC = tonumber(sAC:match("^(%d+)")) or 10;
+		local sACComps = sAC:match("%(([^)]+)%)");
+		local nCompTotal = 10;
+		if sACComps then
+			local aACSplit = StringManager.split(sACComps, ",", true);
+			for _,vACComp in ipairs(aACSplit) do
+				local sACCompBonus, sACCompType = vACComp:match("^([+-]%d+)%s+(.*)$");
+				if not sACCompType then
+					sACCompType, sACCompBonus = vACComp:match("^(.*)%s+([+-]%d+)$");
+				end
+				local nACCompBonus = tonumber(sACCompBonus) or 0;
+				if sACCompType and nACCompBonus ~= 0 then
+					sACCompType = sACCompType:gsub("[+-]%d+", "");
+					sACCompType = StringManager.trim(sACCompType);
+					
+					if DataCommon.actypes[sACCompType] then
+						aComps[DataCommon.actypes[sACCompType]] = nACCompBonus;
+						nCompTotal = nCompTotal + nACCompBonus;
+					elseif StringManager.contains (DataCommon.acarmormatch, sACCompType) then
+						aComps["armor"] = nACCompBonus;
+						nCompTotal = nCompTotal + nACCompBonus;
+					elseif StringManager.contains (DataCommon.acshieldmatch, sACCompType) then
+						aComps["shield"] = nACCompBonus;
+						nCompTotal = nCompTotal + nACCompBonus;
+					elseif StringManager.contains (DataCommon.acdeflectionmatch, sACCompType) then
+						aComps["deflection"] = nACCompBonus;
+						nCompTotal = nCompTotal + nACCompBonus;
+					end
+				end
+			end
+		end
+		if nCompTotal ~= nAC then
+			aComps["misc"] = nAC - nCompTotal;
+		end
+	end
+
+	return aComps;
 end
 
 function getDefenseValue(rAttacker, rDefender, rRoll)
@@ -561,6 +617,9 @@ function getDefenseValue(rAttacker, rDefender, rRoll)
 			bCombatAdvantage = true;
 		end
 		
+		-- DETERMINE EXISTING AC MODIFIER TYPES
+		local aExistingBonusByType = getArmorComps (rDefender);
+		
 		-- GET DEFENDER ALL DEFENSE MODIFIERS
 		local aIgnoreEffects = {};
 		if bTouch then
@@ -574,7 +633,24 @@ function getDefenseValue(rAttacker, rDefender, rRoll)
 		local aACEffects, nACEffectCount = EffectManager.getEffectsBonusByType(rDefender, {"AC"}, true, aAttackFilter, rAttacker);
 		for k,v in pairs(aACEffects) do
 			if not StringManager.contains(aIgnoreEffects, k) then
-				nBonusAC = nBonusAC + v.mod;
+				local sBonusType = DataCommon.actypes[k];
+				if sBonusType then
+					-- Dodge bonuses stack (by rules)
+					if sBonusType == "dodge" then
+						nBonusAC = nBonusAC + v.mod;
+					-- Size bonuses stack (by usage expectation)
+					elseif sBonusType == "size" then
+						nBonusAC = nBonusAC + v.mod;
+					elseif aExistingBonusByType[sBonusType] then
+						if v.mod > aExistingBonusByType[sBonusType] then
+							nBonusAC = nBonusAC + v.mod - aExistingBonusByType[sBonusType];
+						end
+					else
+						nBonusAC = nBonusAC + v.mod;
+					end
+				else
+					nBonusAC = nBonusAC + v.mod;
+				end
 			end
 		end
 		if rRoll.sType == "grapple" then
@@ -716,7 +792,7 @@ function getDefenseValue(rAttacker, rDefender, rRoll)
 				elseif nCover < 2 then
 					aCover = EffectManager.getEffectsByType(rDefender, "PCOVER", aAttackFilter, rAttacker);
 					if #aCover > 0 or EffectManager.hasEffect(rDefender, "PCOVER", rAttacker) then
-						nBonusSituational = nBonusSitiational + 2 - nCover;
+						nBonusSituational = nBonusSituational + 2 - nCover;
 					end
 				end
 			end
@@ -764,4 +840,208 @@ function getDefenseValue(rAttacker, rDefender, rRoll)
 	
 	-- Return the final defense value
 	return nDefense + nDefenseEffectMod - nAttackEffectMod, nAttackEffectMod, nDefenseEffectMod, nMissChance;
+end
+
+function isAlignment(rActor, sAlignCheck)
+	local nCheckLawChaosAxis = 0;
+	local nCheckGoodEvilAxis = 0;
+	local aCheckSplit = StringManager.split(sAlignCheck:lower(), " ", true);
+	for _,v in ipairs(aCheckSplit) do
+		if nCheckLawChaosAxis == 0 and DataCommon.alignment_lawchaos[v] then
+			nCheckLawChaosAxis = DataCommon.alignment_lawchaos[v];
+		end
+		if nCheckGoodEvilAxis == 0 and DataCommon.alignment_goodevil[v] then
+			nCheckGoodEvilAxis = DataCommon.alignment_goodevil[v];
+		end
+	end
+	if nCheckLawChaosAxis == 0 and nCheckGoodEvilAxis == 0 then
+		return false;
+	end
+	
+	local nActorLawChaosAxis = 2;
+	local nActorGoodEvilAxis = 2;
+	local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
+	local sField = "alignment";
+	if sType ~= "pc" and DataCommon.isPFRPG() then
+		sField = "type";
+	end
+	local aActorSplit = StringManager.split(DB.getValue(nodeActor, sField, ""):lower(), " ", true);
+	for _,v in ipairs(aActorSplit) do
+		if nActorLawChaosAxis == 2 and DataCommon.alignment_lawchaos[v] then
+			nActorLawChaosAxis = DataCommon.alignment_lawchaos[v];
+		end
+		if nActorGoodEvilAxis == 2 and DataCommon.alignment_goodevil[v] then
+			nActorGoodEvilAxis = DataCommon.alignment_goodevil[v];
+		end
+	end
+	
+	local bLCReturn = true;
+	if nCheckLawChaosAxis > 0 then
+		if nActorLawChaosAxis > 0 then
+			bLCReturn = (nActorLawChaosAxis == nCheckLawChaosAxis);
+		else
+			bLCReturn = false;
+		end
+	end
+	
+	local bGEReturn = true;
+	if nCheckGoodEvilAxis > 0 then
+		if nActorGoodEvilAxis > 0 then
+			bGEReturn = (nActorGoodEvilAxis == nCheckGoodEvilAxis);
+		else
+			bGEReturn = false;
+		end
+	end
+	
+	return (bLCReturn and bGEReturn);
+end
+
+function isSize(rActor, sSizeCheck)
+	local sSizeCheckLower = StringManager.trim(sSizeCheck:lower());
+
+	local sCheckOp = sSizeCheckLower:match("^[<>]?=?");
+	if sCheckOp then
+		sSizeCheckLower = StringManager.trim(sSizeCheckLower:sub(#sCheckOp + 1));
+	end
+	
+	local nCheckSize = 0;
+	if DataCommon.creaturesize[sSizeCheckLower] then
+		nCheckSize = DataCommon.creaturesize[sSizeCheckLower];
+	end
+	if nCheckSize == 0 then
+		return false;
+	end
+	
+	local nActorSize = 0;
+	local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
+	local sField = "size";
+	if sType ~= "pc" then
+		sField = "type";
+	end
+	local aActorSplit = StringManager.split(DB.getValue(nodeActor, sField, ""):lower(), " ", true);
+	for _,v in ipairs(aActorSplit) do
+		if nActorSize == 0 and DataCommon.creaturesize[v] then
+			nActorSize = DataCommon.creaturesize[v];
+			break;
+		end
+		if not DataCommon.alignment_lawchaos[v] and not DataCommon.alignment_goodevil[v] and (v ~= DataCommon.alignment_neutral) and not DataCommon.creaturesize[v] then
+			break;
+		end
+	end
+	if nActorSize == 0 then
+		nActorSize = 5;
+	end
+	
+	local bReturn = true;
+	if sCheckOp then
+		if sCheckOp == "<" then
+			bReturn = (nActorSize < nCheckSize);
+		elseif sCheckOp == ">" then
+			bReturn = (nActorSize > nCheckSize);
+		elseif sCheckOp == "<=" then
+			bReturn = (nActorSize <= nCheckSize);
+		elseif sCheckOp == ">=" then
+			bReturn = (nActorSize >= nCheckSize);
+		else
+			bReturn = (nActorSize == nCheckSize);
+		end
+	else
+		bReturn = (nActorSize == nCheckSize);
+	end
+	
+	return bReturn;
+end
+
+function getCreatureTypeHelper(sTypeCheck, bUseDefaultType)
+	local aCheckSplit = StringManager.split(sTypeCheck:lower(), ", %(%)", true);
+	
+	local aTypeCheck = {};
+	local aSubTypeCheck = {};
+	
+	-- Handle half races
+	local nHalfRace = 0;
+	for k = 1, #aCheckSplit do
+		if aCheckSplit[k]:sub(1, #DataCommon.creaturehalftype) == DataCommon.creaturehalftype then
+			aCheckSplit[k] = aCheckSplit[k]:sub(#DataCommon.creaturehalftype + 1);
+			nHalfRace = nHalfRace + 1;
+		end
+	end
+	if nHalfRace == 1 then
+		if not StringManager.contains (aCheckSplit, DataCommon.creaturehalftypesubrace) then
+			table.insert(aCheckSplit, DataCommon.creaturehalftypesubrace);
+		end
+	end
+	
+	-- Check each word combo in the creature type string against standard creature types and subtypes
+	for k = 1, #aCheckSplit do
+		for _,sMainType in ipairs(DataCommon.creaturetype) do
+			local aMainTypeSplit = StringManager.split(sMainType, " ", true);
+			if #aMainTypeSplit > 0 then
+				local bMatch = true;
+				for i = 1, #aMainTypeSplit do
+					if aMainTypeSplit[i] ~= aCheckSplit[k - 1 + i] then
+						bMatch = false;
+						break;
+					end
+				end
+				if bMatch then
+					table.insert(aTypeCheck, sMainType);
+					k = k + (#aMainTypeSplit - 1);
+				end
+			end
+		end
+		for _,sSubType in ipairs(DataCommon.creaturesubtype) do
+			local aSubTypeSplit = StringManager.split(sSubType, " ", true);
+			if #aSubTypeSplit > 0 then
+				local bMatch = true;
+				for i = 1, #aSubTypeSplit do
+					if aSubTypeSplit[i] ~= aCheckSplit[k - 1 + i] then
+						bMatch = false;
+						break;
+					end
+				end
+				if bMatch then
+					table.insert(aSubTypeCheck, sSubType);
+					k = k + (#aSubTypeSplit - 1);
+				end
+			end
+		end
+	end
+	
+	-- Make sure we have a default creature type (if requested)
+	if bUseDefaultType then
+		if #aTypeCheck == 0 then
+			table.insert(aTypeCheck, DataCommon.creaturedefaulttype);
+		end
+	end
+	
+	-- Combine into a single list
+	for _,vSubType in ipairs(aSubTypeCheck) do
+		table.insert(aTypeCheck, vSubType);
+	end
+	
+	return aTypeCheck;
+end
+
+function isCreatureType(rActor, sTypeCheck)
+	local aTypeCheck = getCreatureTypeHelper(sTypeCheck, false);
+	if #aTypeCheck == 0 then
+		return false;
+	end
+	
+	local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
+	local sField = "race";
+	if sType ~= "pc" then
+		sField = "type";
+	end
+	local aTypeActor = getCreatureTypeHelper(DB.getValue(nodeActor, sField, ""), true);
+
+	local bReturn = false;
+	for kCheck,vCheck in ipairs(aTypeCheck) do
+		if StringManager.contains(aTypeActor, vCheck) then
+			bReturn = true;
+			break;
+		end
+	end
+	return bReturn;
 end

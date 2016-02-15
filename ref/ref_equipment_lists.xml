@@ -73,13 +73,12 @@
 		<tooltip field="description" />
 		<nodelete />
 		<sheetdata>
-			<windowtitlebar>
+			<windowtitlebar name="reftitle">
 				<field>description</field>
 			</windowtitlebar>
+			<anchor_reftitle name="contentanchor" />
 
-			<genericcontrol name="headeranchor">
-				<bounds>65,45,0,0</bounds>
-			</genericcontrol>
+			<header_reftablegroup />
 			<label_reftable name="headername">
 				<anchored width="120" />
 				<static textres="ref_label_listname" />
@@ -112,23 +111,15 @@
 				<static textres="ref_label_listtype" />
 			</label_reftable>
 
-			<windowlist name="grouplist">
-				<bounds>35,80,-40,-70</bounds>
-				<frame name="groupbox" offset="15,15,20,15" />
+			<list_reftablegroup name="grouplist">
 				<class>reference_weapontablegroup</class>
 				<datasource>.groups</datasource>
-			</windowlist>
+			</list_reftablegroup>
 			<scrollbar_reftablegroup />
 			
-			<filter_reftable name="filter">
-				<bounds>125,-45,-35,20</bounds>
-			</filter_reftable>
-			<button_expand>
-				<bounds>30,-45,20,20</bounds>
-			</button_expand>
-			<button_collapse>
-				<bounds>60,-45,20,20</bounds>
-			</button_collapse>
+			<filter_reftable name="filter" />
+			<button_reftable_expand />
+			<button_reftable_collapse />
 			
 			<resize_referencelist />
 			<close_referencelist />
@@ -207,13 +198,12 @@
 		<tooltip field="description" />
 		<nodelete />
 		<sheetdata>
-			<windowtitlebar>
+			<windowtitlebar name="reftitle">
 				<field>description</field>
 			</windowtitlebar>
+			<anchor_reftitle name="contentanchor" />
 
-			<genericcontrol name="headeranchor">
-				<bounds>65,45,0,0</bounds>
-			</genericcontrol>
+			<header_reftablegroup />
 			<label_reftable name="headername">
 				<anchored width="120" />
 				<static textres="ref_label_listarmorname" />
@@ -251,23 +241,15 @@
 				<center />
 			</label_reftable>
 			
-			<windowlist name="grouplist">
-				<bounds>35,100,-40,-70</bounds>
-				<frame name="groupbox" offset="15,15,20,15" />
+			<list_reftablegroup name="grouplist">
 				<class>reference_armortablegroup</class>
 				<datasource>.groups</datasource>
-			</windowlist>
+			</list_reftablegroup>
 			<scrollbar_reftablegroup />
 			
-			<filter_reftable name="filter">
-				<bounds>125,-45,-35,20</bounds>
-			</filter_reftable>
-			<button_expand>
-				<bounds>30,-45,20,20</bounds>
-			</button_expand>
-			<button_collapse>
-				<bounds>60,-45,20,20</bounds>
-			</button_collapse>
+			<filter_reftable name="filter" />
+			<button_reftable_expand />
+			<button_reftable_collapse />
 			
 			<resize_referencelist />
 			<close_referencelist />
@@ -328,13 +310,12 @@
 		<tooltip field="description" />
 		<nodelete />
 		<sheetdata>
-			<windowtitlebar>
+			<windowtitlebar name="reftitle">
 				<field>description</field>
 			</windowtitlebar>
+			<anchor_reftitle name="contentanchor" />
 
-			<genericcontrol name="headeranchor">
-				<bounds>65,45,0,0</bounds>
-			</genericcontrol>
+			<header_reftablegroup />
 			<label_reftable name="headername">
 				<anchored width="140" />
 				<static textres="ref_label_listname" />
@@ -348,23 +329,15 @@
 				<center />
 			</label_reftable>
 			
-			<windowlist name="grouplist">
-				<bounds>35,80,-40,-70</bounds>
-				<frame name="groupbox" offset="15,15,20,15" />
+			<list_reftablegroup name="grouplist">
 				<class>reference_equipmenttablegroup</class>
 				<datasource>.groups</datasource>
-			</windowlist>
+			</list_reftablegroup>
 			<scrollbar_reftablegroup />
 			
-			<filter_reftable name="filter">
-				<bounds>125,-45,-35,20</bounds>
-			</filter_reftable>
-			<button_expand>
-				<bounds>30,-45,20,20</bounds>
-			</button_expand>
-			<button_collapse>
-				<bounds>60,-45,20,20</bounds>
-			</button_collapse>
+			<filter_reftable name="filter" />
+			<button_reftable_expand />
+			<button_reftable_collapse />
 
 			<resize_referencelist />
 			<close_referencelist />

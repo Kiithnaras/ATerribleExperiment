@@ -210,8 +210,8 @@
 					function onValueChanged()
 						local nodeWin = window.getDatabaseNode();
 						local nETotal = DB.getValue(nodeWin, "energy.total", 0);
-						local nFatLimit = math.ceil(nETotal * 0.75);
-						local nExLimit = math.ceil(nETotal * 0.90);
+						local nFatLimit = math.ceil(nETotal * 0.66);
+						local nExLimit = math.ceil(nETotal * 0.80);
 						DB.setValue(nodeWin, "energy.fatlimit", "number", nFatLimit);
 						DB.setValue(nodeWin, "energy.exlimit", "number", nExLimit);
 					end
@@ -224,7 +224,7 @@
 			
 			<number_dropadd name="epspent" source="energy.spent">
 				<anchored to="epoints" position="right" offset="10,0" width="40"/>
-				<min>0</min> <!-- I would love to have the max of energy.spent be equal to energy.total, somehow. HALP! -I did it, I think???-->
+				<min>0</min> <!-- I would love to have the max of energy.spent be equal to energy.total, somehow. HALP! -I did it, I think???--><min>0</min> <!-- I would love to have the max of energy.spent be equal to energy.total, somehow. HALP! -I did it, I think???-->
 				<script>
 					function onInit()
 						setmaxval();
@@ -542,7 +542,7 @@
 			</number_charsavewill>
 			<label_fieldtop>
 				<anchored to="will" />
-				<static textres="will" />
+				<static textres="will_long" />
 			</label_fieldtop>
 		</sheetdata>
 	</windowclass>

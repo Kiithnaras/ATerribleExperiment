@@ -9,7 +9,7 @@ function onInit()
 	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_APPLYDMG, handleApplyDamage);
 
 	ActionsManager.registerModHandler("damage", modDamage);
-	ActionsManager.registerModHandler("spdamage", modSpellDamage);
+	ActionsManager.registerModHandler("spdamage", modDamage);
 	ActionsManager.registerModHandler("stabilization", modStabilization);
 
 	ActionsManager.registerPostRollHandler("damage", onDamageRoll);
@@ -80,55 +80,25 @@ function getRoll(rActor, rAction)
 	end
 	if rAction.range then
 		rRoll.sDesc = rRoll.sDesc .. " (" .. rAction.range ..")";
+		rRoll.range = rAction.range;
 	end
 	rRoll.sDesc = rRoll.sDesc .. "] " .. rAction.label;
 	
-	-- Add ability modifiers and multiples
-	if rAction.stat ~= "" then
-		if (rAction.range == "M" and rAction.statmult ~= 1) or (rAction.range == "R" and rAction.statmult ~= 0) then
-			rRoll.sDesc = rRoll.sDesc .. " [MULT:" .. rAction.statmult .. "]";
+	-- Save the damage clauses in the roll structure
+	rRoll.clauses = rAction.clauses;
+	
+	-- Add the dice and modifiers
+	for _,vClause in pairs(rRoll.clauses) do
+		for _,vDie in ipairs(vClause.dice) do
+			table.insert(rRoll.aDice, vDie);
 		end
-	end
-	if (rAction.stat ~= "strength" and rAction.statmult ~= 0) or (rAction.statmax and rAction.statmax > 0) then
-		local sAbilityEffect = DataCommon.ability_ltos[rAction.stat];
-		if sAbilityEffect then
-			rRoll.sDesc = rRoll.sDesc .. " [MOD:" .. sAbilityEffect;
-			if rAction.statmax and rAction.statmax > 0 then
-				rRoll.sDesc = rRoll.sDesc .. ":" .. rAction.statmax;
-			end
-			rRoll.sDesc = rRoll.sDesc .. "]";
-		end
-	end
-	if rAction.stat2 ~= "" then
-		local sAbilityEffect = DataCommon.ability_ltos[rAction.stat2];
-		if sAbilityEffect then
-			rRoll.sDesc = rRoll.sDesc .. " [MOD2:" .. sAbilityEffect .. "]";
-		end
+		rRoll.nMod = rRoll.nMod + vClause.modifier;
 	end
 	
-	-- Iterate through damage clauses to get dice, modifiers and damage types
-	local aDamageTypes = {};
-	for k, v in pairs(rAction.clauses) do
-		local nClauseDice = 0;
-		local nClauseMod = 0;
-		local nClauseMult = v.mult or 2;
-		
-		for kDie, vDie in ipairs(v.dice) do
-			table.insert(rRoll.aDice, vDie);
-			nClauseDice = nClauseDice + 1;
-		end
-			
-		nClauseMod = v.modifier;
-		rRoll.nMod = rRoll.nMod + v.modifier;
-		
-		if (nClauseDice > 0) or (nClauseMod ~= 0) then
-			table.insert(aDamageTypes, { sType = v.dmgtype, nDice = nClauseDice, nMod = nClauseMod, nMult = nClauseMult } );
-		end
-	end
-	if #aDamageTypes > 0 then
-		rRoll.sDesc = rRoll.sDesc .. " " .. encodeDamageTypes(aDamageTypes);
-	end
+	-- Encode the damage types
+	encodeDamageTypes(rRoll);
 
+	-- Encode meta tags
 	if rAction.meta then
 		if rAction.meta == "empower" then
 			rRoll.sDesc = rRoll.sDesc .. " [EMPOWER]";
@@ -151,24 +121,80 @@ function modStabilization(rSource, rTarget, rRoll)
 end
 
 function modDamage(rSource, rTarget, rRoll)
+	-- Extract damage type information from roll
+	decodeDamageTypes(rRoll);
+
+	-- Set up
 	local aAddDesc = {};
 	local aAddDice = {};
 	local nAddMod = 0;
+	local bEffects = false;
+	local aEffectDice = {};
+	local nEffectMod = 0;
 	local bPFMode = DataCommon.isPFRPG();
 	
 	-- Build attack type filter
 	local aAttackFilter = {};
-	local sAttackType = string.match(rRoll.sDesc, "%[DAMAGE%s*%(([^%)%]]+)%)%]");
-	if sAttackType == "R" then
+	if rRoll.range == "R" then
 		table.insert(aAttackFilter, "ranged");
-	elseif sAttackType == "M" then
+	elseif rRoll.range == "M" then
 		table.insert(aAttackFilter, "melee");
 	end
 	
-	local aDamageTypes = decodeDamageTypes(false, rRoll.sDesc, rRoll.aDice, rRoll.nMod);
-	rRoll.sDesc = string.gsub(rRoll.sDesc, " %[TYPE: ([^]]+)%]", "");
-	
-	-- IS CRITICAL?
+	-- Handle ability effects
+	if rSource then
+		-- Apply ability modifiers
+		for kClause,vClause in ipairs(rRoll.clauses) do
+			-- Get original stat modifier
+			local nStatMod = ActorManager2.getAbilityBonus(rSource, vClause.stat);
+			
+			-- Get any stat effects bonus
+			local nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, vClause.stat);
+			if nBonusEffects > 0 then
+				bEffects = true;
+				
+				-- Calc total stat mod
+				local nTotalStatMod = nStatMod + nBonusStat;
+				
+				-- Handle maximum stat mod setting
+				-- WORKAROUND: If max limited, then assume no penalty allowed (i.e. bows)
+				local nStatModMax = vClause.statmax or 0;
+				if nStatModMax > 0 then
+					nStatMod = math.max(math.min(nStatMod, nStatModMax), 0);
+					nTotalStatMod = math.max(math.min(nTotalStatMod, nStatModMax), 0);
+				end
+
+				-- Handle multipliers correctly
+				-- NOTE: Negative values are not multiplied, but positive values are.
+				local nMult = vClause.statmult or 1;
+				local nMultOrigStatMod, nMultNewStatMod;
+				if nStatMod <= 0 then
+					nMultOrigStatMod = nStatMod;
+				else
+					nMultOrigStatMod = math.floor(nStatMod * nMult);
+				end
+				if nTotalStatMod <= 0 then
+					nMultNewStatMod = nTotalStatMod;
+				else
+					nMultNewStatMod = math.floor(nTotalStatMod * nMult);
+				end
+				
+				-- Calculate bonus difference
+				local nMultDiffStatMod = nMultNewStatMod - nMultOrigStatMod;
+				if bCritical then
+					local nCritMult = vClause.mult or 2;
+					nMultDiffStatMod = nMultDiffStatMod * nCritMult;
+				end
+				
+				-- Apply bonus difference
+				nEffectMod = nEffectMod + nMultDiffStatMod;
+				vClause.modifier = vClause.modifier + nMultDiffStatMod;
+				rRoll.nMod = rRoll.nMod + nMultDiffStatMod;
+			end
+		end
+	end
+
+	-- Handle critical
 	local bCritical = ModifierStack.getModifierKey("DMG_CRIT") or Input.isShiftPressed();
 	if rTarget then
 		if ActionAttack.isCrit(rSource, rTarget) then
@@ -176,450 +202,200 @@ function modDamage(rSource, rTarget, rRoll)
 		end
 	end
 	if bCritical then
-		local aAddDamageTypes = {};
 		table.insert(aAddDesc, "[CRITICAL]");
 
-		local nDiceIndex = 0;
-		for _,v in pairs(aDamageTypes) do
-			local nMult = v.nMult or 2;
+		local nDieIndex = 1;
+		local aNewClauses = {};
+		for _,vClause in ipairs(rRoll.clauses) do
+			nDieIndex = nDieIndex + #(vClause.dice);
+			
+			table.insert(aNewClauses, vClause);
+			
+			local nMult = vClause.mult or 2;
 			if nMult > 1 then
+				local rNewClause = UtilityManager.copyDeep(vClause);
+				rNewClause.dice = {};
+				rNewClause.modifier = 0;
+				if rNewClause.dmgtype == "" then
+					rNewClause.dmgtype = "critical";
+				else
+					rNewClause.dmgtype = rNewClause.dmgtype .. ",critical";
+				end
+				
+				local nDice = #(vClause.dice);
+				local nMod = vClause.modifier or 0;
+				
 				for i = 2, nMult do
-					for j = 1, v.nDice do
-						local nIndex = nDiceIndex + j;
-						if nIndex <= #(rRoll.aDice) then
-							local sDie = rRoll.aDice[nIndex];
-							if type(sDie) == "table" then
-								sDie = sDie.type;
-							end
-							table.insert(aAddDice, "g" .. string.sub(sDie, 2));
+					for j = 1, nDice do
+						if vClause.dice[j]:sub(1,1) == "-" then
+							table.insert(rRoll.aDice, nDieIndex, "-g" .. vClause.dice[j]:sub(3));
+						else
+							table.insert(rRoll.aDice, nDieIndex, "g" .. vClause.dice[j]:sub(2));
+						end
+						table.insert(rNewClause.dice, vClause.dice[j]);
+					end
+					rRoll.nMod = rRoll.nMod + nMod;
+					rNewClause.modifier = rNewClause.modifier + nMod;
+				end
+				
+				table.insert(aNewClauses, rNewClause);
+			end
+		end
+		rRoll.clauses = aNewClauses;
+	end
+	
+	-- Handle general damage effects
+	if rSource then
+		-- NOTE: Effect damage dice are not multiplied on critical, though numerical modifiers are multiplied
+		-- http://rpg.stackexchange.com/questions/4465/is-smite-evil-damage-multiplied-by-a-critical-hit
+		local aEffects, nEffectCount;
+		if rRoll.sType == "spdamage" then
+			aEffects, nEffectCount = EffectManager.getEffectsBonusByType(rSource, "DMGS", true, aAttackFilter, rTarget);
+		else
+			aEffects, nEffectCount = EffectManager.getEffectsBonusByType(rSource, "DMG", true, aAttackFilter, rTarget);
+		end
+		if nEffectCount > 0 then
+			-- Use the first damage clause to determine damage type and crit multiplier for effect damage
+			local nEffectCritMult = 2;
+			local sEffectBaseType = "";
+			if #(rRoll.clauses) > 0 then
+				nEffectCritMult = rRoll.clauses[1].mult or 2;
+				sEffectBaseType = rRoll.clauses[1].dmgtype or "";
+			end
+
+			-- For each effect, add a damage clause
+			for _,v in pairs(aEffects) do
+				-- Process effect damage types
+				local bEffectPrecision = false;
+				local bEffectCritical = false;
+				local aEffectDmgType = {};
+				local aEffectSpecialDmgType = {};
+				for _,sWord in ipairs(v.remainder) do
+					if StringManager.contains(DataCommon.specialdmgtypes, sWord) then
+						table.insert(aEffectSpecialDmgType, sWord);
+						if sWord == "critical" then
+							bEffectCritical = true;
+						elseif sWord == "precision" then
+							bEffectPrecision = true;
+						end
+					elseif StringManager.contains(DataCommon.dmgtypes, sWord) then
+						table.insert(aEffectDmgType, sWord);
+					end
+				end
+				
+				if not bEffectCritical or bCritical then
+					bEffects = true;
+					
+					local rClause = {};
+					
+					-- Add effect dice
+					rClause.dice = {};
+					for _,vDie in ipairs(v.dice) do
+						table.insert(aEffectDice, vDie);
+						table.insert(rClause.dice, vDie);
+						if vDie:sub(1,1) == "-" then
+							table.insert(rRoll.aDice, "-p" .. vDie:sub(3));
+						else
+							table.insert(rRoll.aDice, "p" .. vDie:sub(2));
 						end
 					end
-					nAddMod = nAddMod + v.nMod;
+
+					if #aEffectDmgType == 0 then
+						table.insert(aEffectDmgType, sEffectBaseType);
+					end
+					for _,vSpecialDmgType in ipairs(aEffectSpecialDmgType) do
+						table.insert(aEffectDmgType, vSpecialDmgType);
+					end
+					rClause.dmgtype = table.concat(aEffectDmgType, ",");
+					
+					-- Add effect modifier
+					local nCurrentMod;
+					if bCritical and not bEffectPrecision and not bEffectCritical then
+						nCurrentMod = (v.mod * nEffectCritMult);
+					else
+						nCurrentMod = v.mod;
+					end
+					nEffectMod = nEffectMod + nCurrentMod;
+					rClause.modifier = nCurrentMod;
+					rRoll.nMod = rRoll.nMod + nCurrentMod;
+					
+					table.insert(rRoll.clauses, rClause);
 				end
-				nDiceIndex = nDiceIndex + v.nDice;
-				
-				table.insert(aAddDamageTypes, { sType = v.sType, nDice = v.nDice * (nMult - 1), nMod = v.nMod * (nMult - 1), nMult = v.nMult });
 			end
 		end
 		
-		for _,v in ipairs(aAddDamageTypes) do
-			table.insert(aDamageTypes, v);
-		end
-	end
-	
-	-- IS HALF?
-	local bHalf = ModifierStack.getModifierKey("DMG_HALF");
-	if bHalf then
-		table.insert(aAddDesc, "[HALF]");
-	end
-	
-	if rSource then
-		local bEffects = false;
-
-		-- GET STATS AND MULTIPLES
-		local nMult = 1;
-		if sAttackType == "R" then
-			nMult = 0;
-		end
-		local sModMult = string.match(rRoll.sDesc, "%[MULT:([%d.]+)%]");
-		if sModMult then
-			nMult = tonumber(sModMult) or nMult;
-			if nMult < 0 then
-				nMult = 1;
+		-- Apply damage type modifiers
+		local aEffects = EffectManager.getEffectsByType(rSource, "DMGTYPE", {});
+		local aAddTypes = {};
+		for _,v in ipairs(aEffects) do
+			for _,v2 in ipairs(v.remainder) do
+				if StringManager.contains(DataCommon.dmgtypes, v2) then
+					table.insert(aAddTypes, v2);
+				end
 			end
 		end
-		local sActionStat = nil;
-		local nActionStatMax = 0;
-		local sModStat, sModMax = string.match(rRoll.sDesc, "%[MOD:(%w+):?(%d*)%]");
-		if sModStat then
-			sActionStat = DataCommon.ability_stol[sModStat];
-			nActionStatMax = tonumber(sModMax) or 0;
+		if #aAddTypes > 0 then
+			for _,vClause in ipairs(rRoll.clauses) do
+				local aSplitTypes = StringManager.split(vClause.dmgtype, ",", true);
+				for _,v2 in ipairs(aAddTypes) do
+					if not StringManager.contains(aSplitTypes, v2) then
+						if vClause.dmgtype ~= "" then
+							vClause.dmgtype = vClause.dmgtype .. "," .. v2;
+						else
+							vClause.dmgtype = v2;
+						end
+					end
+				end
+			end
 		end
-		if not sActionStat then
-			sActionStat = "strength";
-		end
-		local sActionStat2 = nil;
-		local sModStat2 = string.match(rRoll.sDesc, "%[MOD2:%w+%]");
-		if sModStat2 then
-			sActionStat2 = DataCommon.ability_stol[sModStat2];
-		end
-
-		-- NOTE: Effect damage dice are not multiplied on critical, though numerical modifiers are multiplied
-		-- http://rpg.stackexchange.com/questions/4465/is-smite-evil-damage-multiplied-by-a-critical-hit
-		-- NOTE: Using damage type of the first damage clause for the bonuses
-		local aEffectDice = {};
-		local nEffectMod = 0;
-
-		-- GET STAT MODIFIERS
-		local nBonusStat, nBonusEffects;
-		if nMult > 0 then
-			-- Get original stat modifier
-			local nActionStatMod = ActorManager2.getAbilityBonus(rSource, sActionStat);
-			
-			-- Get modified stat modifier
-			nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, sActionStat);
-			if nBonusEffects > 0 then
+		
+		-- Apply condition modifiers
+		if rRoll.sType ~= "spdamage" then
+			if EffectManager.hasEffectCondition(rSource, "Sickened") then
+				rRoll.nMod = rRoll.nMod - 2;
+				nEffectMod = nEffectMod - 2;
 				bEffects = true;
 			end
-			local nTotalStatMod = nActionStatMod + nBonusStat;
-			
-			-- Handle maximums
-			-- WORKAROUND: If max limited, then assume bows which allow no penalty
-			if nActionStatMax > 0 then
-				nActionStatMod = math.max(math.min(nActionStatMod, nActionStatMax), 0);
-				nTotalStatMod = math.max(math.min(nTotalStatMod, nActionStatMax), 0);
-			end
-			
-			-- Handle multipliers correctly (i.e. negative values are not multiplied, but positive values are)
-			local nMultOrigStatMod, nMultNewStatMod;
-			if nActionStatMod <= 0 then
-				nMultOrigStatMod = nActionStatMod;
-			else
-				nMultOrigStatMod = math.floor(nActionStatMod * nMult);
-			end
-			if nTotalStatMod <= 0 then
-				nMultNewStatMod = nTotalStatMod;
-			else
-				nMultNewStatMod = math.floor(nTotalStatMod * nMult);
-			end
-			
-			-- Calculate bonus difference and apply
-			local nMultDiffStatMod = nMultNewStatMod - nMultOrigStatMod;
-			nEffectMod = nEffectMod + nMultDiffStatMod;
-		end
-		nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, sActionStat2);
-		if nBonusEffects > 0 then
-			bEffects = true;
-			nEffectMod = nEffectMod + nBonusStat;
-		end
-
-		-- GET CONDITION MODIFIERS
-		if EffectManager.hasEffectCondition(rSource, "Sickened") then
-			nEffectMod = nEffectMod - 2;
-			bEffects = true;
-		end
-		if bPFMode then
-			if EffectManager.hasEffect(rSource, "Incorporeal") and sAttackType == "M" and not string.match(string.lower(rRoll.sDesc), "incorporeal touch") then
+			if EffectManager.hasEffect(rSource, "Incorporeal") and rRoll.range == "M" and not string.match(string.lower(rRoll.sDesc), "incorporeal touch") then
 				bEffects = true;
 				table.insert(aAddDesc, "[INCORPOREAL]");
 			end
 		end
-
-		-- APPLY CRITICAL MULTIPLIER TO EFFECTS SO FAR
-		if bCritical then
-			local nEffectCritMult = 2;
-			if #aDamageTypes > 0 then
-				nEffectCritMult = aDamageTypes[1].nMult or 2;
-			end
-			
-			nEffectMod = nEffectMod * nEffectCritMult;
-		end
-		
-		-- GET GENERAL DAMAGE MODIFIERS
-		local aEffects, nEffectCount = EffectManager.getEffectsBonusByType(rSource, "DMG", true, aAttackFilter, rTarget);
-		if nEffectCount > 0 then
-			bEffects = true;
-			
-			local nEffectCritMult = 2;
-			local sEffectBaseType = "";
-			if #aDamageTypes > 0 then
-				nEffectCritMult = aDamageTypes[1].nMult or 2;
-				sEffectBaseType = aDamageTypes[1].sType or "";
-			end
-			
-			for _,v in pairs(aEffects) do
-				for _,v2 in ipairs(v.dice) do
-					table.insert(aEffectDice, v2);
-				end
-				
-				local nCurrentMod;
-				if bCritical then
-					nCurrentMod = (v.mod * nEffectCritMult);
-				else
-					nCurrentMod = v.mod;
-				end
-				nEffectMod = nEffectMod + nCurrentMod;
-				
-				local aEffectDmgType = {};
-				if sEffectBaseType ~= "" then
-					table.insert(aEffectDmgType, sEffectBaseType);
-				end
-				for kWord, sWord in ipairs(v.remainder) do
-					if StringManager.contains(DataCommon.dmgtypes, sWord) then
-						table.insert(aEffectDmgType, sWord);
-					end
-				end
-				if #aEffectDmgType > 0 then
-					table.insert(aDamageTypes, { sType = table.concat(aEffectDmgType, ","), nDice = #(v.dice), nMod = nCurrentMod, nMult = nEffectCritMult });
-				else
-					table.insert(aDamageTypes, { sType = "", nDice = #(v.dice), nMod = nCurrentMod, nMult = nEffectCritMult });
-				end
-			end
-		end
-		
-		-- GET DAMAGE TYPE MODIFIER
-		local aEffects = EffectManager.getEffectsByType(rSource, "DMGTYPE", {});
-		local aAddTypes = {};
-		for _,v in ipairs(aEffects) do
-			for _,v2 in ipairs(v.remainder) do
-				local aSplitTypes = StringManager.split(v2, ",", true);
-				for _,v3 in ipairs(aSplitTypes) do
-					table.insert(aAddTypes, v3);
-				end
-			end
-		end
-		if #aAddTypes > 0 then
-			for _,v in ipairs(aDamageTypes) do
-				local aSplitTypes = StringManager.split(v.sType, ",", true);
-				for _,v2 in ipairs(aAddTypes) do
-					if not StringManager.contains(aSplitTypes, v2) then
-						if v.sType ~= "" then
-							v.sType = v.sType .. "," .. v2;
-						else
-							v.sType = v2;
-						end
-					end
-				end
-			end
-		end
-		
-		-- IF EFFECTS HAPPENED, THEN ADD NOTE
-		if bEffects then
-			local sEffects = "";
-			local sMod = StringManager.convertDiceToString(aEffectDice, nEffectMod, true);
-			if sMod ~= "" then
-				sEffects = "[" .. Interface.getString("effects_tag") .. " " .. sMod .. "]";
-			else
-				sEffects = "[" .. Interface.getString("effects_tag") .. "]";
-			end
-			table.insert(aAddDesc, sEffects);
-			
-			for _,vDie in ipairs(aEffectDice) do
-				table.insert(aAddDice, "p" .. string.sub(vDie, 2));
-			end
-			nAddMod = nAddMod + nEffectMod;
-		end
 	end
 	
-	if #aDamageTypes > 0 then
-		table.insert(aAddDesc, encodeDamageTypes(aDamageTypes));
-	end
-	
-	if #aAddDesc > 0 then
-		rRoll.sDesc = rRoll.sDesc .. " " .. table.concat(aAddDesc, " ");
-	end
-	for _,vDie in ipairs(aAddDice) do
-		table.insert(rRoll.aDice, vDie);
-	end
-	rRoll.nMod = rRoll.nMod + nAddMod;
-end
-
-function modSpellDamage(rSource, rTarget, rRoll)
-	local aAddDesc = {};
-	local aAddDice = {};
-	local nAddMod = 0;
-	
-	local aDamageTypes = decodeDamageTypes(false, rRoll.sDesc, rRoll.aDice, rRoll.nMod);
-	rRoll.sDesc = string.gsub(rRoll.sDesc, " %[TYPE: ([^]]+)%]", "");
-	
-	-- IS CRITICAL?
-	local bCritical = ModifierStack.getModifierKey("DMG_CRIT") or Input.isShiftPressed();
-	if bCritical then
-		local aAddDamageTypes = {};
-		table.insert(aAddDesc, "[CRITICAL]");
-
-		local nDiceIndex = 0;
-		for _,v in pairs(aDamageTypes) do
-			local nMult = v.nMult or 2;
-			if nMult > 1 then
-				for i = 2, nMult do
-					for j = 1, v.nDice do
-						local nIndex = nDiceIndex + j;
-						if nIndex <= #(rRoll.aDice) then
-							local sDie = rRoll.aDice[nIndex];
-							table.insert(aAddDice, "g" .. string.sub(sDie, 2));
-						end
-					end
-					nAddMod = nAddMod + v.nMod;
-				end
-				nDiceIndex = nDiceIndex + v.nDice;
-				
-				table.insert(aAddDamageTypes, { sType = v.sType, nDice = v.nDice * (nMult - 1), nMod = v.nMod * (nMult - 1), nMult = v.nMult });
-			end
-		end
-		
-		for _,v in ipairs(aAddDamageTypes) do
-			table.insert(aDamageTypes, v);
-		end
-	end
-	
-	-- IS HALF?
+	-- Handle half damage
 	local bHalf = ModifierStack.getModifierKey("DMG_HALF");
 	if bHalf then
 		table.insert(aAddDesc, "[HALF]");
 	end
 	
-	if rSource then
-		local bEffects = false;
-
-		-- GET STATS AND MULTIPLES
-		local sActionStat = nil;
-		local nActionStatMax = 0;
-		local sModStat, sModMax = string.match(rRoll.sDesc, "%[MOD:(%w+):?(%d*)%]");
-		if sModStat then
-			sActionStat = DataCommon.ability_stol[sModStat];
-			nActionStatMax = tonumber(sModMax) or 0;
+	-- Add note about effects
+	if bEffects then
+		local sEffects = "";
+		local sMod = StringManager.convertDiceToString(aEffectDice, nEffectMod, true);
+		if sMod ~= "" then
+			sEffects = "[" .. Interface.getString("effects_tag") .. " " .. sMod .. "]";
+		else
+			sEffects = "[" .. Interface.getString("effects_tag") .. "]";
 		end
-		local sActionStat2 = nil;
-		local sModStat2 = string.match(rRoll.sDesc, "%[MOD2:%w+%]");
-		if sModStat2 then
-			sActionStat2 = DataCommon.ability_stol[sModStat2];
-		end
-
-		-- NOTE: Effect damage dice are not multiplied on critical, though numerical modifiers are multiplied
-		-- http://rpg.stackexchange.com/questions/4465/is-smite-evil-damage-multiplied-by-a-critical-hit
-		-- NOTE: Using damage type of the first damage clause for the bonuses
-		local aEffectDice = {};
-		local nEffectMod = 0;
-
-		-- GET STAT MODIFIERS
-		local nBonusStat, nBonusEffects;
-		if sActionStat then
-			nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, sActionStat);
-
-			if nBonusEffects > 0 then
-				bEffects = true;
-
-				local nActionStatMod = ActorManager2.getAbilityBonus(rSource, sActionStat);
-				if nBonusStat > 0 and nActionStatMax > 0 then
-					nBonusStat = math.min(nBonusStat, nActionStatMax);
-				end
-
-				nEffectMod = nEffectMod + nBonusStat;
-			end
-		end
-		if sActionStat2 then
-			nBonusStat, nBonusEffects = ActorManager2.getAbilityEffectsBonus(rSource, sActionStat2);
-			if nBonusEffects > 0 then
-				bEffects = true;
-				nEffectMod = nEffectMod + nBonusStat;
-			end
-		end
-
-		-- APPLY CRITICAL MULTIPLIER TO EFFECTS SO FAR
-		if bCritical then
-			local nEffectCritMult = 2;
-			if #aDamageTypes > 0 then
-				nEffectCritMult = aDamageTypes[1].nMult or 2;
-			end
-			
-			nEffectMod = nEffectMod * nEffectCritMult;
-		end
-		
-		-- GET GENERAL DAMAGE MODIFIERS
-		local aEffects, nEffectCount = EffectManager.getEffectsBonusByType(rSource, "DMGS", true, nil);
-		if nEffectCount > 0 then
-			bEffects = true;
-			
-			local nEffectCritMult = 2;
-			local sEffectBaseType = "";
-			if #aDamageTypes > 0 then
-				nEffectCritMult = aDamageTypes[1].nMult or 2;
-				sEffectBaseType = aDamageTypes[1].sType or "";
-			end
-			
-			for _,v in pairs(aEffects) do
-				for _,v2 in ipairs(v.dice) do
-					table.insert(aEffectDice, v2);
-				end
-				
-				local nCurrentMod;
-				if bCritical then
-					nCurrentMod = (v.mod * nEffectCritMult);
-				else
-					nCurrentMod = v.mod;
-				end
-				nEffectMod = nEffectMod + nCurrentMod;
-				
-				local aEffectDmgType = {};
-				if sEffectBaseType ~= "" then
-					table.insert(aEffectDmgType, sEffectBaseType);
-				end
-				for kWord, sWord in ipairs(v.remainder) do
-					if StringManager.contains(DataCommon.dmgtypes, sWord) then
-						table.insert(aEffectDmgType, sWord);
-					end
-				end
-				if #aEffectDmgType > 0 then
-					table.insert(aDamageTypes, { sType = table.concat(aEffectDmgType, ","), nDice = #(v.dice), nMod = nCurrentMod, nMult = nEffectCritMult });
-				else
-					table.insert(aDamageTypes, { sType = "", nDice = #(v.dice), nMod = nCurrentMod, nMult = nEffectCritMult });
-				end
-			end
-		end
-		
-		-- GET DAMAGE TYPE MODIFIER
-		local aEffects = EffectManager.getEffectsByType(rSource, "DMGTYPE", {});
-		local aAddTypes = {};
-		for _,v in ipairs(aEffects) do
-			for _,v2 in ipairs(v.remainder) do
-				local aSplitTypes = StringManager.split(v2, ",", true);
-				for _,v3 in ipairs(aSplitTypes) do
-					table.insert(aAddTypes, v3);
-				end
-			end
-		end
-		if #aAddTypes > 0 then
-			for _,v in ipairs(aDamageTypes) do
-				local aSplitTypes = StringManager.split(v.sType, ",", true);
-				for _,v2 in ipairs(aAddTypes) do
-					if not StringManager.contains(aSplitTypes, v2) then
-						if v.sType ~= "" then
-							v.sType = v.sType .. "," .. v2;
-						else
-							v.sType = v2;
-						end
-					end
-				end
-			end
-		end
-		
-		-- IF EFFECTS HAPPENED, THEN ADD NOTE
-		if bEffects then
-			local sEffects = "";
-			local sMod = StringManager.convertDiceToString(aEffectDice, nEffectMod, true);
-			if sMod ~= "" then
-				sEffects = "[" .. Interface.getString("effects_tag") .. " " .. sMod .. "]";
-			else
-				sEffects = "[" .. Interface.getString("effects_tag") .. "]";
-			end
-			table.insert(aAddDesc, sEffects);
-			
-			for _,vDie in ipairs(aEffectDice) do
-				table.insert(aAddDice, "p" .. string.sub(vDie, 2));
-			end
-			nAddMod = nAddMod + nEffectMod;
-		end
+		table.insert(aAddDesc, sEffects);
 	end
 	
-	if #aDamageTypes > 0 then
-		table.insert(aAddDesc, encodeDamageTypes(aDamageTypes));
-	end
-	
+	-- Add notes to roll description
 	if #aAddDesc > 0 then
 		rRoll.sDesc = rRoll.sDesc .. " " .. table.concat(aAddDesc, " ");
 	end
-	for _,vDie in ipairs(aAddDice) do
-		table.insert(rRoll.aDice, vDie);
-	end
-	rRoll.nMod = rRoll.nMod + nAddMod;
+
+	-- Add damage type info to roll description
+	encodeDamageTypes(rRoll);
 end
 
 function onDamageRoll(rSource, rRoll)
+	-- Set up for meta damage processing
 	local bMaximize = rRoll.sDesc:match(" %[MAXIMIZE%]");
 	local bEmpower = rRoll.sDesc:match(" %[EMPOWER%]");
-	local nEmpowerTotalMod = 0;
 	
+	-- Apply maximize meta damage
 	if bMaximize then
 		for _, v in ipairs(rRoll.aDice) do
 			local nDieSides = tonumber(v.type:match("[dgpr](%d+)")) or 0;
@@ -629,71 +405,63 @@ function onDamageRoll(rSource, rRoll)
 		end
 	end
 	
-	-- Get damage types for this roll
-	local aDamageTypes = decodeDamageTypes(true, rRoll.sDesc, rRoll.aDice, rRoll.nMod);
-	if #aDamageTypes > 0 then
-		-- Build damage type subtotals
-		local nTypeIndex = 1;
-		local nTypeCount = 0;
-		local nTypeTotal = 0;
-		for i, d in ipairs(rRoll.aDice) do
-			if nTypeIndex <= #aDamageTypes then
-				nTypeCount = nTypeCount + 1;
-				nTypeTotal = nTypeTotal + d.result;
-				
-				if nTypeCount >= aDamageTypes[nTypeIndex].nDice then
-					nTypeTotal = nTypeTotal + aDamageTypes[nTypeIndex].nMod;
-					if bEmpower then
-						local nEmpowerMod = math.floor(nTypeTotal / 2);
-						aDamageTypes[nTypeIndex].nMod = aDamageTypes[nTypeIndex].nMod + nEmpowerMod;
-						nTypeTotal = nTypeTotal + nEmpowerMod;
-						nEmpowerTotalMod = nEmpowerTotalMod + nEmpowerMod;
+	-- Decode damage types
+	decodeDamageTypes(rRoll, true);
+
+	-- Apply empower meta damage
+	if bEmpower then
+		local nEmpowerTotalMod = 0;
+		
+		for _,vClause in pairs(rRoll.clauses) do
+			local nEmpowerMod = math.floor(vClause.nTotal / 2);
+			
+			nEmpowerTotalMod = nEmpowerTotalMod + nEmpowerMod;
+			vClause.modifier = vClause.modifier + nEmpowerMod;
+			vClause.nTotal = vClause.nTotal + nEmpowerMod;
+			rRoll.nMod = rRoll.nMod + nEmpowerMod;
+		end
+
+		local sReplace = string.format(" [EMPOWER %+d]", nEmpowerTotalMod);
+		rRoll.sDesc = rRoll.sDesc:gsub(" %[EMPOWER%]", sReplace);
+	end
+	
+	-- Handle minimum damage
+	local nTotal = ActionsManager.total(rRoll);
+	if nTotal <= 0 and rRoll.aDice and #rRoll.aDice > 0 then
+		rRoll.sDesc = rRoll.sDesc .. " [MIN DAMAGE]";
+		local nMinMod = 1 - nTotal;
+		rRoll.nMod = rRoll.nMod + nMinMod;
+		
+		local bLethal = true;
+		local aDamageTypes = {};
+		for _,vClause in pairs(rRoll.clauses) do
+			local aSplit = StringManager.split(vClause.dmgtype, ",", true);
+			for _,vSplit in ipairs(aSplit) do
+				if vSplit ~= "" and not StringManager.contains(aDamageTypes, vSplit) then
+					table.insert(aDamageTypes, vSplit);
+					if vSplit == "nonlethal" then
+						bLethal = false;
 					end
-					aDamageTypes[nTypeIndex].nTotal = nTypeTotal;
-					
-					nTypeIndex = nTypeIndex + 1;
-					nTypeCount = 0;
-					nTypeTotal = 0;
 				end
 			end
 		end
-
-		-- Handle any remaining fixed damage
-		for i = nTypeIndex, #aDamageTypes do
-			if bEmpower then
-				local nEmpowerMod = math.floor(aDamageTypes[i].nMod / 2);
-				aDamageTypes[i].nTotal = aDamageTypes[i].nMod + nEmpowerMod;
-				nEmpowerTotalMod = nEmpowerTotalMod + nEmpowerMod;
-			else
-				aDamageTypes[i].nTotal = aDamageTypes[i].nMod;
-			end
+		local bPFMode = DataCommon.isPFRPG();
+		if bPFMode and bLethal then
+			table.insert(aDamageTypes, "nonlethal");
 		end
-			
-		-- Add damage type totals to output
-		rRoll.sDesc = string.gsub(rRoll.sDesc, " %[TYPE: ([^]]+)%]", "");
-		rRoll.sDesc = rRoll.sDesc .. " " .. encodeDamageTypes(aDamageTypes);
-		
-		if bEmpower then
-			local sReplace = string.format(" [EMPOWER %+d]", nEmpowerTotalMod);
-			rRoll.sDesc = string.gsub(rRoll.sDesc, " %[EMPOWER%]", sReplace);
-			rRoll.nMod = rRoll.nMod + nEmpowerTotalMod;
-		end
+		rRoll.clauses = { { dmgtype = table.concat(aDamageTypes, ","), dice = {}, modifier = 1, nTotal = 1 } };
 	end
+	
+	-- Encode the damage results for damage application and readability
+	encodeDamageText(rRoll);
 end
 
 function onDamage(rSource, rTarget, rRoll)
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
+	rMessage.text = string.gsub(rMessage.text, " %[MOD:[^]]*%]", "");
+	rMessage.text = string.gsub(rMessage.text, " %[MULT:[^]]*%]", "");
+
 	local nTotal = ActionsManager.total(rRoll);
-	
-	-- Handle minimum damage
-	if string.match(rMessage.text, " %[MIN OVERRIDE%]") then
-		rMessage.text = string.gsub(rMessage.text, " %[MIN OVERRIDE%]", "");
-	elseif nTotal <= 0 and rRoll.aDice and #rRoll.aDice > 0 then
-		local nMinDmgAdj = -(nTotal) + 1;
-		rMessage.text = string.format("%s [MIN DMG ADJ %+d]", rMessage.text, nMinDmgAdj);
-		rMessage.diemodifier = rMessage.diemodifier + nMinDmgAdj;
-		nTotal = nTotal + nMinDmgAdj;
-	end
 	
 	-- Send the chat message
 	local bShowMsg = true;
@@ -723,7 +491,7 @@ function onStabilization(rSource, rTarget, rRoll)
 	if bSuccess then
 		EffectManager.addEffect("", "", ActorManager.getCTNode(rSource), { sName = "Stable", nDuration = 0 }, true);
 	else
-		ActionDamage.applyDamage(nil, rSource, false, "number", "[DAMAGE] Dying", 1);
+		applyFailedStabilization(rSource);
 	end
 end
 
@@ -731,147 +499,116 @@ end
 -- UTILITY FUNCTIONS
 --
 
-function encodeDamageTypes(aDamageTypes)
-	local aOutputType = {};
-	
-	local nTypeCount = 0;
-	local sLastDamageType = nil;
-	local nLastDieCount = 0;
-	local nLastMod = 0;
-	local nLastTotal = nil;
-	local nLastMult = 2;
-	for _,v in ipairs(aDamageTypes) do
-		local nCurrentMult = v.nMult or 2;
-		
-		local sCurrentDamageType = string.lower(v.sType);
-		
-		if sLastDamageType and ((sCurrentDamageType ~= sLastDamageType) or (nCurrentMult ~= nLastMult)) then
-			local sDmgType;
-			if sLastDamageType == "" then
-				sDmgType = "[TYPE: untyped";
-			else
-				sDmgType = "[TYPE: " .. sLastDamageType;
-			end
-			sDmgType = sDmgType .. " (" .. nLastDieCount .. "D";
-			if nLastMod > 0 then
-				sDmgType = sDmgType .. "+" .. nLastMod;
-			elseif nLastMod < 0 then
-				sDmgType = sDmgType .. nLastMod;
-			end
-			if nLastTotal then
-				sDmgType = sDmgType .. "=" .. nLastTotal;
-			end
-			sDmgType = sDmgType .. ")";
-			if nLastMult ~= 2 then
-				sDmgType = sDmgType .. "(x" .. nLastMult .. ")";
-			end
-			sDmgType = sDmgType .. "]";
-			
-			table.insert(aOutputType, sDmgType);
-			
-			nTypeCount = nTypeCount + 1;
-			nLastDieCount = 0;
-			nLastMod = 0;
-		end
-		
-		sLastDamageType = sCurrentDamageType;
-		nLastDieCount = nLastDieCount + v.nDice;
-		nLastMod = nLastMod + v.nMod;
-		nLastMult = nCurrentMult;
-		nLastTotal = v.nTotal;
+function encodeDamageTypes(rRoll)
+	for _,vClause in ipairs(rRoll.clauses) do
+		local sDice = StringManager.convertDiceToString(vClause.dice, vClause.modifier);
+		rRoll.sDesc = rRoll.sDesc .. string.format(" [TYPE: %s (%s) (%s) (%s) (%s) (%s)]", vClause.dmgtype, sDice, vClause.mult or 2, vClause.stat or "", vClause.statmax or 0, vClause.statmult or 1);
 	end
-	if sLastDamageType and ((sLastDamageType ~= "") or (nLastMult ~= 2)) then
-		local sDmgType;
-		if sLastDamageType == "" then
-			sDmgType = "[TYPE: untyped";
-		else
-			sDmgType = "[TYPE: " .. sLastDamageType;
-		end
-		if nTypeCount > 0 then
-			sDmgType = sDmgType .. " (" .. nLastDieCount .. "D";
-			if nLastMod > 0 then
-				sDmgType = sDmgType .. "+" .. nLastMod;
-			elseif nLastMod < 0 then
-				sDmgType = sDmgType .. nLastMod;
-			end
-			if nLastTotal then
-				sDmgType = sDmgType .. "=" .. nLastTotal;
-			end
-			sDmgType = sDmgType .. ")";
-		end
-		if nLastMult ~= 2 then
-			sDmgType = sDmgType .. "(x" .. nLastMult .. ")";
-		end
-		sDmgType = sDmgType .. "]";
-		
-		table.insert(aOutputType, sDmgType);
-	end
-	
-	return table.concat(aOutputType, " ");
 end
 
-function decodeDamageTypes(bRolled, sDesc, aDice, nMod)
-	local aDamageTypes = {};
-	
-	local nDamageDice = 0;
-	local nDamageMod = 0;
-	
-	for sDamageClause in string.gmatch(sDesc, "%[TYPE: ([^]]+)%]") do
-		local sDamageType = string.match(sDamageClause, "^([,%w%s]+)");
-		if sDamageType then
-			sDamageType = StringManager.trim(sDamageType);
-			
-			local nTotal = nil;
-			local sDieCount, sSign, sMod = string.match(sDamageClause, "%((%d+)D([%+%-]?)(%d*)");
-			local nDieCount = tonumber(sDieCount) or 0;
-			local nDieMod = tonumber(sMod) or 0;
-			if nDieCount > 0 or nDieMod > 0 then
-				if sSign == "-" then
-					nDieMod = 0 - nDieMod;
-				end
-			else
-				nDieCount = #aDice - nDamageDice;
-				nDieMod = nMod - nDamageMod;
-			end
-
-			nDamageDice = nDamageDice + nDieCount;
-			nDamageMod = nDamageMod + nDieMod;
-
-			if sDamageType == "untyped" then
-				sDamageType = "";
-			end
-			
-			local rDamageType = { sType = sDamageType, nDice = nDieCount, nMod = nDieMod };
-
-			local sMult = string.match(sDamageClause, "%(x(%d+)%)");
-			if sMult then
-				rDamageType.nMult = tonumber(sMult) or 2;
-			end
-			local sTotal = string.match(sDamageClause, "%(%d+D[%+%-]?%d*=(%d+)%)");
-			if sTotal then
-				rDamageType.nTotal = tonumber(sTotal) or 0;
-			end
-			
-			table.insert(aDamageTypes, rDamageType);
-		end
-	end
-	
-	if (nDamageDice < #aDice) or (nDamageMod ~= nMod) then
-		local rDamageType = { sType = "", nDice = (#aDice - nDamageDice), nMod = (nMod - nDamageMod) };
-		if bRolled then
-			rDamageType.nTotal = 0;
-			if (nDamageDice < #aDice) then
-				for i = nDamageDice + 1, #aDice do
-					rDamageType.nTotal = rDamageType.nTotal + aDice[i].result;
-				end
-			end
-			rDamageType.nTotal = rDamageType.nTotal + rDamageType.nMod;
+function decodeDamageTypes(rRoll, bFinal)
+	-- Process each type clause in the damage description as encoded previously
+	local nMainDieIndex = 0;
+	rRoll.clauses = {};
+	for sDmgType, sDmgDice, sDmgMult, sDmgStat, sDmgStatMax, sDmgStatMult in string.gmatch(rRoll.sDesc, "%[TYPE: ([^(]*) %(([^)]*)%) %(([^)]*)%) %(([^)]*)%) %(([^)]*)%) %(([^)]*)%)%]") do
+		local rClause = {};
+		rClause.dmgtype = StringManager.trim(sDmgType);
+		rClause.dice, rClause.modifier = StringManager.convertStringToDice(sDmgDice);
+		rClause.mult = tonumber(sDmgMult) or 2;
+		rClause.stat = sDmgStat;
+		rClause.statmax = tonumber(sDmgStatMax) or 0;
+		rClause.statmult = tonumber(sDmgStatMult) or 1;
+		
+		rClause.nTotal = rClause.modifier;
+		for _,vDie in ipairs(rClause.dice) do
+			nMainDieIndex = nMainDieIndex + 1;
+			rClause.nTotal = rClause.nTotal + (rRoll.aDice[nMainDieIndex].result or 0);
 		end
 		
-		table.insert(aDamageTypes, rDamageType);
+		table.insert(rRoll.clauses, rClause);
 	end
 	
-	return aDamageTypes;
+	-- Handle rolls that went straight to roll without going through whole system (i.e. ongoing damage, regen, fast heal, etc.)
+	local nClauses = #(rRoll.clauses);
+	if nClauses == 0 then
+		for sDamageType in rRoll.sDesc:gmatch("%[TYPE: ([^%]]+)%]") do
+			local sDmgType = StringManager.trim(sDamageType:match("^([^(%]]+)"));
+			local sDmgDice, sTotal = sDamageType:match("%(([%d%+%-Dd]+)%=(%d+)%)");
+			if not sDmgDice then
+				sTotal = sDamageType:match("%((%d+)%)")
+			end
+			
+			local rClause = {};
+			rClause.dmgtype = StringManager.trim(sDmgType);
+			rClause.dice = {};
+			rClause.modifier = tonumber(sTotal) or ActionsManager.total(rRoll);
+			rClause.mult = 2;
+			rClause.stat = "";
+			rClause.statmax = 0;
+			rClause.statmult = 1;
+			
+			rClause.nTotal = rClause.modifier;
+			
+			table.insert(rRoll.clauses, rClause);
+		end
+	end
+	
+	-- Handle drag results that are halved or doubled
+	if #(rRoll.aDice) == 0 then
+		local nResultTotal = 0;
+		for i = nClauses + 1, #(rRoll.clauses) do
+			nResultTotal = rRoll.clauses[i].nTotal;
+		end
+		if nResultTotal > 0 and nResultTotal ~= rRoll.nMod then
+			if math.floor(nResultTotal / 2) == rRoll.nMod then
+				for _,vClause in ipairs(rRoll.clauses) do
+					vClause.modifier = math.floor(vClause.modifier / 2);
+					vClause.nTotal = math.floor(vClause.nTotal / 2);
+				end
+			elseif nResultTotal * 2 == rRoll.nMod then
+				for _,vClause in ipairs(rRoll.clauses) do
+					vClause.modifier = 2 * vClause.modifier;
+					vClause.nTotal = 2 * vClause.nTotal;
+				end
+			end
+		end
+	end
+	
+	-- Remove damage type information from roll description
+	rRoll.sDesc = string.gsub(rRoll.sDesc, " %[TYPE:[^]]*%]", "");
+	
+	if bFinal then
+		-- Capture any manual modifiers and adjust damage types accordingly
+		-- NOTE: Positive values are added to first damage clause, Negative values reduce damage clauses until none remain
+		local nFinalTotal = ActionsManager.total(rRoll);
+		local nClausesTotal = 0;
+		for _,vClause in ipairs(rRoll.clauses) do
+			nClausesTotal = nClausesTotal + vClause.nTotal;
+		end
+		if nFinalTotal ~= nClausesTotal then
+			local nRemainder = nFinalTotal - nClausesTotal;
+			if nRemainder > 0 then
+				if #(rRoll.clauses) == 0 then
+					table.insert(rRoll.clauses, { dmgtype = "", stat = "", dice = {}, modifier = nRemainder, nTotal = nRemainder})
+				else
+					rRoll.clauses[1].modifier = rRoll.clauses[1].modifier + nRemainder;
+					rRoll.clauses[1].nTotal = rRoll.clauses[1].nTotal + nRemainder;
+				end
+			else
+				for _,vClause in ipairs(rRoll.clauses) do
+					if vClause.nTotal >= -nRemainder then
+						vClause.modifier = vClause.modifier + nRemainder;
+						vClause.nTotal = vClause.nTotal + nRemainder;
+						break;
+					else
+						vClause.modifier = vClause.modifier - vClause.nTotal;
+						nRemainder = nRemainder + vClause.nTotal;
+						vClause.nTotal = 0;
+					end
+				end
+			end
+		end
+	end
 end
 
 function getDamageTypesFromString(sDamageTypes)
@@ -1028,13 +765,24 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput)
 	local aResist = EffectManager.getEffectsBonusByType(rTarget, "RESIST", false, {}, rSource);
 	local aDR = EffectManager.getEffectsByType(rTarget, "DR", {}, rSource);
 	
-	local bIncorporealTarget = EffectManager.hasEffect(rTarget, "Incorporeal", rSource);
+	local bApplyIncorporeal = false;
+	local bSourceIncorporeal = false;
+	if string.match(rDamageOutput.sOriginal, "%[INCORPOREAL%]") then
+		bSourceIncorporeal = true;
+	end
+	local bTargetIncorporeal = EffectManager.hasEffect(rTarget, "Incorporeal");
+	if bSourceIncorporeal ~= bTargetIncorporeal then
+		bApplyIncorporeal = true;
+		if bPFMode then
+			aImmune["critical"] = true;
+		end
+	end
 	
 	-- IF IMMUNE ALL, THEN JUST HANDLE IT NOW
 	if aImmune["all"] then
 		nDamageAdjust = 0 - nDamage;
 		bResist = true;
-		return nDamageAdjust, bVulnerable, bResist;
+		return nDamageAdjust, 0, bVulnerable, bResist;
 	end
 	
 	-- HANDLE REGENERATION
@@ -1063,7 +811,7 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput)
 				if bCheckRegen then
 					local bMatchAND, nMatchAND, bMatchDMG, aClausesOR;
 					local bApplyRegen;
-					for kRegen, vRegen in pairs(aRegen) do
+					for _,vRegen in pairs(aRegen) do
 						bApplyRegen = true;
 						
 						local sRegen = table.concat(vRegen.remainder, " ");
@@ -1136,6 +884,23 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput)
 							nLocalDamageAdjust = nLocalDamageAdjust - nChange;
 							bResist = true;
 						end
+					-- CHECK RESIST ALL
+					elseif aResist["all"] then
+						local nApplied = aResist["all"].nApplied or 0;
+						if nApplied < aResist["all"].mod then
+							local nChange = math.min((aResist["all"].mod - nApplied), v + nLocalDamageAdjust);
+							aResist["all"].nApplied = nApplied + nChange;
+							nLocalDamageAdjust = nLocalDamageAdjust - nChange;
+							bResist = true;
+						end
+					elseif aResist[""] then
+						local nApplied = aResist[""].nApplied or 0;
+						if nApplied < aResist[""].mod then
+							local nChange = math.min((aResist[""].mod - nApplied), v + nLocalDamageAdjust);
+							aResist[""].nApplied = nApplied + nChange;
+							nLocalDamageAdjust = nLocalDamageAdjust - nChange;
+							bResist = true;
+						end
 					end
 				end
 			end
@@ -1146,12 +911,14 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput)
 			local bMatchAND, nMatchAND, bMatchDMG, aClausesOR;
 			
 			local bApplyDR;
-			for kDR, vDR in pairs(aDR) do
+			for _,vDR in pairs(aDR) do
+				local kDR = table.concat(vDR.remainder, " ");
+				
 				if kDR == "" or kDR == "-" or kDR == "all" then
 					bApplyDR = true;
 				else
 					bApplyDR = true;
-					aClausesOR = decodeAndOrClauses(table.concat(vDR.remainder, " "));
+					aClausesOR = decodeAndOrClauses(kDR);
 					if matchAndOrClauses(aClausesOR, aSrcDmgClauseTypes) then
 						bApplyDR = false;
 					end
@@ -1170,17 +937,17 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput)
 		end
 		
 		-- HANDLE INCORPOREAL (PF MODE)
-		if bIncorporealTarget and (v + nLocalDamageAdjust) > 0 then
+		if bApplyIncorporeal and (v + nLocalDamageAdjust) > 0 then
 			local bIgnoreDamage = true;
-			local bApplyIncorporeal = true;
+			local bApplyIncorporeal2 = true;
 			for keyDmgType, sDmgType in pairs(aSrcDmgClauseTypes) do
 				if sDmgType == "force" then
-					bApplyIncorporeal = false;
+					bApplyIncorporeal2 = false;
 				elseif sDmgType == "spell" or sDmgType == "magic" then
 					bIgnoreDamage = false;
 				end
 			end
-			if bApplyIncorporeal then
+			if bApplyIncorporeal2 then
 				if bIgnoreDamage then
 					nLocalDamageAdjust = -v;
 					bResist = true;
@@ -1211,40 +978,82 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput)
 		nNonlethal = nNonlethal + nNonlethalAdjust;
 	end
 
-	-- HANDLE IMMUNITY TO NONLETHAL
-	if EffectManager.hasEffectCondition(rTarget, "Construct traits") or EffectManager.hasEffectCondition(rTarget, "Undead traits") then
-		if nNonlethal > 0 then
-			nNonlethal = 0;
-			bResist = true;
-		end
-	end
-	
 	-- RESULTS
 	return nDamageAdjust, nNonlethal, bVulnerable, bResist;
 end
 
+-- Collapse damage clauses by damage type (in the original order, if possible)
+function getDamageStrings(clauses)
+	local aOrderedTypes = {};
+	local aDmgTypes = {};
+	for _,vClause in ipairs(clauses) do
+		local rDmgType = aDmgTypes[vClause.dmgtype];
+		if not rDmgType then
+			rDmgType = {};
+			rDmgType.aDice = {};
+			rDmgType.nMod = 0;
+			rDmgType.nTotal = 0;
+			rDmgType.sType = vClause.dmgtype;
+			aDmgTypes[vClause.dmgtype] = rDmgType;
+			table.insert(aOrderedTypes, rDmgType);
+		end
+
+		for _,vDie in ipairs(vClause.dice) do
+			table.insert(rDmgType.aDice, vDie);
+		end
+		rDmgType.nMod = rDmgType.nMod + vClause.modifier;
+		rDmgType.nTotal = rDmgType.nTotal + (vClause.nTotal or 0);
+	end
+	
+	return aOrderedTypes;
+end
+
+function encodeDamageText(rRoll)
+	local aDamage = getDamageStrings(rRoll.clauses);
+	for _, rDamage in ipairs(aDamage) do
+		local sDmgTypeOutput = rDamage.sType;
+		if sDmgTypeOutput == "" then
+			sDmgTypeOutput = "untyped";
+		end
+		
+		if #rDamage.aDice == 0 then
+			rRoll.sDesc = rRoll.sDesc .. string.format(" [TYPE: %s (%d)]", sDmgTypeOutput, rDamage.nTotal);
+		else
+			local sDice = StringManager.convertDiceToString(rDamage.aDice, rDamage.nMod);
+			rRoll.sDesc = rRoll.sDesc .. string.format(" [TYPE: %s (%s=%d)]", sDmgTypeOutput, sDice, rDamage.nTotal);
+		end
+	end
+	
+	-- NOTE: Using damage type of the first damage clause for any targeted effect crit multiplier
+	if #(rRoll.clauses) > 0 then
+		local nEffectCritMult = rRoll.clauses[1].mult or 2;
+		if nEffectCritMult then
+			rRoll.sDesc = rRoll.sDesc .. string.format(" [MULT: %d]", nEffectCritMult);
+		end
+	end
+end
+
 function decodeDamageText(nDamage, sDamageDesc)
 	local rDamageOutput = {};
-	rDamageOutput.sType = "damage";
-	rDamageOutput.sTypeOutput = "Damage";
-	rDamageOutput.sVal = "" .. nDamage;
-	rDamageOutput.nVal = nDamage;
+	rDamageOutput.sOriginal = sDamageDesc;
 	
 	if string.match(sDamageDesc, "%[HEAL") then
-		if nDamage >= 0 then
-			if string.match(sDamageDesc, "%[TEMP%]") then
-				-- SET MESSAGE TYPE
-				rDamageOutput.sType = "temphp";
-				rDamageOutput.sTypeOutput = "Temporary hit points";
-			else
-				-- SET MESSAGE TYPE
-				rDamageOutput.sType = "heal";
-				rDamageOutput.sTypeOutput = "Heal";
-			end
+		if string.match(sDamageDesc, "%[TEMP%]") then
+			rDamageOutput.sType = "temphp";
+			rDamageOutput.sTypeOutput = "Temporary hit points";
+		else
+			rDamageOutput.sType = "heal";
+			rDamageOutput.sTypeOutput = "Heal";
 		end
+		rDamageOutput.sVal = string.format("%01d", nDamage);
+		rDamageOutput.nVal = nDamage;
+
 	elseif string.match(sDamageDesc, "%[FHEAL") then
 		rDamageOutput.sType = "fheal";
 		rDamageOutput.sTypeOutput = "Fast healing";
+		rDamageOutput.sVal = string.format("%01d", nDamage);
+		rDamageOutput.nVal = nDamage;
+
 	elseif string.match(sDamageDesc, "%[REGEN") then
 		local bPFMode = DataCommon.isPFRPG();
 		if bPFMode then
@@ -1254,28 +1063,45 @@ function decodeDamageText(nDamage, sDamageDesc)
 			rDamageOutput.sType = "regen";
 			rDamageOutput.sTypeOutput = "Regeneration";
 		end
+		rDamageOutput.sVal = string.format("%01d", nDamage);
+		rDamageOutput.nVal = nDamage;
+
 	elseif nDamage < 0 then
 		rDamageOutput.sType = "heal";
 		rDamageOutput.sTypeOutput = "Heal";
-		rDamageOutput.sVal = "" .. (0 - nDamage);
+		rDamageOutput.sVal = string.format("%01d", (0 - nDamage));
 		rDamageOutput.nVal = 0 - nDamage;
+
 	else
-		-- DETERMINE CRITICAL
+		rDamageOutput.sType = "damage";
+		rDamageOutput.sTypeOutput = "Damage";
+		rDamageOutput.sVal = string.format("%01d", nDamage);
+		rDamageOutput.nVal = nDamage;
+
+		-- Determine critical
 		rDamageOutput.bCritical = string.match(sDamageDesc, "%[CRITICAL%]");
 
-		-- DETERMINE RANGE
+		-- Determine range
 		rDamageOutput.sRange = string.match(sDamageDesc, "%[DAMAGE %((%w)%)%]") or "";
+		rDamageOutput.aDamageFilter = {};
+		if rDamageOutput.sRange == "M" then
+			table.insert(rDamageOutput.aDamageFilter, "melee");
+		elseif rDamageOutput.sRange == "R" then
+			table.insert(rDamageOutput.aDamageFilter, "ranged");
+		end
 
 		-- NOTE: Effect damage dice are not multiplied on critical, though numerical modifiers are multiplied
 		-- http://rpg.stackexchange.com/questions/4465/is-smite-evil-damage-multiplied-by-a-critical-hit
-		-- NOTE: Using damage type of the first damage clause for the bonuses
 
-		-- DETERMINE DAMAGE ENERGY TYPES
+		-- Determine damage energy types
 		rDamageOutput.aDamageTypes = {};
 		local nDamageRemaining = nDamage;
-		for sDamageType in string.gmatch(sDamageDesc, "%[TYPE: ([^%]]+)%]") do
-			local sDmgType = StringManager.trim(string.match(sDamageType, "^([^(%]]+)"));
-			local sDice, sTotal = string.match(sDamageType, "%(([%d%+%-D]+)%=(%d+)%)");
+		for sDamageType in sDamageDesc:gmatch("%[TYPE: ([^%]]+)%]") do
+			local sDmgType = StringManager.trim(sDamageType:match("^([^(%]]+)"));
+			local sDice, sTotal = sDamageType:match("%(([%d%+%-Dd]+)%=(%d+)%)");
+			if not sDice then
+				sTotal = sDamageType:match("%((%d+)%)")
+			end
 			local nDmgTypeTotal = tonumber(sTotal) or nDamageRemaining;
 
 			if rDamageOutput.aDamageTypes[sDmgType] then
@@ -1285,33 +1111,25 @@ function decodeDamageText(nDamage, sDamageDesc)
 			end
 			if not rDamageOutput.sFirstDamageType then
 				rDamageOutput.sFirstDamageType = sDmgType;
-				local sMult = string.match(sDamageType, "%(x(%d+)%)");
-				rDamageOutput.nFirstDamageMult = tonumber(sMult) or 2;
 			end
 
 			nDamageRemaining = nDamageRemaining - nDmgTypeTotal;
-			if nDamageRemaining <= 0 then
-				break;
-			end
 		end
 		if nDamageRemaining > 0 then
 			rDamageOutput.aDamageTypes[""] = nDamageRemaining;
+		elseif nDamageRemaining < 0 then
+			ChatManager.SystemMessage("Total mismatch in damage type totals");
 		end
 		
-		-- DETERMINE DAMAGE TYPES
-		rDamageOutput.aDamageFilter = {};
-		if rDamageOutput.sRange == "M" then
-			table.insert(rDamageOutput.aDamageFilter, "melee");
-		elseif rDamageOutput.sRange == "R" then
-			table.insert(rDamageOutput.aDamageFilter, "ranged");
-		end
+		-- Determine effect damage multiple
+		local sMult = sDamageDesc:match("%[MULT: ([^%]]+)%]");
+		rDamageOutput.nFirstDamageMult = tonumber(sMult) or 2;
 	end
 	
 	return rDamageOutput;
 end
 
 function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal)
-	-- SETUP
 	local nTotalHP = 0;
 	local nTempHP = 0;
 	local nNonLethal = 0;
@@ -1320,7 +1138,7 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal)
 
 	local aNotifications = {};
 	
-	-- GET HEALTH FIELDS
+	-- Get health fields
 	local sTargetType, nodeTarget = ActorManager.getTypeAndNode(rTarget);
 	if sTargetType ~= "pc" and sTargetType ~= "ct" then
 		return;
@@ -1339,13 +1157,12 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal)
 	end
 	
 	-- Remember current health status
-	local sOriginalStatus, sNewStatus;
-	_,_,sOriginalStatus = ActorManager2.getPercentWounded(sTargetType, nodeTarget);
+	local _,_,sOriginalStatus = ActorManager2.getPercentWounded(sTargetType, nodeTarget);
 
-	-- DECODE DAMAGE DESCRIPTION
+	-- Decode damage/heal description
 	local rDamageOutput = decodeDamageText(nTotal, sDamage);
-	
-	-- HEALING
+
+	-- Healing
 	if rDamageOutput.sType == "heal" or rDamageOutput.sType == "fheal" then
 		-- CHECK COST
 		if nWounds <= 0 and nNonlethal <= 0 then
@@ -1384,7 +1201,7 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal)
 			end
 		end
 
-	-- REGENERATION
+	-- Regeneration
 	elseif rDamageOutput.sType == "regen" then
 		if nNonlethal <= 0 then
 			table.insert(aNotifications, "[NO NONLETHAL DAMAGE]");
@@ -1396,16 +1213,14 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal)
 			rDamageOutput.sVal = "" .. nNonlethalHealAmount .. " NL";
 		end
 
-	-- TEMPORARY HIT POINTS
+	-- Temporary hit points
 	elseif rDamageOutput.sType == "temphp" then
-		-- APPLY TEMPORARY HIT POINTS
-		nTempHP = math.max(nTempHP, nTotal);
+		nTempHP = nTempHP + nTotal;
 
-	-- DAMAGE
+	-- Damage
 	else
-	
-		-- APPLY ANY TARGETED DAMAGE EFFECTS
-		-- NOTE: DICE ARE RANDOMLY DETERMINED BY COMPUTER, INSTEAD OF ROLLED
+		-- Apply any targeted damage effects 
+		-- NOTE: Dice determined randomly, instead of rolled
 		if rSource and rTarget and rTarget.nOrder then
 			local aTargetedDamage;
 			if sRollType == "spdamage" then
@@ -1449,7 +1264,7 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal)
 			end
 		end
 		
-		-- CHECK FOR HALF DAMAGE
+		-- Handle half damage
 		local isHalf = string.match(sDamage, "%[HALF%]");
 		if isHalf then
 			table.insert(aNotifications, "[HALF]");
@@ -1459,10 +1274,8 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal)
 			nTotal = math.max(math.floor(nTotal / 2), 1);
 		end
 		
-		-- APPLY ANY DAMAGE TYPE ADJUSTMENT EFFECTS
+		-- Apply damage type adjustments
 		local nDamageAdjust, nNonlethalDmgAmount, bVulnerable, bResist = getDamageAdjust(rSource, rTarget, nTotal, rDamageOutput);
-
-		-- ADDITIONAL DAMAGE ADJUSTMENTS NOT RELATED TO DAMAGE TYPE
 		local nAdjustedDamage = nTotal + nDamageAdjust;
 		if nAdjustedDamage < 0 then
 			nAdjustedDamage = 0;
@@ -1478,7 +1291,7 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal)
 			table.insert(aNotifications, "[VULNERABLE]");
 		end
 		
-		-- REDUCE DAMAGE BY TEMPORARY HIT POINTS
+		-- Reduce damage by temporary hit points
 		if nTempHP > 0 and nAdjustedDamage > 0 then
 			if nAdjustedDamage > nTempHP then
 				nAdjustedDamage = nAdjustedDamage - nTempHP;
@@ -1491,33 +1304,40 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal)
 			end
 		end
 
+		-- Apply remaining damage
+		if nNonlethalDmgAmount > 0 then
+			if bPFMode and (nNonlethal + nNonlethalDmgAmount > nTotalHP) then
+				local aRegen = EffectManager.getEffectsByType(rTarget, "REGEN");
+				if #aRegen == 0 then
+					local nOver = nNonlethal + nNonlethalDmgAmount - nTotalHP;
+					if nOver > nNonlethalDmgAmount then
+						nOver = nNonlethalDmgAmount;
+					end
+					nAdjustedDamage = nAdjustedDamage + nOver;
+					nNonlethalDmgAmount = nNonlethalDmgAmount - nOver;
+				end
+			end
+			nNonlethal = math.max(nNonlethal + nNonlethalDmgAmount, 0);
+		end
+		if nAdjustedDamage > 0 then
+			nWounds = math.max(nWounds + nAdjustedDamage, 0);
+		end
+		
 		-- Update the damage output variable to reflect adjustments
 		rDamageOutput.nVal = nAdjustedDamage;
 		if nAdjustedDamage > 0 then
-			rDamageOutput.sVal = "" .. nAdjustedDamage;
+			rDamageOutput.sVal = string.format("%01d", nAdjustedDamage);
 			if nNonlethalDmgAmount > 0 then
-				rDamageOutput.sVal = rDamageOutput.sVal .. " (+" .. nNonlethalDmgAmount .. " NL)";
+				rDamageOutput.sVal = rDamageOutput.sVal .. string.format(" (+%01d NL)", nNonlethalDmgAmount);
 			end
 		elseif nNonlethalDmgAmount > 0 then
-			rDamageOutput.sVal = "" .. nNonlethalDmgAmount .. " NL";
+			rDamageOutput.sVal = string.format("%01d NL", nNonlethalDmgAmount);
 		else
 			rDamageOutput.sVal = "0";
 		end
-
-		-- APPLY REMAINING DAMAGE
-		local nOriginalWounds = nWounds;
-		nWounds = nWounds + nAdjustedDamage;
-		if nWounds < 0 then
-			nWounds = 0;
-		end
-		local nOriginalNonlethal = nNonlethal;
-		nNonlethal = nNonlethal + nNonlethalDmgAmount;
-		if nNonlethal < 0 then
-			nNonlethal = 0;
-		end
 	end
 
-	-- SET HEALTH FIELDS
+	-- Set health fields
 	if sTargetType == "pc" then
 		DB.setValue(nodeTarget, "hp.temporary", "number", nTempHP);
 		DB.setValue(nodeTarget, "hp.wounds", "number", nWounds);
@@ -1529,12 +1349,20 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal)
 	end
 
 	-- Check for status change
-	_,_,sNewStatus = ActorManager2.getPercentWounded(sTargetType, nodeTarget);
-	if sOriginalStatus ~= sNewStatus then
-		table.insert(aNotifications, "[" .. sNewStatus:upper() .. "]");
+	local bShowStatus = false;
+	if ActorManager.getFaction(rTarget) == "friend" then
+		bShowStatus = not OptionsManager.isOption("SHPC", "off");
+	else
+		bShowStatus = not OptionsManager.isOption("SHNPC", "off");
+	end
+	if bShowStatus then
+		local _,_,sNewStatus = ActorManager2.getPercentWounded(sTargetType, nodeTarget);
+		if sOriginalStatus ~= sNewStatus then
+			table.insert(aNotifications, "[" .. Interface.getString("combat_tag_status") .. ": " .. sNewStatus .. "]");
+		end
 	end
 	
-	-- OUTPUT RESULTS
+	-- Output results
 	messageDamage(rSource, rTarget, bSecret, rDamageOutput.sTypeOutput, sDamage, rDamageOutput.sVal, table.concat(aNotifications, " "));
 end
 
@@ -1566,4 +1394,82 @@ function messageDamage(rSource, rTarget, bSecret, sDamageType, sDamageDesc, sTot
 	end
 	
 	ActionsManager.messageResult(bSecret, rSource, rTarget, msgLong, msgShort);
+end
+
+function applyFailedStabilization(rActor)
+	local sDamageTypeOutput = "Damage";
+	local sDamage = "[DAMAGE] Dying";
+	local nTotal = 1;
+	
+	local nTotalHP = 0;
+	local nTempHP = 0;
+	local nWounds = 0;
+
+	local aNotifications = {};
+	
+	-- Get health fields
+	local sActorType, nodeActor = ActorManager.getTypeAndNode(rActor);
+	if sActorType ~= "pc" and sActorType ~= "ct" then
+		return;
+	end
+	
+	if sActorType == "pc" then
+		nTotalHP = DB.getValue(nodeActor, "hp.total", 0);
+		nTempHP = DB.getValue(nodeActor, "hp.temporary", 0);
+		nWounds = DB.getValue(nodeActor, "hp.wounds", 0);
+	else
+		nTotalHP = DB.getValue(nodeActor, "hp", 0);
+		nTempHP = DB.getValue(nodeActor, "hptemp", 0);
+		nWounds = DB.getValue(nodeActor, "wounds", 0);
+	end
+	
+	-- Remember current health status
+	local _,_,sOriginalStatus = ActorManager2.getPercentWounded(sActorType, nodeActor);
+
+	-- Track adjustments, if any
+	local nAdjustedDamage = nTotal;
+
+	-- Reduce damage by temporary hit points
+	if nTempHP > 0 and nAdjustedDamage > 0 then
+		if nAdjustedDamage > nTempHP then
+			nAdjustedDamage = nAdjustedDamage - nTempHP;
+			nTempHP = 0;
+			table.insert(aNotifications, "[PARTIALLY ABSORBED]");
+		else
+			nTempHP = nTempHP - nAdjustedDamage;
+			nAdjustedDamage = 0;
+			table.insert(aNotifications, "[ABSORBED]");
+		end
+	end
+
+	-- Apply remaining damage
+	if nAdjustedDamage > 0 then
+		nWounds = math.max(nWounds + nAdjustedDamage, 0);
+	end
+	
+	-- Set health fields
+	if sActorType == "pc" then
+		DB.setValue(nodeActor, "hp.temporary", "number", nTempHP);
+		DB.setValue(nodeActor, "hp.wounds", "number", nWounds);
+	else
+		DB.setValue(nodeActor, "hptemp", "number", nTempHP);
+		DB.setValue(nodeActor, "wounds", "number", nWounds);
+	end
+
+	-- Check for status change
+	local _,_,sNewStatus = ActorManager2.getPercentWounded(sActorType, nodeActor);
+	if sOriginalStatus ~= sNewStatus then
+		table.insert(aNotifications, "[Status: " .. sNewStatus:upper() .. "]");
+	end
+	
+	-- Update the damage output variable to reflect adjustments
+	local sDamageOutput;
+	if nAdjustedDamage > 0 then
+		sDamageOutput = string.format("%01d", nAdjustedDamage);
+	else
+		sDamageOutput = "0";
+	end
+
+	-- Output results
+	messageDamage(nil, rActor, false, sDamageTypeOutput, sDamage, sDamageOutput, table.concat(aNotifications, " "));
 end

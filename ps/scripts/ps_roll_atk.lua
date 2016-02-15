@@ -30,9 +30,12 @@ function action(draginfo)
 	end
 	rRoll.nMod = rRoll.nMod + nStackMod;
 	
+	ModifierStack.lock();
 	for _,v in pairs(aParty) do
 		ActionsManager.actionDirect(nil, "attack", { rRoll }, { { v } });
 	end
+	ModifierStack.unlock(true);
+	
 	return true;
 end
 

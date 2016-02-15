@@ -4,23 +4,9 @@
 --
 
 function onInit()
-	registerMenuItem(Interface.getString("menu_deleteweapon"), "delete", 4);
-	registerMenuItem(Interface.getString("list_menu_deleteconfirm"), "delete", 4, 3);
-	
 	local sNode = getDatabaseNode().getNodeName();
 	DB.addHandler(sNode, "onChildUpdate", onDataChanged);
 	onDataChanged();
-end
-
-function onMenuSelection(selection, subselection)
-	if selection == 4 and subselection == 3 then
-		local node = getDatabaseNode();
-		if node then
-			node.delete();
-		else
-			close();
-		end
-	end
 end
 
 function onClose()
@@ -31,7 +17,7 @@ end
 function onDataChanged()
 	onDamageChanged();
 	
-	local bRanged = (type.getValue() == 1);
+	local bRanged = (type.getValue() ~= 0);
 	label_range.setVisible(bRanged);
 	rangeincrement.setVisible(bRanged);
 	label_ammo.setVisible(bRanged);

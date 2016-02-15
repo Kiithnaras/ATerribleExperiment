@@ -6,11 +6,11 @@
 -->
 
 <root>
+	<icon name="rulesetlogo_35E" file="graphics/icons/rulesetlogo_35E.png" />
+
 	<!-- Common -->
 	<icon name="question" file="graphics/icons/question.png" />
 	<icon name="star" file="graphics/icons/star.png" />
-	<icon name="dropdown" file="graphics/icons/dropdown.png" />
-	<icon name="dropdown_active" file="graphics/icons/dropdown_active.png" />
 	<icon name="expand" file="graphics/icons/expand.png" />
 	<icon name="expand_down" file="graphics/icons/expand_down.png" />
 	<icon name="details" file="graphics/icons/details.png" />

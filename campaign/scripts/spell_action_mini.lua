@@ -4,19 +4,17 @@
 --
 
 function onInit()
-	local node = getDatabaseNode();
-	if node then
-		node.onChildUpdate = onUpdate;
-	end
-
-	onUpdate();
+	local sNode = getDatabaseNode().getNodeName();
+	DB.addHandler(sNode, "onChildUpdate", onDataChanged);
+	onDataChanged();
 end
 
-function getActorType()
-	return windowlist.window.parentcontrol.window.getActorType();
-end	
+function onClose()
+	local sNode = getDatabaseNode().getNodeName();
+	DB.removeHandler(sNode, "onChildUpdate", onDataChanged);
+end
 
-function onUpdate()
+function onDataChanged()
 	updateDisplay();
 	updateViews();
 end
@@ -55,39 +53,16 @@ function onCastChanged()
 		return;
 	end
 	
-	local sCL = "CAST: " .. DB.getValue(node, "clcbase", 0) + DB.getValue(node, "clcmod", 0);
+	local sCL = string.format("%s: %d", Interface.getString("power_tooltip_cast"), SpellManager.getActionCLC(node));
 	
-	local sAttack = "";
-	local sAttackType = DB.getValue(node, "atktype", "");
-	local nAttackMod = DB.getValue(node, "atkmod", 0);
-	if sAttackType == "melee" then
-		sAttack = "ATK: Melee";
-	elseif sAttackType == "ranged" then
-		sAttack = "ATK: Ranged";
-	elseif sAttackType == "mtouch" then
-		sAttack = "ATK: M Touch";
-	elseif sAttackType == "rtouch" then
-		sAttack = "ATK: R Touch";
-	elseif sAttackType == "cm" then
-		sAttack = "ATK: CMB";
-	end
-	if sAttack ~= "" and nAttackMod ~= 0 then
-		sAttack = sAttack .. " + " .. nAttackMod;
+	local sAttack = SpellManager.getActionAttackText(node);
+	if sAttack ~= "" then
+		sAttack = string.format("%s: %s", Interface.getString("power_tooltip_attack"), sAttack);
 	end
 
-	local sSave = "";
-	local sSaveType = DB.getValue(node, "savetype", "");
-	if sSaveType ~= "" and nDC ~= 0 then
-		if sSaveType == "fortitude" then
-			sSave = "SAVE: Fort";
-		elseif sSaveType == "reflex" then
-			sSave = "SAVE: Ref";
-		elseif sSaveType == "will" then
-			sSave = "SAVE: Will";
-		end
-		
-		local nDC = DB.getValue(node, "savedcbase", 0) + DB.getValue(node, "savedcmod", 0);
-		sSave = sSave .. " DC " .. nDC;
+	local sSave = SpellManager.getActionSaveText(node);
+	if sSave ~= "" then
+		sSave = string.format("%s: %s", Interface.getString("power_tooltip_save"), sSave);
 	end
 	
 	local sTooltip = sCL;
@@ -102,45 +77,13 @@ function onCastChanged()
 end
 
 function onDamageChanged()
-	local nodeAction = getDatabaseNode();
-	local rActor = ActorManager.getActor(getActorType(), nodeAction.getChild("........."));
-
-	local aDice, nMod, sType = SpellManager.getSpellActionDamage(rActor, nodeAction);
-
-	local sTooltip = "DMG: " .. StringManager.convertDiceToString(aDice, nMod);
-	if sType ~= "" then
-		sTooltip = sTooltip .. " " .. sType;
-	end
-	
-	local sMeta = DB.getValue(nodeAction, "dmgmeta", "");
-	if sMeta == "empower" then
-		sTooltip = sTooltip .. " [E]";
-	elseif sMeta == "maximize" then
-		sTooltip = sTooltip .. " [M]";
-	end
-	
-	button.setTooltipText(sTooltip);
+	local sDamage = SpellManager.getActionDamageText(getDatabaseNode());
+	button.setTooltipText(string.format("%s: %s", Interface.getString("power_tooltip_damage"), sDamage));
 end
 
 function onHealChanged()
-	local nodeAction = getDatabaseNode();
-	local rActor = ActorManager.getActor(getActorType(), nodeAction.getChild("........."));
-
-	local aDice, nMod, sType = SpellManager.getSpellActionHeal(rActor, nodeAction);
-
-	local sTooltip = "HEAL: " .. StringManager.convertDiceToString(aDice, nMod);
-	if sType == "temp" then
-		sTooltip = sTooltip .. " [TEMP]";
-	end
-	
-	local sMeta = DB.getValue(nodeAction, "healmeta", "");
-	if sMeta == "empower" then
-		sTooltip = sTooltip .. " [E]";
-	elseif sMeta == "maximize" then
-		sTooltip = sTooltip .. " [M]";
-	end
-	
-	button.setTooltipText(sTooltip);
+	local sHeal = SpellManager.getActionHealText(getDatabaseNode());
+	button.setTooltipText(string.format("%s: %s", Interface.getString("power_tooltip_heal"), sHeal));
 end
 
 function onEffectChanged()
@@ -165,7 +108,7 @@ function onEffectChanged()
 		sTooltip = "[SELF]; " .. sTooltip;
 	end
 	
-	sTooltip = "EFFECT: " .. sTooltip;
+	sTooltip = string.format("%s: %s", Interface.getString("power_tooltip_effect"), sTooltip);
 	
 	button.setTooltipText(sTooltip);
 end

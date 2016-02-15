@@ -26,19 +26,15 @@ function onHealthChanged()
 		nPercentNonlethal = (nWounds + nNonlethal) / (nHP + nTempHP);
 	end
 	
-	if nPercentWounded >= 1 then
-		hpbar.updateBackColor("808080");
-	elseif nPercentNonlethal >= 1 then
-		hpbar.updateBackColor("663399");
-	elseif nPercentWounded >= .66 then
-		hpbar.updateBackColor("990000");
-	elseif nPercentWounded >= .33 then
-		hpbar.updateBackColor("CC6600");
-	elseif nPercentWounded > 0 then
-		hpbar.updateBackColor("006600");
+	local sColor;
+	if nPercentWounded <= 1 and nPercentNonlethal > 1 then
+		sColor = ActorManager2.COLOR_HEALTH_UNCONSCIOUS;
+	elseif nPercentWounded == 1 or nPercentNonlethal == 1 then
+		sColor = ColorManager.COLOR_HEALTH_SIMPLE_BLOODIED;
 	else
-		hpbar.updateBackColor("000099");
+		sColor = ColorManager.getHealthColor(nPercentNonlethal, true);
 	end
+	hpbar.updateBackColor(sColor);
 	
 	hpbar.setMax(nHP + nTempHP);
 	hpbar.setValue(nHP + nTempHP - nWounds);

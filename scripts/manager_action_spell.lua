@@ -9,10 +9,11 @@ function onInit()
 	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_APPLYSAVE, handleApplySave);
 
 	ActionsManager.registerTargetingHandler("cast", onSpellTargeting);
-	ActionsManager.registerTargetingHandler("clc", onCastCLC);
+	ActionsManager.registerTargetingHandler("clc", onSpellTargeting);
 	ActionsManager.registerTargetingHandler("spellsave", onSpellTargeting);
 
 	ActionsManager.registerModHandler("castsave", modCastSave);
+	ActionsManager.registerModHandler("spellsave", modCastSave);
 	ActionsManager.registerModHandler("clc", modCLC);
 	ActionsManager.registerModHandler("save", modSave);
 	ActionsManager.registerModHandler("concentration", modConcentration);
@@ -316,7 +317,11 @@ function modSave(rSource, rTarget, rRoll)
 		rRoll.sDesc = rRoll.sDesc .. " " .. table.concat(aAddDesc, " ");
 	end
 	for _,vDie in ipairs(aAddDice) do
-		table.insert(rRoll.aDice, "p" .. string.sub(vDie, 2));
+		if vDie:sub(1,1) == "-" then
+			table.insert(rRoll.aDice, "-p" .. vDie:sub(3));
+		else
+			table.insert(rRoll.aDice, "p" .. vDie:sub(2));
+		end
 	end
 	rRoll.nMod = rRoll.nMod + nAddMod;
 end

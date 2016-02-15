@@ -6,4 +6,25 @@
 -->
 
 <root>
+	<!-- Languages -->
+	<font name="Dwarven">
+		<ttf file="graphics/fonts/Dwarven.ttf" name="D&amp;D Dwarvish Bold" size="20" />
+		<color value="#000000" />
+	</font>
+	<font name="Elven">
+		<ttf file="graphics/fonts/Elven.ttf" name="D&amp;DElven" size="26" />
+		<color value="#000000" />
+	</font>
+	<font name="Infernal">
+		<ttf file="graphics/fonts/Infernal.ttf" name="D&amp;D Abyssal Barazhad" size="20" />
+		<color value="#000000" />
+	</font>
+	<font name="Celestial">
+		<ttf file="graphics/fonts/Celestial.ttf" name="Supernal" size="24" />
+		<color value="#000000" />
+	</font>
+	<font name="Draconic">
+		<ttf file="graphics/fonts/Draconic.ttf" name="Draconic 4" size="24" />
+		<color value="#000000" />
+	</font>
 </root>

@@ -7,52 +7,32 @@
 
 <root>
 	<windowclass name="ps_xp">
+		<script>
+			function onDrop(x, y, draginfo)
+				if User.isHost() and draginfo.isType("shortcut") then
+					local sClass = draginfo.getShortcutData();
+					if sClass == "quest" then
+						PartyManager2.addQuest(draginfo.getDatabaseNode());
+					elseif sClass == "battle" then
+						PartyManager2.addEncounter(draginfo.getDatabaseNode());
+					end
+					return true;
+				end
+			end
+		</script>
 		<sheetdata>
-			<genericcontrol name="sheetframe">
-				<bounds>10,20,-20,-15</bounds>
-				<disabled />
-			</genericcontrol>
+			<anchor_partysheet_xp_header />
 			
 			<label>
-				<anchored to="sheetframe" position="insidetop" offset="0,20" />
+				<anchored to="headeranchor" position="insidetop" />
 				<static textres="ps_label_party" />
 				<center />
 			</label>
-			<windowlist name="list">
-				<anchored to="sheetframe">
-					<top offset="45" />
-					<left offset="10" />
-					<right offset="-20" />
-					<bottom parent="" anchor="center" offset="-20" />
-				</anchored>
-				<frame name="groupbox" offset="5,10,15,10" />
-				<datasource>.partyinformation</datasource>
-				<class>ps_xp_partyentry</class>
-				<sortby><control>name</control></sortby>
-				<columns width="350" fillwidth="true" />
-				<empty font="list-empty" gmtextres="ps_emptylistother" />
-			</windowlist>
+
+			<list_psxp_party />
 			<scrollbar_list />
 		
-			<windowlist name="encounters">
-				<anchored to="sheetframe">
-					<top parent="" anchor="center" offset="35" />
-					<left offset="10" />
-					<right parent="" anchor="center" offset="-10" />
-					<bottom offset="-40" />
-				</anchored>
-				<frame name="groupbox" offset="5,10,15,10" />
-				<footer>footer_narrow</footer>
-				<datasource>.encounters</datasource>
-				<class>ps_xp_encounterentry</class>
-				<useallmodules />
-				<child><backcolor>1A40301E</backcolor></child>
-				<child></child>
-				<filter control="encfilter" />
-				<filteron control="name" />
-				<empty font="list-empty" textres="ps_emptylistenc" />
-				<script file="ps/scripts/ps_xp_enclist.lua" />
-			</windowlist>
+			<list_psxp_encounters />
 			<scrollbar>
 				<anchored to="encounters" />
 				<target>encounters</target>
@@ -64,20 +44,12 @@
 				<center />
 			</label>
 			<genericcontrol name="rightanchor_enc">
-				<anchored to="encounters" position="aboveright" offset="0,25" height="0" width="0" />
-			</genericcontrol>
-			<genericcontrol name="idelete_header_enc">
-				<anchored to="rightanchor_enc" width="20" height="20">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
-				<disabled />
-				<invisible />
+				<anchored to="encounters" position="aboveright" offset="25,25" height="0" width="0" />
 			</genericcontrol>
 			<label>
 				<anchored to="rightanchor_enc" width="30" height="20">
 					<top />
-					<right anchor="left" relation="relative" offset="3" />
+					<right anchor="left" relation="relative" offset="5" />
 				</anchored>
 				<static textres="ps_label_xpawarded" />
 				<tooltip textres="ps_tooltip_xpawarded" />
@@ -109,12 +81,18 @@
 				<static textres="ps_label_xpname" />
 				<center />
 			</label>
+			<button_text>
+				<anchored to="encounters" position="aboveleft" offset="5,15" width="40" height="20" />
+				<state textres="ps_label_award" />
+				<script>
+					function onButtonPress()
+						PartyManager2.awardEncountersToParty();
+					end
+				</script>
+			</button_text>
 			
 			<genericcontrol name="rightanchor_encfilter">
-				<anchored height="0" width="0">
-					<top anchor="bottom" offset="-40" />
-					<right parent="encounters" />
-				</anchored>
+				<anchored to="encounters" position="belowright" offset="0,15" height="0" width="0" />
 			</genericcontrol>
 			<button_iedit name="enc_iedit">
 				<anchored to="rightanchor_encfilter">
@@ -124,31 +102,12 @@
 				<target>encounters</target>
 			</button_iedit>
 			<filter name="encfilter">
-				<anchored to="sheetframe" position="insidebottomleft" offset="50,5" height="20">
+				<anchored to="encounters" position="belowleft" offset="25,15" height="20">
 					<right parent="rightanchor_encfilter" anchor="left" relation="relative" offset="-10" />
 				</anchored>
 			</filter>
 
-			<windowlist name="quests">
-				<anchored to="sheetframe">
-					<top parent="" anchor="center" offset="35" />
-					<left parent="" anchor="center" offset="10" />
-					<right offset="-20" />
-					<bottom offset="-40" />
-				</anchored>
-				<frame name="groupbox" offset="5,10,15,10" />
-				<footer>footer_narrow</footer>
-				<datasource>.quests</datasource>
-				<class>ps_xp_questentry</class>
-				<useallmodules />
-				<allowcreate />
-				<child><backcolor>1A40301E</backcolor></child>
-				<child></child>
-				<filter control="questfilter" />
-				<filteron control="name" />
-				<empty font="list-empty" textres="ps_emptylistquest" />
-				<script file="ps/scripts/ps_xp_questlist.lua" />
-			</windowlist>
+			<list_psxp_quests />
 			<scrollbar>
 				<anchored to="quests" />
 				<target>quests</target>
@@ -160,20 +119,12 @@
 				<center />
 			</label>
 			<genericcontrol name="rightanchor_quest">
-				<anchored to="quests" position="aboveright" offset="0,25" height="0" width="0" />
-			</genericcontrol>
-			<genericcontrol name="idelete_header_quest">
-				<anchored to="rightanchor_quest" width="20" height="20">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
-				<disabled />
-				<invisible />
+				<anchored to="quests" position="aboveright" offset="25,25" height="0" width="0" />
 			</genericcontrol>
 			<label>
 				<anchored to="rightanchor_quest" width="30" height="20">
 					<top />
-					<right anchor="left" relation="relative" offset="3" />
+					<right anchor="left" relation="relative" offset="5" />
 				</anchored>
 				<static textres="ps_label_xpawarded" />
 				<tooltip textres="ps_tooltip_xpawarded" />
@@ -213,12 +164,18 @@
 				<static textres="ps_label_xpname" />
 				<center />
 			</label>
+			<button_text>
+				<anchored to="quests" position="aboveleft" offset="5,15" width="40" height="20" />
+				<state textres="ps_label_award" />
+				<script>
+					function onButtonPress()
+						PartyManager2.awardQuestsToParty();
+					end
+				</script>
+			</button_text>
 			
 			<genericcontrol name="rightanchor_questfilter">
-				<anchored height="0" width="0">
-					<top anchor="bottom" offset="-40" />
-					<right parent="quests" />
-				</anchored>
+				<anchored to="quests" position="belowright" offset="0,15" height="0" width="0" />
 			</genericcontrol>
 			<button_iedit name="quests_iedit">
 				<anchored to="rightanchor_questfilter">
@@ -236,9 +193,7 @@
 			</button_iadd>
 			
 			<filter name="questfilter">
-				<anchored height="20">
-					<left anchor="center" offset="50" />
-					<bottom parent="sheetframe" offset="-5" />
+				<anchored to="quests" position="belowleft" offset="25,15" height="20">
 					<right parent="rightanchor_questfilter" anchor="left" relation="relative" offset="-10" />
 				</anchored>
 			</filter>
@@ -298,31 +253,36 @@
 		<margins control="0,0,0,2" />
 		<script file="ps/scripts/ps_xp_encentry.lua" />
 		<sheetdata>
-			<linkfield name="shortcut">
-				<bounds>5,2,20,20</bounds>
-			</linkfield>
-
 			<genericcontrol name="rightanchor">
 				<anchored height="0" width="0">
 					<top />
 					<right />
 				</anchored>
 			</genericcontrol>
+			<linkcontrol name="shortcut">
+				<anchored to="rightanchor" width="20" height="20">
+					<top offset="3" />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+				<class>battle</class>
+				<description field="name" />
+				<readonly />
+			</linkcontrol>
 			<button_idelete name="idelete">
-				<anchored>
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
+				<anchored to="rightanchor">
+					<top offset="3" />
+					<right anchor="left" offset="-5" />
 				</anchored>
 				<tabtarget prev="xpawarded" />
 			</button_idelete>
 			<button_checkbox name="xpawarded">
 				<anchored width="20" height="20">
 					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="0" />
 				</anchored>
 				<tabtarget next="idelete" prev="xp" />
 			</button_checkbox>
-			<basicnumber name="xp">
+			<basicnumber name="exp">
 				<anchored width="65" height="20">
 					<top offset="2" />
 					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
@@ -330,7 +290,6 @@
 				<hideonvalue>0</hideonvalue>
 				<delaykeyupdate />
 				<tabtarget next="xpawarded" prev="level" />
-				<readonly />
 			</basicnumber>
 			<basicnumber name="level">
 				<anchored width="20" height="20">
@@ -340,17 +299,15 @@
 				<hideonvalue>0</hideonvalue>
 				<delaykeyupdate />
 				<tabtarget next="xp" prev="type" />
-				<readonly />
 			</basicnumber>
 			<basicstring name="name">
 				<anchored>
 					<top offset="2" />
-					<left offset="30" />
+					<left offset="5" />
 					<right parent="rightanchor" anchor="left" relation="relative" offset="-10" />
 				</anchored>
 				<multilinespacing>20</multilinespacing>
 				<tabtarget next="type" />
-				<readonly />
 			</basicstring>
 		</sheetdata>
 	</windowclass>
@@ -359,28 +316,32 @@
 		<margins control="0,0,0,2" />
 		<script file="ps/scripts/ps_xp_questentry.lua" />
 		<sheetdata>
-			<linkcontrol name="shortcut">
-				<bounds>5,2,20,20</bounds>
-				<class>quest</class>
-			</linkcontrol>
-
 			<genericcontrol name="rightanchor">
 				<anchored height="0" width="0">
 					<top />
 					<right />
 				</anchored>
 			</genericcontrol>
+			<linkcontrol name="shortcut">
+				<anchored to="rightanchor" width="20" height="20">
+					<top offset="3" />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+				<class>quest</class>
+				<description field="name" />
+				<readonly />
+			</linkcontrol>
 			<button_idelete name="idelete">
-				<anchored>
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
+				<anchored to="rightanchor">
+					<top offset="3" />
+					<right anchor="left" offset="-5" />
 				</anchored>
 				<tabtarget prev="xpawarded" />
 			</button_idelete>
 			<button_checkbox name="xpawarded">
 				<anchored width="20" height="20">
 					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="0" />
 				</anchored>
 				<tabtarget next="idelete" prev="xp" />
 			</button_checkbox>
@@ -418,7 +379,7 @@
 			<basicstring name="name">
 				<anchored>
 					<top offset="2" />
-					<left offset="30" />
+					<left offset="5" />
 					<right parent="rightanchor" anchor="left" relation="relative" offset="-10" />
 				</anchored>
 				<multilinespacing>20</multilinespacing>

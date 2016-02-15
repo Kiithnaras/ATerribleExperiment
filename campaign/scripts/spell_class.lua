@@ -11,9 +11,7 @@ function onInit()
 	
 	onCasterTypeChanged();
 	toggleDetail();
-	if getActorType() ~= "npc" then
-		onDisplayChanged();
-	end
+	onDisplayChanged();
 end
 
 function update(bEditMode)
@@ -21,7 +19,7 @@ function update(bEditMode)
 		return;
 	end
 	
-	idelete.setVisible(bEditMode);
+	idelete.setVisibility(bEditMode);
 	for _,w in ipairs(levels.getWindows()) do
 		w.update(bEditMode);
 	end
@@ -40,26 +38,14 @@ function registerMenuItems()
 	end
 end
 
-function getActorType()
-	if windowlist.npc then
-		return "npc";
-	end
-	return "pc";
-end	
-
 function onStatUpdate()
 	if dcstatmod then
 		local nodeSpellClass = getDatabaseNode();
 		local nodeCreature = nodeSpellClass.getChild("...");
 
-		local sType = "npc";
-		if nodeCreature.getParent().getName() == "charsheet" then
-			sType = "pc";
-		end
-		
 		local sAbility = DB.getValue(nodeSpellClass, "dc.ability", "");
 
-		local rActor = ActorManager.getActor(sType, nodeCreature);
+		local rActor = ActorManager.getActor("", nodeCreature);
 		local nValue = ActorManager2.getAbilityBonus(rActor, sAbility);
 		
 		dcstatmod.setValue(nValue);
@@ -73,6 +59,9 @@ function onStatUpdate()
 				end
 			else
 				for kAction, vAction in pairs(vSpell.actions.getWindows()) do
+					vAction.updateViews();
+				end
+				for kAction, vAction in pairs(vSpell.header.subwindow.actionsmini.getWindows()) do
 					vAction.updateViews();
 				end
 			end
@@ -255,7 +244,7 @@ function updateSpellView()
 						vSpell.header.subwindow.counter.update(sSheetMode, (sCasterType == "spontaneous"), nAvailable, 0, nTotalPrepared, nMaxPrepared);
 						vSpell.header.subwindow.usespacer.setVisible(nAvailable == 0);
 					else
-						if (nPrepared  > 0) then
+						if (nPrepared > 0) then
 							vSpell.header.subwindow.usepower.setVisible(true);
 							vSpell.header.subwindow.usepower.setTooltipText(Interface.getString("spell_tooltip_castspell"));
 							vSpell.header.subwindow.usespacer.setVisible(false);
@@ -338,7 +327,7 @@ function updateSpellView()
 				if (sSheetMode == "preparation" or sCasterType == "spontaneous") then
 					vSpell.header.subwindow.usespacer.setVisible(nAvailable == 0);
 				else
-					vSpell.header.subwindow.usespacer.setVisible(nMaxPrepared == 0);
+					vSpell.header.subwindow.usespacer.setVisible(nPrepared == 0);
 				end
 			end
 			

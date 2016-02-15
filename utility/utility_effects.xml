@@ -6,6 +6,84 @@
 -->
 
 <root>
+	<windowclass name="effectlist">
+		<frame>utilitybox3</frame>
+		<placement>
+			<size width="520" height="540" />
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum width="520" height="540" />
+		</sizelimits>
+		<playercontrol />
+		<nodelete />
+		<tooltip textres="effect_window_title" />
+		<script>
+			function onInit()
+				local nHalf = math.ceil(#(DataCommon.conditions) / 2);
+				for i = 1, nHalf do
+					local sEffect1 = StringManager.capitalize(DataCommon.conditions[i]);
+					local c1 = createControl("button_effect", "condition_" .. i);
+					c1.setEffect(sEffect1);
+
+					if (nHalf + i &lt;= #(DataCommon.conditions)) then
+						local sEffect2 = StringManager.capitalize(DataCommon.conditions[nHalf + i]);
+						local c2 = createControl("button_effectright", "condition_" .. (nHalf + i));
+						c2.setEffect(sEffect2);
+					end
+				end
+			end
+		</script>
+		<sheetdata>
+			<windowtitlebar name="title">
+				<resource>effect_window_title</resource>
+			</windowtitlebar>
+			<anchor_title_utilitybox3 name="contentanchor" />
+			
+			<!-- Conditions -->
+			<label name="label_conditions">
+				<anchored to="contentanchor" width="170" height="20">
+					<top anchor="bottom"/>
+					<left />
+				</anchored>
+				<static textres="effect_label_conditions" />
+				<color>FFFFFF</color>
+				<center />
+			</label>
+			
+			<genericcontrol name="buttonanchor">
+				<anchored to="contentanchor" width="170" height="0">
+					<top anchor="bottom" offset="15" />
+					<left />
+				</anchored>
+			</genericcontrol>
+
+			<!-- Custom -->
+			<label name="label_custom">
+				<anchored to="contentanchor" height="20">
+					<top anchor="bottom" />
+					<left offset="195" />
+					<right offset="-10" />
+				</anchored>
+				<static textres="effect_label_custom" />
+				<color>FFFFFF</color>
+				<center />
+			</label>
+			
+			<list_effects name="list" />
+			<scrollbar_list />
+
+			<anchor_campaign2 />
+			<button_iedit_campaign />
+			<button_iadd_utility />
+			<filter_utility />
+			
+			<resize_utilitybox3 />
+			<helper_effects />
+			<close_utilitybox3 />
+		</sheetdata>
+	</windowclass>
+
 	<windowclass name="effectsmall">
 		<margins control="0,0,0,2" />
 		<script file="utility/scripts/effect.lua" />

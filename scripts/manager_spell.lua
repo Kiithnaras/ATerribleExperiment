@@ -263,19 +263,19 @@ function parseSpell(nodeSpell)
 					end
 					
 					if bPointMode or #(rRoll.aDice) == 0 then
-						rRoll.sModMult = sMult;
+						rRoll.sModStat = sMult;
 					else
-						rRoll.sDiceMult = sMult;
+						rRoll.sDiceStat = sMult;
 					end
 					
 					if sMaxRollDice then
 						local aMaxDice, nMaxMod = StringManager.convertStringToDice(sMaxRollDice);
 						if bPointMode then
-							rRoll.nMaxMult = nMaxMod;
+							rRoll.nMaxStat = nMaxMod;
 						elseif #(rRoll.aDice) > 0 then
-							rRoll.nMaxMult = math.floor(#aMaxDice / #(rRoll.aDice))
+							rRoll.nMaxStat = math.floor(#aMaxDice / #(rRoll.aDice))
 						else
-							rRoll.nMaxMult = math.floor(nMaxMod / rRoll.nMod);
+							rRoll.nMaxStat = math.floor(nMaxMod / rRoll.nMod);
 						end
 					end
 				end
@@ -295,29 +295,32 @@ function parseSpell(nodeSpell)
 	-- Add the Damage and Heal rolls
 	for i = 1, #aDamages do
 		local rRoll = aDamages[i];
-		local nodeAction = nodeActions.createChild();
+		local nodeAction = DB.createChild(nodeActions);
 		
 		DB.setValue(nodeAction, "type", "string", "damage");
 		
-		DB.setValue(nodeAction, "dmgdice", "dice", rRoll.aDice);
-		if rRoll.sDiceMult then
-			DB.setValue(nodeAction, "dmgdicemult", "string", rRoll.sDiceMult);
-			if rRoll.nMaxMult then
-				DB.setValue(nodeAction, "dmgdicemultmax", "number", rRoll.nMaxMult);
+		local nodeDmgList = DB.createChild(nodeAction, "damagelist");
+		local nodeDmgEntry = DB.createChild(nodeDmgList);
+
+		DB.setValue(nodeDmgEntry, "dice", "dice", rRoll.aDice);
+		if rRoll.sDiceStat then
+			DB.setValue(nodeDmgEntry, "dicestat", "string", rRoll.sDiceStat);
+			if rRoll.nMaxStat then
+				DB.setValue(nodeDmgEntry, "dicestatmax", "number", rRoll.nMaxStat);
 			end
 		end
 		
-		if rRoll.sModMult then
-			DB.setValue(nodeAction, "dmgstat", "string", rRoll.sModMult);
-			DB.setValue(nodeAction, "dmgstatmult", "number", rRoll.nMod);
-			if rRoll.nMaxMult then
-				DB.setValue(nodeAction, "dmgmaxstat", "number", rRoll.nMaxMult);
+		if rRoll.sModStat then
+			DB.setValue(nodeDmgEntry, "stat", "string", rRoll.sModStat);
+			DB.setValue(nodeDmgEntry, "statmult", "number", rRoll.nMod);
+			if rRoll.nMaxStat then
+				DB.setValue(nodeDmgEntry, "statmax", "number", rRoll.nMaxStat);
 			end
 		else
-			DB.setValue(nodeAction, "dmgmod", "number", rRoll.nMod);
+			DB.setValue(nodeDmgEntry, "bonus", "number", rRoll.nMod);
 		end
 		
-		DB.setValue(nodeAction, "dmgtype", "string", rRoll.sType);
+		DB.setValue(nodeDmgEntry, "type", "string", rRoll.sType);
 	end
 	for i = 1, #aHeals do
 		local rRoll = aHeals[i];
@@ -325,22 +328,25 @@ function parseSpell(nodeSpell)
 		
 		DB.setValue(nodeAction, "type", "string", "heal");
 		
-		DB.setValue(nodeAction, "hdice", "dice", rRoll.aDice);
-		if rRoll.sDiceMult then
-			DB.setValue(nodeAction, "hdicemult", "string", rRoll.sDiceMult);
-			if rRoll.nMaxMult then
-				DB.setValue(nodeAction, "hdicemultmax", "number", rRoll.nMaxMult);
+		local nodeHealList = DB.createChild(nodeAction, "heallist");
+		local nodeHealEntry = DB.createChild(nodeHealList);
+
+		DB.setValue(nodeHealEntry, "dice", "dice", rRoll.aDice);
+		if rRoll.sDiceStat then
+			DB.setValue(nodeHealEntry, "dicestat", "string", rRoll.sDiceStat);
+			if rRoll.nMaxStat then
+				DB.setValue(nodeHealEntry, "dicestatmax", "number", rRoll.nMaxStat);
 			end
 		end
 		
-		if rRoll.sModMult then
-			DB.setValue(nodeAction, "hstat", "string", rRoll.sModMult);
-			DB.setValue(nodeAction, "hstatmult", "number", rRoll.nMod);
-			if rRoll.nMaxMult then
-				DB.setValue(nodeAction, "hmaxstat", "number", rRoll.nMaxMult);
+		if rRoll.sModStat then
+			DB.setValue(nodeHealEntry, "stat", "string", rRoll.sModStat);
+			DB.setValue(nodeHealEntry, "statmult", "number", rRoll.nMod);
+			if rRoll.nMaxStat then
+				DB.setValue(nodeHealEntry, "statmax", "number", rRoll.nMaxStat);
 			end
 		else
-			DB.setValue(nodeAction, "hmod", "number", rRoll.nMod);
+			DB.setValue(nodeHealEntry, "bonus", "number", rRoll.nMod);
 		end
 	end
 	
@@ -600,7 +606,7 @@ function getSpellActionOutputOrder(nodeAction)
 	return nOutputOrder;
 end
 
-function getSpellRoll(rActor, nodeAction, sSubRoll)
+function getSpellAction(rActor, nodeAction, sSubRoll)
 	if not nodeAction then
 		return;
 	end
@@ -632,35 +638,57 @@ function getSpellRoll(rActor, nodeAction, sSubRoll)
 				rAction.range = "M";
 			end
 			
-			local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
-			rAction.modifier = DB.getValue(nodeActor, "attackbonus.base", 0) + DB.getValue(nodeAction, "atkmod", 0);
-			rAction.crit = 18;
-			
-			if rAction.range == "R" then
-				rAction.stat = DB.getValue(nodeActor, "attackbonus.ranged.ability", "");
-				if rAction.stat == "" then
-					rAction.stat = "dexterity";
-				end
-				rAction.modifier = rAction.modifier + DB.getValue(nodeActor, "attackbonus.ranged.size", 0) + DB.getValue(nodeActor, "attackbonus.ranged.misc", 0);
+			if rAction.cm then
+				rAction.modifier = ActorManager2.getAbilityScore(rActor, "cmb") + DB.getValue(nodeAction, "atkmod", 0);
 			else
-				if rAction.cm then
-					rAction.stat = DB.getValue(nodeActor, "attackbonus.grapple.ability", "");
+				rAction.modifier = ActorManager2.getAbilityScore(rActor, "bab") + DB.getValue(nodeAction, "atkmod", 0);
+			end
+			rAction.modifier = DB.getValue(nodeAction, "atkmod", 0);
+			rAction.crit = 18;
+
+			local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
+			if sType == "pc" then
+				if rAction.range == "R" then
+					rAction.stat = DB.getValue(nodeActor, "attackbonus.ranged.ability", "");
 					if rAction.stat == "" then
-						rAction.stat = "strength";
+						rAction.stat = "dexterity";
 					end
-					rAction.modifier = rAction.modifier + DB.getValue(nodeActor, "attackbonus.grapple.size", 0) + DB.getValue(nodeActor, "attackbonus.grapple.misc", 0);
+					if sType == "pc" then
+						rAction.modifier = rAction.modifier + DB.getValue(nodeActor, "attackbonus.ranged.size", 0) + DB.getValue(nodeActor, "attackbonus.ranged.misc", 0);
+					end
 				else
-					rAction.stat = DB.getValue(nodeActor, "attackbonus.melee.ability", "");
-					if rAction.stat == "" then
-						rAction.stat = "strength";
+					if rAction.cm then
+						rAction.stat = DB.getValue(nodeActor, "attackbonus.grapple.ability", "");
+						if rAction.stat == "" then
+							rAction.stat = "strength";
+						end
+						if sType == "pc" then
+							rAction.modifier = rAction.modifier + DB.getValue(nodeActor, "attackbonus.grapple.size", 0) + DB.getValue(nodeActor, "attackbonus.grapple.misc", 0);
+						end
+					else
+						rAction.stat = DB.getValue(nodeActor, "attackbonus.melee.ability", "");
+						if rAction.stat == "" then
+							rAction.stat = "strength";
+						end
+						rAction.modifier = rAction.modifier + DB.getValue(nodeActor, "attackbonus.melee.size", 0) + DB.getValue(nodeActor, "attackbonus.melee.misc", 0);
 					end
-					rAction.modifier = rAction.modifier + DB.getValue(nodeActor, "attackbonus.melee.size", 0) + DB.getValue(nodeActor, "attackbonus.melee.misc", 0);
+				end
+				rAction.modifier = rAction.modifier + ActorManager2.getAbilityScore(rActor, "bab") + ActorManager2.getAbilityBonus(rActor, rAction.stat);
+			else
+				if rAction.range == "R" then
+					rAction.stat = "dexterity";
+				else
+					rAction.stat = "strength";
+				end
+				if rAction.cm then
+					rAction.modifier = rAction.modifier + ActorManager2.getAbilityScore(rActor, "cmb");
+				else
+					rAction.modifier = rAction.modifier + ActorManager2.getAbilityScore(rActor, "bab") + ActorManager2.getAbilityBonus(rActor, rAction.stat);
 				end
 			end
-			rAction.modifier = rAction.modifier + ActorManager2.getAbilityBonus(rActor, rAction.stat)
 		end
 		
-		rAction.clc = DB.getValue(nodeAction, "clcbase", 0) + DB.getValue(nodeAction, "clcmod", 0);
+		rAction.clc = SpellManager.getActionCLC(nodeAction);
 		rAction.sr = "yes";
 		
 		if (DB.getValue(nodeAction, "srnotallowed", 0) == 1) then
@@ -672,74 +700,33 @@ function getSpellRoll(rActor, nodeAction, sSubRoll)
 		local sSaveType = DB.getValue(nodeAction, "savetype", "");
 		if sSaveType ~= "" then
 			rAction.save = sSaveType;
-			rAction.savemod = DB.getValue(nodeAction, "savedcbase", 0) + DB.getValue(nodeAction, "savedcmod", 0);
+			rAction.savemod = SpellManager.getActionSaveDC(nodeAction);
 		else
 			rAction.save = "";
 			rAction.savemod = 0;
 		end
 		
 	elseif sType == "damage" then
-		-- Pull action statistics
-		local aDice, nMod, sType, sStat, nStat, nMaxStat = getSpellActionDamage(rActor, nodeAction);
+		rAction.clauses = getActionDamage(rActor, nodeAction);
 		
-		-- Figure out how many bonuses until max stat value reached (for effects)
-		if nMaxStat > 0 then
-			if nStat >= nMaxStat then
-				sStat = "";
-				nStat = nMaxStat;
-				nMaxStat = 0;
-			elseif nStat > 0 then
-				nMaxStat = nMaxStat - nStat;
+		rAction.meta = DB.getValue(nodeAction, "meta", "");
+
+		local bSpellDamage = (DB.getValue(nodeAction, "dmgnotspell", 0) == 0);
+		if bSpellDamage then
+			for _,vClause in ipairs(rAction.clauses) do
+				if not vClause.dmgtype or vClause.dmgtype == "" then
+					vClause.dmgtype = "spell";
+				else
+					vClause.dmgtype = vClause.dmgtype .. ",spell";
+				end
 			end
 		end
-
-		-- Build action structure
-		rAction.stat = sStat;
-		rAction.statmax = nMaxStat;
-		rAction.statmult = 1;
-		rAction.stat2 = "";
-		
-		rAction.clauses = {};
-
-		local rSpellClause = {};
-		
-		rSpellClause.dice = aDice;
-		rSpellClause.modifier = nMod;
-		rSpellClause.mult = 2;
-		
-		local aDamageTypes = ActionDamage.getDamageTypesFromString(sType);
-		if DB.getValue(nodeAction, "dmgnotspell", 0) == 0 then
-			table.insert(aDamageTypes, "spell");
-		end
-		rSpellClause.dmgtype = table.concat(aDamageTypes, ",");
-		
-		table.insert(rAction.clauses, rSpellClause);
-
-		rAction.meta = DB.getValue(nodeAction, "dmgmeta", "");
 		
 	elseif sType == "heal" then
-		-- Pull action statistics
-		local aDice, nMod, sType, sStat, nStat, nMaxStat = getSpellActionHeal(rActor, nodeAction);
-		
-		-- Figure out how many bonuses until max stat value reached (for effects)
-		if nMaxStat > 0 then
-			if nStat >= nMaxStat then
-				sStat = "";
-				nStat = nMaxStat;
-				nMaxStat = 0;
-			elseif nStat > 0 then
-				nMaxStat = nMaxStat - nStat;
-			end
-		end
+		rAction.clauses = getActionHeal(rActor, nodeAction);
 
-		-- Build action structure
-		rAction.subtype = sType;
-		rAction.stat = sStat;
-		rAction.statmax = nStatMax;
-		rAction.dice = aDice;
-		rAction.modifier = nMod;
-		
-		rAction.meta = DB.getValue(nodeAction, "healmeta", "");
+		rAction.subtype = DB.getValue(nodeAction, "healtype", "");
+		rAction.meta = DB.getValue(nodeAction, "meta", "");
 	
 	elseif sType == "effect" then
 		rAction.sName = EffectManager.evalEffect(rActor, DB.getValue(nodeAction, "label", ""));
@@ -747,42 +734,24 @@ function getSpellRoll(rActor, nodeAction, sSubRoll)
 		rAction.sApply = DB.getValue(nodeAction, "apply", "");
 		rAction.sTargeting = DB.getValue(nodeAction, "targeting", "");
 		
-		rAction.aDice = DB.getValue(nodeAction, "durdice", {});
-		rAction.nDuration = DB.getValue(nodeAction, "durmod", 0);
+		rAction.aDice, rAction.nDuration = getActionEffectDuration(rActor, nodeAction);
 
-		local nMult = DB.getValue(nodeAction, "durmult", 0);
-		if nMult > 0 then
-			local sStat = DB.getValue(nodeAction, "durstat", "");
-			local nStat = 0;
-			if sStat == "cl" or sStat == "halfcl" or sStat == "oddcl" then
-				nStat = DB.getValue(nodeAction, ".......cl", 0);
-				if sStat == "halfcl" then
-					nStat = math.floor((nStat + 0.5) / 2);
-				elseif sStat == "oddcl" then
-					nStat = math.floor((nStat + 1.5) / 2);
-				end
-			else
-				nStat = ActorManager2.getAbilityBonus(rActor, sStat);
-			end
-			local nMaxStat = DB.getValue(nodeAction, "dmaxstat", 0);
-			if nMaxStat > 0 and nMaxStat < nStat then
-				nStat = nMaxStat;
-			end
-			rAction.nDuration = rAction.nDuration + math.floor(nMult * nStat);
-		end
-		
 		rAction.sUnits = DB.getValue(nodeAction, "durunit", "");
 	end
 	
 	return rAction;
 end
 
-function onSpellAction(rActor, nodeAction, draginfo, sSubRoll)
-	if not rActor or not nodeAction then
+function onSpellAction(draginfo, nodeAction, sSubRoll)
+	if not nodeAction then
+		return;
+	end
+	local rActor = ActorManager.getActor("", nodeAction.getChild("........."));
+	if not rActor then
 		return;
 	end
 	
-	local rAction = getSpellRoll(rActor, nodeAction, sSubRoll);
+	local rAction = getSpellAction(rActor, nodeAction, sSubRoll);
 	
 	local rRolls = {};
 	local rCustom = nil;
@@ -819,6 +788,7 @@ function onSpellAction(rActor, nodeAction, draginfo, sSubRoll)
 	elseif rAction.type == "damage" then
 		local rRoll = ActionDamage.getRoll(rActor, rAction);
 		rRoll.sType = "spdamage";
+		
 		table.insert(rRolls, rRoll);
 		
 	elseif rAction.type == "heal" then
@@ -837,134 +807,308 @@ function onSpellAction(rActor, nodeAction, draginfo, sSubRoll)
 	end
 end
 
-function getSpellActionDamage(rActor, nodeAction)
-	if not nodeAction then
-		return;
-	end
+function getActionCLC(nodeAction)
+	local nStat = DB.getValue(nodeAction, ".......cl", 0);
+	local nPen = DB.getValue(nodeAction, ".......sp", 0);
+	local nMod = DB.getValue(nodeAction, "clcmod", 0);
 	
-	local aDice = DB.getValue(nodeAction, "dmgdice", {});
-	if #aDice > 0 then
-		local sDiceMult = DB.getValue(nodeAction, "dmgdicemult", "");
-		local nDiceMult = 1;
-		if sDiceMult == "cl" or sDiceMult == "halfcl" or sDiceMult == "oddcl" then
-			nDiceMult = DB.getValue(nodeAction, ".......cl", 0);
-			if sDiceMult == "halfcl" then
-				nDiceMult = math.floor((nDiceMult + 0.5) / 2);
-			elseif sDiceMult == "oddcl" then
-				nDiceMult = math.floor((nDiceMult + 1.5) / 2);
-			end
-			
-			local nDiceMultMax = DB.getValue(nodeAction, "dmgdicemultmax", 0);
-			if nDiceMultMax > 0 and nDiceMultMax < nDiceMult then
-				nDiceMult = nDiceMultMax;
-			end
-			if nDiceMult < 1 then
-				nDiceMult = 1;
-			end
-		end
-		
-		local nCopy = #aDice;
-		for i = 2, nDiceMult do
-			for j = 1, nCopy do
-				table.insert(aDice, aDice[j]);
-			end
-		end
-	end
-
-	local nMod = DB.getValue(nodeAction, "dmgmod", 0);
-	local sStat = DB.getValue(nodeAction, "dmgstat", "");
-	local nStat = 0;
-	local nMaxStat = DB.getValue(nodeAction, "dmgmaxstat", 0);
-	local nStatMult = DB.getValue(nodeAction, "dmgstatmult", 1);
-	if nStatMult < 1 then
-		nStatMult = 1;
-	end
-	if sStat ~= "" then
-		if sStat == "cl" or sStat == "halfcl" or sStat == "oddcl" then
-			nStat = DB.getValue(nodeAction, ".......cl", 0);
-			if sStat == "halfcl" then
-				nStat = math.floor((nStat + 0.5) / 2);
-			elseif sStat == "oddcl" then
-				nStat = math.floor((nStat + 1.5) / 2);
-			end
-		else
-			nStat = ActorManager2.getAbilityBonus(rActor, sStat);
-		end
-		
-		if nMaxStat > 0 and nMaxStat < nStat then
-			nStat = nMaxStat;
-		end
-		
-		nMod = nMod + (nStat * nStatMult);
-	end
-	
-	local sType = DB.getValue(nodeAction, "dmgtype", "");
-	
-	return aDice, nMod, sType, sStat, nStat, nMaxStat;
+	return nStat + nPen + nMod;
 end
 
-function getSpellActionHeal(rActor, nodeAction)
-	if not nodeAction then
-		return;
+function getActionSaveDC(nodeAction)
+	local nTotal;
+	
+	if DB.getValue(nodeAction, "savedctype", "") == "fixed" then
+		nTotal = DB.getValue(nodeAction, "savedcmod", 0);
+	else
+		local nStat = DB.getValue(nodeAction, ".......dc.total", 0);
+		local nLevel = DB.getValue(nodeAction, ".....level", 0);
+		local nMod = DB.getValue(nodeAction, "savedcmod", 0);
+		
+		nTotal = nStat + nLevel + nMod;
 	end
 	
-	local aDice = DB.getValue(nodeAction, "hdice", {});
-	if #aDice > 0 then
-		local sDiceMult = DB.getValue(nodeAction, "hdicemult", "");
-		local nDiceMult = 1;
-		if sDiceMult == "cl" or sDiceMult == "halfcl" or sDiceMult == "oddcl" then
-			nDiceMult = DB.getValue(nodeAction, ".......cl", 0);
-			if sDiceMult == "halfcl" then
-				nDiceMult = math.floor((nDiceMult + 0.5) / 2);
-			elseif sDiceMult == "oddcl" then
-				nDiceMult = math.floor((nDiceMult + 1.5) / 2);
-			end
+	
+	return nTotal;
+end
+
+function getActionMod(rActor, nodeAction, sStat, nStatMax)
+	local nStat;
+	
+	if sStat == "" then
+		nStat = 0;
+	elseif sStat == "cl" or sStat == "halfcl" or sStat == "oddcl" then
+		nStat = DB.getValue(nodeAction, ".......cl", 0);
+		if sStat == "halfcl" then
+			nStat = math.floor((nStat + 0.5) / 2);
+		elseif sStat == "oddcl" then
+			nStat = math.floor((nStat + 1.5) / 2);
+		end
+	else
+		nStat = ActorManager2.getAbilityBonus(rActor, sStat);
+	end
+	
+	if nStatMax and nStatMax > 0 then
+		nStat = math.max(math.min(nStat, nStatMax), 1);
+	end
+	
+	return nStat;
+end
+
+function getActionDamage(rActor, nodeAction)
+	if not nodeAction then
+		return {};
+	end
+	
+	local clauses = {};
+	local aDamageNodes = UtilityManager.getSortedTable(DB.getChildren(nodeAction, "damagelist"));
+	for _,v in ipairs(aDamageNodes) do
+		local aDmgDice = DB.getValue(v, "dice", {});
+		if #aDmgDice > 0 then
+			local sDiceStat = DB.getValue(v, "dicestat", "");
+			local nDiceStatMax = DB.getValue(v, "dicestatmax", 0);
 			
-			local nDiceMultMax = DB.getValue(nodeAction, "hdicemultmax", 0);
-			if nDiceMultMax > 0 and nDiceMultMax < nDiceMult then
-				nDiceMult = nDiceMultMax;
-			end
-			if nDiceMult < 1 then
-				nDiceMult = 1;
+			local nDiceMult = math.max(getActionMod(rActor, nodeAction, sDiceStat, nDiceStatMax), 1);
+			if nDiceMult > 1 then
+				local nCopy = #aDmgDice;
+				for i = 2, nDiceMult do
+					for j = 1, nCopy do
+						table.insert(aDmgDice, aDmgDice[j]);
+					end
+				end
 			end
 		end
 		
-		local nCopy = #aDice;
-		for i = 2, nDiceMult do
-			for j = 1, nCopy do
-				table.insert(aDice, aDice[j]);
-			end
+		local nDmgMod = DB.getValue(v, "bonus", 0);
+
+		local sDmgStat = DB.getValue(v, "stat", "");
+		local nDmgStatMult = 1;
+		local nDmgStatMax = 0;
+		if sDmgStat ~= "" then
+			nDmgStatMult = math.max(DB.getValue(v, "statmult", 1), 1);
+			nDmgStatMax = math.max(DB.getValue(v, "statmax", 0), 0);
+			
+			local nDmgStat = getActionMod(rActor, nodeAction, sDmgStat, nDmgStatMax);
+			nDmgMod = nDmgMod + (nDmgStat * nDmgStatMult);
 		end
+
+		local aDamageTypes = ActionDamage.getDamageTypesFromString(DB.getValue(v, "type", ""));
+		local sDmgType = table.concat(aDamageTypes, ",");
+		
+		table.insert(clauses, { dice = aDmgDice, modifier = nDmgMod, mult = 2, stat = sDmgStat, statmax = nDmgStatMax, statmult = nDmgStatMult, dmgtype = sDmgType });
 	end
 
-	local nMod = DB.getValue(nodeAction, "hmod", 0);
-	local sStat = DB.getValue(nodeAction, "hstat", "");
-	local nStat = 0;
-	local nMaxStat = DB.getValue(nodeAction, "hmaxstat", 0);
-	local nStatMult = DB.getValue(nodeAction, "hstatmult", 1);
-	if nStatMult < 1 then
-		nStatMult = 1;
+	return clauses;
+end
+
+function getActionHeal(rActor, nodeAction)
+	if not nodeAction then
+		return {};
 	end
-	if sStat ~= "" then
-		if sStat == "cl" or sStat == "halfcl" or sStat == "oddcl" then
-			nStat = DB.getValue(nodeAction, ".......cl", 0);
-			if sStat == "halfcl" then
-				nStat = math.floor((nStat + 0.5) / 2);
-			elseif sStat == "oddcl" then
-				nStat = math.floor((nStat + 1.5) / 2);
+	
+	local clauses = {};
+	local aDamageNodes = UtilityManager.getSortedTable(DB.getChildren(nodeAction, "heallist"));
+	for _,v in ipairs(aDamageNodes) do
+		local aDice = DB.getValue(v, "dice", {});
+		if #aDice > 0 then
+			local sDiceStat = DB.getValue(v, "dicestat", "");
+			local nDiceStatMax = DB.getValue(v, "dicestatmax", 0);
+			
+			local nDiceMult = math.max(getActionMod(rActor, nodeAction, sDiceStat, nDiceStatMax), 1);
+			if nDiceMult > 1 then
+				local nCopy = #aDice;
+				for i = 2, nDiceMult do
+					for j = 1, nCopy do
+						table.insert(aDice, aDice[j]);
+					end
+				end
 			end
-		else
-			nStat = ActorManager2.getAbilityBonus(rActor, sStat);
 		end
 		
-		if nMaxStat > 0 and nMaxStat < nStat then
-			nStat = nMaxStat;
+		local nMod = DB.getValue(v, "bonus", 0);
+
+		local sStat = DB.getValue(v, "stat", "");
+		local nStatMult = 1;
+		local nStatMax = 0;
+		if sStat ~= "" then
+			nStatMult = math.max(DB.getValue(v, "statmult", 1), 1);
+			nStatMax = math.max(DB.getValue(v, "statmax", 0), 0);
+			
+			local nStat = getActionMod(rActor, nodeAction, sStat, nStatMax);
+			nMod = nMod + (nStat * nStatMult);
 		end
+
+		table.insert(clauses, { dice = aDice, modifier = nMod, mult = 2, stat = sStat, statmax = nStatMax, statmult = nStatMult });
+	end
+
+	return clauses;
+end
+
+function getActionEffectDuration(rActor, nodeAction)
+	if not nodeAction then
+		return {}, 0;
+	end
+	
+	local aDice = DB.getValue(nodeAction, "durdice", {});
+	if #aDice > 0 then
+		local sDiceStat = DB.getValue(nodeAction, "durdicestat", "");
+		local nDiceStatMax = DB.getValue(nodeAction, "durdicestatmax", 0);
 		
+		local nDiceMult = math.max(getActionMod(rActor, nodeAction, sDiceStat, nDiceStatMax), 1);
+		if nDiceMult > 1 then
+			local nCopy = #aDice;
+			for i = 2, nDiceMult do
+				for j = 1, nCopy do
+					table.insert(aDice, aDice[j]);
+				end
+			end
+		end
+	end
+	
+	local nMod = DB.getValue(nodeAction, "durmod", 0);
+	
+	local sStat = DB.getValue(nodeAction, "durstat", "");
+	local nStatMult = 1;
+	local nStatMax = 0;
+	if sStat ~= "" then
+		nStatMult = math.max(DB.getValue(nodeAction, "durmult", 1), 1);
+		nStatMax = math.max(DB.getValue(nodeAction, "dmaxstat", 0), 0);
+		
+		local nStat = getActionMod(rActor, nodeAction, sStat, nStatMax);
 		nMod = nMod + (nStat * nStatMult);
 	end
+
+	return aDice, nMod;
+end
+
+--
+-- DISPLAY FUNCTIONS
+--
+
+function getActionAttackText(nodeAction)
+	local sAttack = "";
 	
-	local sType = DB.getValue(nodeAction, "healtype", "");
+	local sAttackType = DB.getValue(nodeAction, "atktype", "");
+	local nAttackMod = DB.getValue(nodeAction, "atkmod", 0);
+	if sAttackType == "melee" then
+		sAttack = Interface.getString("power_label_atktypemelee");
+	elseif sAttackType == "ranged" then
+		sAttack = Interface.getString("power_label_atktyperanged");
+	elseif sAttackType == "mtouch" then
+		sAttack = Interface.getString("power_label_atktypemtouch");
+	elseif sAttackType == "rtouch" then
+		sAttack = Interface.getString("power_label_atktypertouch");
+	elseif sAttackType == "cm" then
+		sAttack = Interface.getString("power_label_atktypegrapple");
+	end
+	if sAttack ~= "" and nAttackMod ~= 0 then
+		sAttack = sAttack .. " + " .. nAttackMod;
+	end
 	
-	return aDice, nMod, sType, sStat, nStat, nMaxStat;
+	return sAttack;
+end
+
+function getActionSaveText(nodeAction)
+	local sSave = "";
+
+	local sSaveType = DB.getValue(nodeAction, "savetype", "");
+	local nDC = SpellManager.getActionSaveDC(nodeAction);
+
+	if sSaveType ~= "" and nDC ~= 0 then
+		if sSaveType == "fortitude" then
+			sSave = Interface.getString("power_label_savetypefort");
+		elseif sSaveType == "reflex" then
+			sSave = Interface.getString("power_label_savetyperef");
+		elseif sSaveType == "will" then
+			sSave = Interface.getString("power_label_savetypewill");
+		end
+		
+		sSave = string.format("%s DC %d", sSave, nDC);
+	end
+	
+	return sSave;
+end
+
+function getActionDamageText(nodeAction)
+	local nodeActor = nodeAction.getChild(".........")
+	local rActor = ActorManager.getActor("", nodeActor);
+
+	local clauses = SpellManager.getActionDamage(rActor, nodeAction);
+	
+	local aOutput = {};
+	local aDamage = ActionDamage.getDamageStrings(clauses);
+	for _,rDamage in ipairs(aDamage) do
+		local sDice = StringManager.convertDiceToString(rDamage.aDice, rDamage.nMod);
+		if sDice ~= "" then
+			if rDamage.sType ~= "" then
+				table.insert(aOutput, string.format("%s %s", sDice, rDamage.sType));
+			else
+				table.insert(aOutput, sDice);
+			end
+		end
+	end
+	local sDamage = table.concat(aOutput, " + ");
+	
+	local sMeta = DB.getValue(nodeAction, "meta", "");
+	if sMeta == "empower" then
+		sDamage = sDamage .. " [E]";
+	elseif sMeta == "maximize" then
+		sDamage = sDamage .. " [M]";
+	end
+	
+	return sDamage;
+end
+
+function getActionHealText(nodeAction)
+	local nodeActor = nodeAction.getChild(".........")
+	local rActor = ActorManager.getActor("", nodeActor);
+
+	local clauses = SpellManager.getActionHeal(rActor, nodeAction);
+	
+	local aHealDice = {};
+	local nHealMod = 0;
+	for _,vClause in ipairs(clauses) do
+		for _,vDie in ipairs(vClause.dice) do
+			table.insert(aHealDice, vDie);
+		end
+		nHealMod = nHealMod + vClause.modifier;
+	end
+
+	local sHeal = StringManager.convertDiceToString(aHealDice, nHealMod);
+	if DB.getValue(nodeAction, "healtype", "") == "temp" then
+		sHeal = sHeal .. " temporary";
+	end
+	
+	local sMeta = DB.getValue(nodeAction, "meta", "");
+	if sMeta == "empower" then
+		sHeal = sHeal .. " [E]";
+	elseif sMeta == "maximize" then
+		sHeal = sHeal .. " [M]";
+	end
+	
+	return sHeal;
+end
+
+function getActionEffectDurationText(nodeAction)
+	local nodeActor = nodeAction.getChild(".........")
+	local rActor = ActorManager.getActor("", nodeActor);
+
+	local aDice, nMod = getActionEffectDuration(rActor, nodeAction);
+
+	local sDuration = StringManager.convertDiceToString(aDice, nMod);
+	
+	local sUnits = DB.getValue(nodeAction, "durunit", "");
+	if sDuration ~= "" then
+		if sUnits == "minute" then
+			sDuration = sDuration .. " min";
+		elseif sUnits == "hour" then
+			sDuration = sDuration .. " hr";
+		elseif sUnits == "day" then
+			sDuration = sDuration .. " dy";
+		else
+			sDuration = sDuration .. " rd";
+		end
+	end
+	
+	return sDuration;
 end

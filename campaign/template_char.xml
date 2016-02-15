@@ -60,13 +60,11 @@
 	</template>
 	
 	<template name="string_charclasslevelsummary">
-		<stringcontrol>
-			<font>sheettext</font>
-			<selectioncolor>FFD296</selectioncolor>
+		<simplestringc>
 			<lineoffset default="on" mergerule="resetandadd">1</lineoffset>
 			<readonly />
 			<script file="campaign/scripts/char_classlevelsummary.lua" />
-		</stringcontrol>
+		</simplestringc>
 	</template>
 
 	<template name="numberc_linked">
@@ -292,7 +290,8 @@
 			<modifiersize>mini</modifiersize>
 			<script>
 				function action(draginfo)
-					local rActor, rAttack = CharManager.getBaseAttackRollStructures(self.description[1].text[1], window.getDatabaseNode());
+					local sText = Interface.getString(self.description[1].textres[1]);
+					local rActor, rAttack = CharManager.getBaseAttackRollStructures(sText, window.getDatabaseNode());
 					
 					ActionAttack.performRoll(draginfo, rActor, rAttack);
 					return true;
@@ -531,8 +530,8 @@
 						local nodeSpellClass = window.getDatabaseNode();
 						nodeCreature = nodeSpellClass.getChild(sCharRelative);
 						local nodeParent = nodeCreature.getParent();
-						
-						if nodeParent.getName() == "charsheet" then
+
+						if ActorManager.isPC(nodeCreature) then
 							if StringManager.contains(DataCommon.abilities, sAbility) then
 								nodeLocal = nodeCreature.getChild("abilities." .. sAbility .. ".bonus");
 							elseif sAbility == "bab" then
@@ -540,7 +539,7 @@
 							elseif sAbility == "level" then
 								nodeLocal = nodeCreature.getChild("level");
 							end
-						elseif nodeParent.getName() == "npc" then
+						else
 							if StringManager.contains(DataCommon.abilities, sAbility) then
 								nodeLocal = nodeCreature.getChild(sAbility);
 							elseif sAbility == "bab" then
@@ -763,7 +762,7 @@
 						if DB.getValue(nodeWin, "state", 0) == 1 then
 							local nRanks = DB.getValue(nodeWin, "ranks", 0);
 							if nRanks > 0 then
-								return 2;
+								return 3;
 							end
 						end
 						return 0;
@@ -839,7 +838,7 @@
 	
 					local bEditMode = window.getEditMode();
 					for _,w in pairs(getWindows()) do
-						w.idelete.setVisible(bEditMode);
+						w.idelete.setVisibility(bEditMode);
 					end
 				end
 				
@@ -873,24 +872,6 @@
 				end
 			</script>
 		</buttonfield>
-	</template>
-	<template name="number_charweapondamagetotal">
-		<number_linked>
-			<displaysign />
-			<source><name>type</name></source>
-			<source><string /><name>damagestat1</name></source>
-			<source><string /><name>damagestat2</name></source>
-			<source><string /><name>damagemeleestatadj</name></source>
-			<source><string /><name>damagerangedstatadj</name></source>
-			<source><name>...abilities.strength.bonus</name></source>
-			<source><name>...abilities.dexterity.bonus</name></source>
-			<source><name>...abilities.constitution.bonus</name></source>
-			<source><name>...abilities.intelligence.bonus</name></source>
-			<source><name>...abilities.wisdom.bonus</name></source>
-			<source><name>...abilities.charisma.bonus</name></source>
-			<source><name>damagebonus</name><op>+</op></source>
-			<script file="campaign/scripts/char_weapondamagetotal.lua" />
-		</number_linked>
 	</template>
 	<template name="number_charweaponattacktotal">
 		<number_linked>

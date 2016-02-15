@@ -7,7 +7,7 @@ function onInit()
 	OptionsManager.registerCallback("REVL", update);
 	
 	if not User.isHost() then
-		list.setAnchor("bottom", "sheetframe", "bottom", "absolute", -20);
+		list.setAnchor("bottom", "", "bottom", "absolute", -25);
 	end
 
 	onSystemChanged();

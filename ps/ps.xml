@@ -18,32 +18,28 @@
 		<softclose />
 		<nodelete />
 		<sheetdata>
-			<windowtitlebar>
+			<windowtitlebar name="title">
 				<resource>ps_window_title</resource>
 			</windowtitlebar>
+			<anchor_title_partysheet name="contentanchor" />
 			
-			<subwindow name="main">
-				<bounds>0,0,-1,-1</bounds>
+			<sub_ps name="main">
 				<class>ps_main</class>
-			</subwindow>
-			<subwindow name="skills">
-				<bounds>0,0,-1,-1</bounds>
+			</sub_ps>
+			<sub_ps name="skills">
 				<class>ps_skills</class>
-			</subwindow>
-			<subwindow name="inventory">
-				<bounds>0,0,-1,-1</bounds>
+			</sub_ps>
+			<sub_ps name="inventory">
 				<class>ps_inventory</class>
-			</subwindow>
-			<subwindow name="order">
-				<bounds>0,0,-1,-1</bounds>
+			</sub_ps>
+			<sub_ps name="order">
 				<class>ps_order</class>
-			</subwindow>
-			<subwindow name="xp">
-				<bounds>0,0,-1,-1</bounds>
+			</sub_ps>
+			<sub_ps name="xp">
 				<class>ps_xp</class>
-			</subwindow>
+			</sub_ps>
 			
-			<tabs_partysheet>
+			<tabs_partysheet name="tabs">
 				<tab>
 					<icon>tab_main</icon>
 					<subwindow>main</subwindow>
@@ -67,6 +63,7 @@
 			</tabs_partysheet>
 			
 			<resize_partysheet />
+			<helper_ps />
 			<close_partysheet />
 		</sheetdata>
 	</windowclass>
@@ -84,28 +81,25 @@
 		<nodelete />
 		<script file="ps/scripts/ps_client.lua" />
 		<sheetdata>
-			<windowtitlebar>
+			<windowtitlebar name="title">
 				<resource>ps_window_title</resource>
 			</windowtitlebar>
+			<anchor_title_partysheet name="contentanchor" />
 			
-			<subwindow name="main">
-				<bounds>0,0,-1,-1</bounds>
+			<sub_ps name="main">
 				<class>ps_main</class>
-			</subwindow>
-			<subwindow name="skills">
-				<bounds>0,0,-1,-1</bounds>
+			</sub_ps>
+			<sub_ps name="skills">
 				<class>ps_skills</class>
-			</subwindow>
-			<subwindow name="inventory">
-				<bounds>0,0,-1,-1</bounds>
+			</sub_ps>
+			<sub_ps name="inventory">
 				<class>ps_inventory</class>
-			</subwindow>
-			<subwindow name="order">
-				<bounds>0,0,-1,-1</bounds>
+			</sub_ps>
+			<sub_ps name="order">
 				<class>ps_order</class>
-			</subwindow>
+			</sub_ps>
 			
-			<tabs_partysheet>
+			<tabs_partysheet name="tabs">
 				<tab>
 					<icon>tab_inventory</icon>
 					<subwindow>inventory</subwindow>
@@ -117,6 +111,7 @@
 			</tabs_partysheet>
 			
 			<resize_partysheet />
+			<helper_ps />
 			<close_partysheet />
 		</sheetdata>
 	</windowclass>

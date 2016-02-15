@@ -94,14 +94,16 @@ function modSkill(rSource, rTarget, rRoll)
 		end
 		local aSkillNameFilter = {};
 		local aSkillWordsLower = StringManager.parseWords(sSkillLower);
-		for kWord, vWord in ipairs(aSkillWordsLower) do
-			if StringManager.contains(DataCommon.dmgtypes, vWord) or StringManager.contains(DataCommon.bonustypes, vWord) or StringManager.contains(DataCommon.connectors, vWord) then
-				-- Skip damage type, bonus type and connector keywords (Hack to allow Use Magic Device bonuses)
+		if #aSkillWordsLower > 0 then
+			if #aSkillWordsLower == 1 then
+				table.insert(aSkillFilter, aSkillWordsLower[1]);
 			else
-				table.insert(aSkillNameFilter, vWord);
+				table.insert(aSkillFilter, table.concat(aSkillWordsLower, " "));
+				if aSkillWordsLower[1] == "knowledge" or aSkillWordsLower[1] == "perform" or aSkillWordsLower[1] == "craft" then
+					table.insert(aSkillFilter, aSkillWordsLower[1]);
+				end
 			end
 		end
-		table.insert(aSkillFilter, aSkillNameFilter);
 		
 		-- Get effects
 		local aAddDice, nAddMod, nEffectCount = EffectManager.getEffectsBonus(rSource, {"SKILL"}, false, aSkillFilter);
@@ -159,7 +161,11 @@ function modSkill(rSource, rTarget, rRoll)
 		-- If effects, then add them
 		if bEffects then
 			for _,vDie in ipairs(aAddDice) do
-				table.insert(rRoll.aDice, "p" .. string.sub(vDie, 2));
+				if vDie:sub(1,1) == "-" then
+					table.insert(rRoll.aDice, "-p" .. vDie:sub(3));
+				else
+					table.insert(rRoll.aDice, "p" .. vDie:sub(2));
+				end
 			end
 			rRoll.nMod = rRoll.nMod + nAddMod;
 

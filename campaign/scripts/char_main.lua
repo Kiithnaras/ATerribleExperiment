@@ -4,14 +4,14 @@
 --
 
 function onInit()
-	DB.addHandler(getDatabaseNode().getNodeName() .. ".classes", "onChildUpdate", onLevelChanged);
 	onLevelChanged();
+	DB.addHandler(DB.getPath(getDatabaseNode(), "classes"), "onChildUpdate", onLevelChanged);
 
 	onSystemChanged();
 end
 
 function onClose()
-	DB.removeHandler(getDatabaseNode().getNodeName() .. ".classes", "onChildUpdate", onLevelChanged);
+	DB.removeHandler(DB.getPath(getDatabaseNode(), "classes"), "onChildUpdate", onLevelChanged);
 end
 
 function onLevelChanged()

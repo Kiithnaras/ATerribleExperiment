@@ -27,20 +27,18 @@ function onInit()
 	end
 	
 	local nodeChar = window.getDatabaseNode();
-	local nodeAbilities = nodeChar.createChild(sCharPath .. ".abilities");
-	if nodeAbilities then
-		nodeAbilities.onChildUpdate = sourceupdate;
-	end
-	local nodeLevel = nodeChar.createChild("level", "number");
-	if nodeLevel then
-		nodeLevel.onUpdate = sourceupdate;
-	end
-	local nodeBAB = nodeChar.createChild("attackbonus.base", "number");
-	if nodeBAB then
-		nodeBAB.onUpdate = sourceupdate;
-	end
+	DB.addHandler(DB.getPath(nodeChar, "abilities"), "onChildUpdate", sourceupdate);
+	DB.addHandler(DB.getPath(nodeChar, "level"), "onUpdate", sourceupdate);
+	DB.addHandler(DB.getPath(nodeChar, "attackbonus.base"), "onUpdate", sourceupdate);
 	
 	super.onInit();
+end
+
+function onClose()
+	local nodeChar = window.getDatabaseNode();
+	DB.addHandler(DB.getPath(nodeChar, "abilities"), "onChildUpdate", sourceupdate);
+	DB.addHandler(DB.getPath(nodeChar, "level"), "onUpdate", sourceupdate);
+	DB.addHandler(DB.getPath(nodeChar, "attackbonus.base"), "onUpdate", sourceupdate);
 end
 
 function sourceupdate()

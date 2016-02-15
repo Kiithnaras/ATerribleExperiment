@@ -19,27 +19,39 @@
 		<nodelete />
 		<script>
 			function onInit()
-				OptionsManager.registerCallback("SHPH", updateHealthDisplay);
+				OptionsManager.registerCallback("SHPC", updateHealthDisplay);
+				OptionsManager.registerCallback("SHNPC", updateHealthDisplay);
 				updateHealthDisplay();
+				OptionsManager.registerCallback("CTSI", updateShowOrder);
+				updateShowOrder();
 			end
 			
 			function onClose()
-				OptionsManager.unregisterCallback("SHPH", updateHealthDisplay);
+				OptionsManager.unregisterCallback("SHPC", updateHealthDisplay);
+				OptionsManager.unregisterCallback("SHNPC", updateHealthDisplay);
+				OptionsManager.unregisterCallback("CTSI", updateShowOrder);
 			end
 			
 			function updateHealthDisplay()
-				local bOption = not OptionsManager.isOption("SHPH", "off");
+				local sOptSHPC = OptionsManager.getOption("SHPC");
+				local sOptSHNPC = OptionsManager.getOption("SHNPC");
+				local bShowDetail = (sOptSHPC == "detailed") or (sOptSHNPC == "detailed");
 				
-				label_hp.setVisible(bOption);
-				label_temp.setVisible(bOption);
-				label_nonlethal.setVisible(bOption);
-				label_wounds.setVisible(bOption);
+				label_hp.setVisible(bShowDetail);
+				label_temp.setVisible(bShowDetail);
+				label_nonlethal.setVisible(bShowDetail);
+				label_wounds.setVisible(bShowDetail);
 
-				label_status.setVisible(not bOption);
+				label_status.setVisible(not bShowDetail);
 
 				for _,w in pairs(list.getWindows()) do
 					w.updateHealthDisplay();
 				end
+			end
+			
+			function updateShowOrder()
+				local bShowInit = not OptionsManager.isOption("CTSI", "off");
+				label_init.setVisible(bShowInit);
 			end
 		</script>
 		<sheetdata>
@@ -110,6 +122,7 @@
 			</simplenumber>
 
 			<resize_ctbox />
+			<helper_ct />
 			<close_ctbox />
 		</sheetdata>
 	</windowclass>
@@ -159,10 +172,24 @@
 					<right anchor="left" relation="relative" offset="-10" />
 				</anchored>
 			</button_ctentry_friendfoe>
-			<number_ct_static name="wounds">
-				<anchored to="rightanchor" width="30" height="20">
+			<genericcontrol name="healthbase">
+				<anchored to="rightanchor" width="150" height="20">
 					<top />
 					<right anchor="left" relation="relative" offset="-10" />
+				</anchored>
+				<disabled />
+			</genericcontrol>
+			<simplestring name="status">
+				<anchored to="healthbase" position="over" />
+				<frame name="fieldlight" offset="7,5,7,5" />
+				<center />
+				<static />
+				<invisible />
+			</simplestring>
+			<number_ct_static name="wounds">
+				<anchored to="healthbase" width="30" height="20">
+					<top />
+					<right />
 				</anchored>
 				<script>
 					function onValueChanged()
@@ -171,9 +198,9 @@
 				</script>
 			</number_ct_static>
 			<number_ct_static name="nonlethal">
-				<anchored to="rightanchor" width="30" height="20">
+				<anchored to="wounds" width="30" height="20">
 					<top />
-					<right anchor="left" relation="relative" offset="-10" />
+					<right anchor="left" offset="-10" />
 				</anchored>
 				<script>
 					function onValueChanged()
@@ -182,9 +209,9 @@
 				</script>
 			</number_ct_static>
 			<number_ct_static name="hptemp">
-				<anchored to="rightanchor" width="30" height="20">
+				<anchored to="nonlethal" width="30" height="20">
 					<top />
-					<right anchor="left" relation="relative" offset="-10" />
+					<right anchor="left" offset="-10" />
 				</anchored>
 				<color>0000AA</color>
 				<script>
@@ -194,9 +221,9 @@
 				</script>
 			</number_ct_static>
 			<number_ct_static name="hp">
-				<anchored to="rightanchor" width="30" height="20">
+				<anchored to="hptemp" width="30" height="20">
 					<top />
-					<right anchor="left" relation="relative" offset="-10" />
+					<right anchor="left" offset="-10" />
 				</anchored>
 				<script>
 					function onValueChanged()
@@ -204,16 +231,6 @@
 					end
 				</script>
 			</number_ct_static>
-			<simplestring name="status">
-				<anchored to="rightanchor" width="150" height="20">
-					<top />
-					<right anchor="left" relation="relative" offset="-10" />
-				</anchored>
-				<frame name="fieldlight" offset="7,5,7,5" />
-				<center />
-				<static />
-				<invisible />
-			</simplestring>
 			<number_ct_static name="initresult">
 				<anchored to="rightanchor" width="30" height="20">
 					<top />
@@ -235,27 +252,9 @@
 				<readonly />
 			</stringu>
 
-			<label name="effects_label">
-				<anchored>
-					<top parent="name" anchor="bottom" relation="current" offset="2" />
-					<left offset="63" />
-				</anchored>
-				<static textres="ct_label_effects" />
-				<nodrag />
-				<invisible />
-			</label>
-			<stringcontrol name="effects_str">
-				<anchored>
-					<top parent="name" anchor="bottom" relation="relative" offset="2" />
-					<left parent="effects_label" anchor="right" offset="5" />
-					<right offset="-10" />
-				</anchored>
-				<multilinespacing>20</multilinespacing>
-				<font>sheettext</font>
-				<static />
-				<nodrag />
-				<invisible />
-			</stringcontrol>
+			<!-- Quick labels -->
+			<string_ctentry_targets name="target_summary" />
+			<string_ctentry_effects name="effect_summary" />
 
 			<genericcontrol name="spacer">
 				<anchored width="0" height="7">

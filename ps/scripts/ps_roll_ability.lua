@@ -15,18 +15,20 @@ function action(draginfo)
 		aParty = nil;
 	end
 	
-	local sAbilityStat = window.abilityselected.getValue():lower();
+	local sAbilityStat = DB.getValue("partysheet.abilityselected", ""):lower();
 	
-	local nTargetDC = window.abilitydc.getValue();
+	local nTargetDC = DB.getValue("partysheet.abilitydc", 0);
 	if nTargetDC == 0 then
 		nTargetDC = nil;
 	end
 	
 	local bSecretRoll = (window.hiderollresults.getValue() == 1);
 	
+	ModifierStack.lock();
 	for _,v in pairs(aParty) do
 		ActionAbility.performRoll(nil, v, sAbilityStat, nTargetDC, bSecretRoll);
 	end
+	ModifierStack.unlock(true);
 
 	return true;
 end

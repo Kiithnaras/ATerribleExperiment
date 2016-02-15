@@ -32,24 +32,9 @@
 				<empty textres="battle_emptyname" />
 			</string_record_name>
 			
-			<genericcontrol name="rightanchor">
-				<anchored height="0" width="0">
-					<top />
-					<right />
-				</anchored>
-			</genericcontrol>
-			<icon_record_locked name="hardlocked">
-				<anchored height="20" width="20">
-					<top offset="5" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
-				</anchored>
-			</icon_record_locked>
-			<button_record_locked name="locked">
-				<anchored height="20" width="20">
-					<top offset="5" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
-				</anchored>
-			</button_record_locked>
+			<anchor_record_header_right />
+			<icon_record_locked />
+			<button_record_locked />
 
 			<frame_record name="detailframe">
 				<anchored height="45">

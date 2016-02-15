@@ -3,10 +3,9 @@
 -- attribution and copyright information.
 --
 
-local effectson = false;
-
 function onInit()
 	-- Set the displays to what should be shown
+	setTargetingVisible();
 	setActiveVisible();
 	setDefensiveVisible();
 	setSpacingVisible();
@@ -25,16 +24,8 @@ function onInit()
 	-- Register the deletion menu item for the host
 	registerMenuItem(Interface.getString("list_menu_deleteitem"), "delete", 6);
 	registerMenuItem(Interface.getString("list_menu_deleteconfirm"), "delete", 6, 7);
-
-	-- Track the effects list
-	DB.addHandler(getDatabaseNode().getNodeName() .. ".effects", "onChildUpdate", onEffectsChanged);
-	onEffectsChanged();
 	
 	label_grapple.setValue(Interface.getString("cmb"));
-end
-
-function onClose()
-	DB.removeHandler(getDatabaseNode().getNodeName() .. ".effects", "onChildUpdate", onEffectsChanged);
 end
 
 function updateDisplay()
@@ -96,19 +87,18 @@ function delete()
 	-- Remember node name
 	local sNode = node.getNodeName();
 	
-	-- Clear any effects and wounds first, so that saves aren't triggered when initiative advanced
+	-- Clear any effects, so that saves aren't triggered when initiative advanced
 	effects.reset(false);
-	wounds.setValue(0);
+	
+	-- Clear NPC wounds, so that stabilization rolls aren't triggered when initiative advanced
+	local sClass, sRecord = link.getValue();
+	if sClass ~= "charsheet" then
+		wounds.setValue(0);
+	end
 	
 	-- Move to the next actor, if this CT entry is active
 	if DB.getValue(node, "active", 0) == 1 then
 		CombatManager.nextActor();
-	end
-
-	-- If this is an NPC with a token on the map, then remove the token also
-	local sClass, sRecord = link.getValue();
-	if sClass ~= "charsheet" then
-		token.deleteReference();
 	end
 
 	-- Delete the database node and close the window
@@ -137,7 +127,7 @@ function onHealthChanged()
 	
 	local sClass,_ = link.getValue();
 	if sClass ~= "charsheet" then
-		idelete.setVisible((nPercentNonlethal > 1));
+		idelete.setVisibility((sStatus == "Dying") or (sStatus == "Dead"));
 	end
 end
 
@@ -156,19 +146,6 @@ end
 function onVisibilityChanged()
 	TokenManager.updateVisibility(getDatabaseNode());
 	windowlist.onVisibilityToggle();
-end
-
-function onEffectsChanged()
-	local affectedby = EffectManager.getEffectsString(getDatabaseNode());
-	effects_str.setValue(affectedby);
-	
-	if affectedby == "" or effectson then
-		effects_label.setVisible(false);
-		effects_str.setVisible(false);
-	else
-		effects_label.setVisible(true);
-		effects_str.setVisible(true);
-	end
 end
 
 function onActiveChanged()
@@ -206,23 +183,35 @@ end
 -- SECTION VISIBILITY FUNCTIONS
 --
 
+function setTargetingVisible()
+	local v = false;
+	if activatetargeting.getValue() == 1 then
+		v = true;
+	end
+
+	targetingicon.setVisible(v);
+	
+	sub_targeting.setVisible(v);
+	
+	frame_targeting.setVisible(v);
+
+	target_summary.onTargetsChanged();
+end
+
 function setActiveVisible()
 	local v = false;
 	if activateactive.getValue() == 1 then
 		v = true;
 	end
+
 	local sClass, sRecord = link.getValue();
-	if sClass ~= "charsheet" and active.getValue() == 1 then
+	local bNPC = (sClass ~= "charsheet");
+	if bNPC and active.getValue() == 1 then
 		v = true;
 	end
 	
 	activeicon.setVisible(v);
 
-	attacks.setVisible(v);
-	if v and not attacks.getNextWindow(nil) then
-		attacks.createWindow();
-	end
-	atklabel.setVisible(v);
 	immediate.setVisible(v);
 	immediatelabel.setVisible(v);
 	init.setVisible(v);
@@ -231,6 +220,19 @@ function setActiveVisible()
 	label_grapple.setVisible(v);
 	speed.setVisible(v);
 	speedlabel.setVisible(v);
+	
+	spacer_active.setVisible(v);
+	
+	if bNPC then
+		attacks.setVisible(v);
+		if v and not attacks.getNextWindow(nil) then
+			attacks.createWindow();
+		end
+		attacks_label.setVisible(v);
+	else
+		attacks.setVisible(false);
+		attacks_label.setVisible(false);
+	end
 	
 	frame_active.setVisible(v);
 end
@@ -262,8 +264,8 @@ function setDefensiveVisible()
 	sr.setVisible(v);
 	sr_label.setVisible(v);
 
-	specialdef.setVisible(v);
-	specialdeflabel.setVisible(v);
+	specialqualities.setVisible(v);
+	specialqualitieslabel.setVisible(v);
 	
 	frame_defensive.setVisible(v);
 end
@@ -290,13 +292,15 @@ function setEffectsVisible()
 		v = true;
 	end
 	
-	effectson = v;
 	effecticon.setVisible(v);
 	
 	effects.setVisible(v);
 	effects_iadd.setVisible(v);
+	for _,w in pairs(effects.getWindows()) do
+		w.idelete.setValue(0);
+	end
 
 	frame_effects.setVisible(v);
 
-	onEffectsChanged();
+	effect_summary.onEffectsChanged();
 end

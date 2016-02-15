@@ -9,10 +9,10 @@
 	<windowclass name="combattracker_host">
 		<frame>ctbox</frame>
 		<placement>
-			<size width="550" height="500" />
+			<size width="600" height="500" />
 		</placement>
 		<sizelimits>
-			<minimum width="550" height="400" />
+			<minimum width="600" height="400" />
 			<dynamic />
 		</sizelimits>
 		<softclose />
@@ -36,42 +36,52 @@
 				</script>
 			</buttoncontrol>
 			<label_ct>
-				<bounds>63,38,-373,20</bounds>
+				<bounds>63,38,-393,20</bounds>
 				<static textres="ct_label_name" />
 				<center />
 			</label_ct>
 			<label_ct name="label_init">
-				<anchored position="insidetopright" offset="333,38" width="30" />
+				<anchored position="insidetopright" offset="353,38" width="30" />
 				<static textres="init" />
 				<center />
 			</label_ct>
 			<label_ct name="label_hp">
-				<anchored position="insidetopright" offset="288,38" width="30" />
+				<anchored position="insidetopright" offset="308,38" width="30" />
 				<static textres="hp" />
 				<tooltip textres="hitpoints" />
 				<center />
 			</label_ct>
 			<label_ct name="label_temp">
-				<anchored position="insidetopright" offset="248,38" width="30" />
+				<anchored position="insidetopright" offset="268,38" width="30" />
 				<static textres="ct_label_hptemp" />
 				<tooltip textres="ct_tooltip_hptemp" />
 				<center />
 			</label_ct>
 			<label_ct name="label_nonlethal">
-				<anchored position="insidetopright" offset="208,38" width="30" />
+				<anchored position="insidetopright" offset="228,38" width="30" />
 				<static textres="ct_label_nonlethal" />
 				<tooltip textres="ct_tooltip_nonlethal" />
 				<center />
 			</label_ct>
 			<label_ct name="label_wounds">
-				<anchored position="insidetopright" offset="168,38" width="30" />
+				<anchored position="insidetopright" offset="188,38" width="30" />
 				<static textres="ct_label_wounds" />
 				<tooltip textres="ct_tooltip_wounds" />
 				<center />
 			</label_ct>
 			<frame_ct>
-				<bounds>-143,28,100,35</bounds>
+				<bounds>-163,28,120,35</bounds>
 			</frame_ct>
+			<buttoncontrol name="button_global_targeting">
+				<bounds>-153,35,20,20</bounds>
+				<state icon="button_section_targeting" />
+				<state icon="button_section_targeting_down" />
+				<script>
+					function onValueChanged()
+						window.list.toggleTargeting();
+					end
+				</script>
+			</buttoncontrol>
 			<buttoncontrol name="button_global_active">
 				<bounds>-133,35,20,20</bounds>
 				<state icon="button_sword" />
@@ -169,6 +179,7 @@
 			</button_ct_nextround>
 			
 			<resize_ctbox />
+			<helper_ct />
 			<close_ctbox />
 		</sheetdata>
 	</windowclass>
@@ -229,11 +240,6 @@
 					<top />
 					<right anchor="left" relation="relative" offset="-12" />
 				</anchored>
-				<script>
-					function onButtonPress()
-						window.delete();
-					end
-				</script>
 			</button_idelete>
 			
 			<link_ctentry name="link">
@@ -299,6 +305,21 @@
 				<script>
 					function onValueChanged()
 						window.setActiveVisible();
+						window.windowlist.onEntrySectionToggle();
+					end
+				</script>
+			</buttoncontrol>
+			<buttoncontrol name="activatetargeting">
+				<anchored to="rightanchor" width="20" height="20">
+					<top />
+					<right anchor="left" relation="relative" />
+				</anchored>
+				<tooltip textres="ct_tooltip_targeting" />
+				<state icon="button_section_targeting" />
+				<state icon="button_section_targeting_down" />
+				<script>
+					function onValueChanged()
+						window.setTargetingVisible();
 						window.windowlist.onEntrySectionToggle();
 					end
 				</script>
@@ -409,6 +430,25 @@
 				<tabtarget next="initresult" />
 			</string_ctname>
 			
+			<!-- Targeting subsection -->
+			<icon_ctsection name="targetingicon">
+				<icon>button_section_targeting_down</icon>
+			</icon_ctsection>
+			<subwindow name="sub_targeting">
+				<anchored>
+					<top parent="name" anchor="bottom" relation="relative" offset="10" />
+					<left parent="targetingicon" anchor="right" offset="8" />
+					<right offset="-12" />
+				</anchored>
+				<class>ct_targets</class>
+			</subwindow>
+			<frame_ctsub name="frame_targeting">
+				<anchored>
+					<top parent="targetingicon" />
+					<bottom parent="sub_targeting" />
+				</anchored>
+			</frame_ctsub>
+
 			<!-- Offense subsection -->
 			<icon_ctsection name="activeicon">
 				<icon>button_sword_down</icon>
@@ -444,7 +484,7 @@
 				<anchored height="20">
 					<top parent="init" />
 					<left parent="grapple" anchor="right" offset="40" />
-					<right offset="-12" />
+					<right offset="-17" />
 				</anchored>
 			</string_ct>
 			<label name="speedlabel">
@@ -452,11 +492,20 @@
 				<static textres="ct_label_speed" />
 			</label>
 
+			<genericcontrol name="spacer_active">
+				<anchored height="0">
+					<top parent="name" anchor="bottom" relation="relative" offset="33" />
+					<left parent="activeicon" anchor="right" offset="75" />
+					<right offset="-17" />
+				</anchored>
+				<disabled />
+			</genericcontrol>
+			
 			<windowlist name="attacks">
 				<anchored>
-					<top parent="name" anchor="bottom" relation="relative" offset="30" />
+					<top parent="name" anchor="bottom" relation="relative" offset="0" />
 					<left parent="activeicon" anchor="right" offset="38" />
-					<right offset="-12" />
+					<right offset="-17" />
 				</anchored>
 				<datasource>.attacks</datasource>
 				<class>ct_attack</class>
@@ -468,7 +517,7 @@
 					end
 				</script>
 			</windowlist>
-			<label name="atklabel">
+			<label name="attacks_label">
 				<anchored to="attacks" position="lefthigh" offset="5,0"/>
 				<static textres="ct_label_attack" />
 			</label>
@@ -538,7 +587,7 @@
 			</label>
 			<number_ct_save name="willsave">
 				<anchored to="reflexsave" position="righthigh" offset="45,0" />
-				<description textres="will" />
+				<description textres="will_long" />
 				<target>will</target>
 			</number_ct_save>
 			<label name="willlabel">
@@ -554,7 +603,7 @@
 				<static textres="sr" />
 			</label>
 
-			<string_ct name="specialdef">
+			<string_ct name="specialqualities">
 				<anchored>
 					<top parent="name" anchor="bottom" relation="relative" offset="55" />
 					<left parent="defensiveicon" anchor="right" offset="61" />
@@ -562,15 +611,15 @@
 				</anchored>
 				<multilinespacing>20</multilinespacing>
 			</string_ct>
-			<label name="specialdeflabel">
-				<anchored to="specialdef" position="lefthigh" offset="5,0"/>
-				<static textres="ct_label_specialdef" />
+			<label name="specialqualitieslabel">
+				<anchored to="specialqualities" position="lefthigh" offset="5,0"/>
+				<static textres="ct_label_specialqualities" />
 			</label>
 
 			<frame_ctsub name="frame_defensive">
 				<anchored>
 					<top parent="defensiveicon" />
-					<bottom parent="specialdef" offset="8" />
+					<bottom parent="specialqualities" offset="8" />
 				</anchored>
 			</frame_ctsub>
 
@@ -629,7 +678,10 @@
 			</windowlist>
  
 			<button_iadd name="effects_iadd">
-				<anchored to="effects" position="belowright" offset="2,2" />
+				<anchored>
+					<top parent="name" anchor="bottom" relation="relative" offset="2" />
+					<right parent="effects" offset="-2" />
+				</anchored>
 				<target>effects</target>
 				<tooltip textres="ct_tooltip_effectadd" />
 			</button_iadd>
@@ -641,27 +693,9 @@
 				</anchored>
 			</frame_ctsub>
 
-			<label name="effects_label">
-				<anchored>
-					<top parent="name" anchor="bottom" relation="current" offset="2" />
-					<left offset="63" />
-				</anchored>
-				<static textres="ct_label_effects" />
-				<nodrag />
-				<invisible />
-			</label>
-			<stringcontrol name="effects_str">
-				<anchored>
-					<top parent="name" anchor="bottom" relation="relative" offset="2" />
-					<left parent="effects_label" anchor="right" offset="5" />
-					<right offset="-10" />
-				</anchored>
-				<multilinespacing>20</multilinespacing>
-				<font>sheettext</font>
-				<static />
-				<nodrag />
-				<invisible />
-			</stringcontrol>
+			<!-- Quick labels -->
+			<string_ctentry_targets name="target_summary" />
+			<string_ctentry_effects name="effect_summary" />
 
 			<genericcontrol name="spacer">
 				<anchored width="0" height="9">
@@ -694,6 +728,7 @@
 				<nohighlight />
 				<actortype>ct</actortype>
 				<actorpath>....</actorpath>
+				<delaykeyupdate merge="delete" />
 				<script file="common/scripts/string_attackline.lua" />
 			</string_textlistitem>
 		</sheetdata>
@@ -761,9 +796,9 @@
 				<tooltip textres="ct_tooltip_effectdragtarget" />
 				<script>
 					function onInit()
-						registerMenuItem(Interface.getString("ct_menu_effecttargeting"), "goto", 4);
-						registerMenuItem(Interface.getString("ct_menu_effecttargetingfriend"), "turn", 4, 3);
-						registerMenuItem(Interface.getString("ct_menu_effecttargetingnonfriend"), "mask", 4, 5);
+						registerMenuItem(Interface.getString("ct_menu_targeting"), "goto", 4);
+						registerMenuItem(Interface.getString("ct_menu_targetingfriend"), "turn", 4, 3);
+						registerMenuItem(Interface.getString("ct_menu_targetingnonfriend"), "mask", 4, 5);
 					end
 					
 					function onDragStart(button, x, y, draginfo)
@@ -772,7 +807,7 @@
 							return false;
 						end
 						
-						draginfo.setType("targeting");
+						draginfo.setType("effect_targeting");
 						draginfo.setIcon("drag_targeting");
 						draginfo.setShortcutData(window.getClass(), nodeWin.getNodeName());
 						
@@ -894,64 +929,14 @@
 				</script>
 			</label>
 
-			<windowlist name="targets">
-				<bounds>0,0,0,0</bounds>
-				<datasource>.targets</datasource>
-				<class>ct_effect_target</class>
-				<invisible />
-			</windowlist>
-			<label name="target_name">
-				<anchored merge="replace">
+			<!-- Effect target summary -->
+			<string_ctentry_effect_targets name="target_summary">
+				<anchored>
 					<left parent="label" />
 					<top parent="duration" anchor="bottom" />
 					<right parent="duration" offset="-105" />
 				</anchored>
-				<static />
-				<color>7F000000</color>
-				<nodrag />
-				<multilinespacing>20</multilinespacing>
-				<invisible />
-				<script>
-					function onClickDown(button, x, y)
-						return true;
-					end
-					
-					function onClickRelease(button, x, y)
-						if isVisible() then
-							for _,w in pairs(window.targets.getWindows()) do
-								local nodeWin = w.getDatabaseNode();
-								if nodeWin then
-									nodeWin.delete();
-								else
-									w.close();
-								end
-							end
-						end
-					end
-
-					function onDragStart(button, x, y, draginfo)
-						return window.onDragStart(button, x, y, draginfo);
-					end
-
-					function onDrop(x, y, draginfo)
-						return window.onDrop(x, y, draginfo);
-					end
-				</script>
-			</label>
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="ct_effect_target">
-		<script file="ct/scripts/ct_effect_target.lua" />
-		<sheetdata>
-			<hs name="type" />
-			<hs name="noderef">
-				<script>
-					function onValueChanged()
-						window.onRefChanged();
-					end
-				</script>
-			</hs>
+			</string_ctentry_effect_targets>
 		</sheetdata>
 	</windowclass>
 </root>

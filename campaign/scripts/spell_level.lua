@@ -32,10 +32,6 @@ function update(bEditMode)
 	end
 end
 
-function getActorType()
-	return windowlist.window.getActorType();
-end	
-
 function setFilter(bFilter)
 	bShow = bFilter;
 end

@@ -280,7 +280,7 @@
 			</number_charsavewill>
 			<label>
 				<anchored to="reflex_label" position="belowleft" offset="0,8" width="80" />
-				<static textres="will" />
+				<static textres="will_long" />
 			</label>
 			<label_fieldtop>
 				<anchored to="fortitude" />

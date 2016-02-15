@@ -3,8 +3,6 @@
 -- attribution and copyright information.
 --
 
-launchmsg = "3.5E v3.0.3 ruleset for Fantasy Grounds.\rCopyright 2013 Smiteworks USA, LLC.";
-
 function isPFRPG()
 	return false;
 end
@@ -50,6 +48,112 @@ save_stol = {
 	["WILL"] = "will"
 };
 
+-- Values for wound comparison
+healthstatushalf = "bloodied";
+healthstatuswounded = "wounded";
+
+-- Values for alignment comparison
+alignment_lawchaos = {
+	["lawful"] = 1,
+	["chaotic"] = 3,
+	["lg"] = 1,
+	["ln"] = 1,
+	["le"] = 1,
+	["cg"] = 3,
+	["cn"] = 3,
+	["ce"] = 3,
+};
+alignment_goodevil = {
+	["good"] = 1,
+	["evil"] = 3,
+	["lg"] = 1,
+	["le"] = 3,
+	["ng"] = 1,
+	["ne"] = 3,
+	["cg"] = 1,
+	["ce"] = 3,
+};
+alignment_neutral = "n";
+
+-- Values for size comparison
+creaturesize = {
+	["fine"] = 1,
+	["diminutive"] = 2,
+	["tiny"] = 3,
+	["small"] = 4,
+	["medium"] = 5,
+	["large"] = 6,
+	["huge"] = 7,
+	["gargantuan"] = 8,
+	["colossal"] = 9,
+	["F"] = 1,
+	["D"] = 2,
+	["T"] = 3,
+	["S"] = 4,
+	["M"] = 5,
+	["L"] = 6,
+	["H"] = 7,
+	["G"] = 8,
+	["C"] = 9,
+};
+
+-- Values for creature type comparison
+creaturedefaulttype = "humanoid";
+creaturehalftype = "half-";
+creaturehalftypesubrace = "human";
+creaturetype = {
+	"aberration",
+	"animal",
+	"construct",
+	"dragon",
+	"fey",
+	"giant",
+	"humanoid",
+	"magical beast",
+	"monstrous humanoid",
+	"ooze",
+	"outsider",
+	"plant",
+	"undead",
+	"vermin",
+};
+creaturesubtype = {
+	"air", -- Monster subtypes
+	"angel",
+	"aquatic",
+	"archon",
+	"augmented",
+	"chaotic",
+	"cold",
+	"demon",
+	"devil",
+	"earth",
+	"evil",
+	"extraplanar",
+	"fire",
+	"good",
+	"incorporeal",
+	"lawful",
+	"living construct",
+	"native",
+	"psionic",
+	"shapechanger",
+	"swarm",
+	"water",
+	"dwarf", -- Humanoid subtypes
+	"elf", 
+	"gnoll",
+	"gnome", 
+	"goblinoid",
+	"halfling",
+	"human",
+	"orc",
+	"reptilian",
+};
+
+-- Values supported in effect conditionals
+conditionaltags = {
+};
 -- Conditions supported in effect conditionals and for token widgets
 -- NOTE: From rules, missing dying, staggered and disabled
 conditions = {
@@ -208,6 +312,8 @@ immunetypes = {
 	"electricity",
 	"fire",
 	"sonic",
+	"nonlethal",	-- SPECIAL DAMAGE TYPES
+	"critical",
 	"poison",		-- OTHER IMMUNITY TYPES
 	"sleep",
 	"paralysis",
@@ -239,8 +345,17 @@ dmgtypes = {
 	"evil",
 	"good",
 	"lawful",
-	"nonlethal",	-- MISC DAMAGE TYPE
-	"spell"
+	"nonlethal",	-- SPECIAL DAMAGE TYPES
+	"spell",
+	"critical",
+	"precision",
+};
+
+specialdmgtypes = {
+	"nonlethal",
+	"spell",
+	"critical",
+	"precision",
 };
 
 -- Bonus types supported in power descriptions
@@ -261,7 +376,8 @@ bonustypes = {
 	"resistance",
 	"sacred",
 	"shield",
-	"size"
+	"size",
+	"trait",
 };
 
 stackablebonustypes = {
@@ -269,6 +385,65 @@ stackablebonustypes = {
 	"dodge"
 };
 
+-- Armor class bonus types
+-- (Map text types to internal types)
+actypes = {
+	["dex"] = "dex",
+	["armor"] = "armor",
+	["shield"] = "shield",
+	["natural"] = "natural",
+	["dodge"] = "dodge",
+	["deflection"] = "deflection",
+	["size"] = "size",
+};
+acarmormatch = {
+	"padded",
+	"padded armor",
+	"padded barding",
+	"leather",
+	"leather armor",
+	"leather barding",
+	"studded leather",
+	"studded leather armor",
+	"studded leather barding",
+	"chain shirt",
+	"chain shirt barding",
+	"hide",
+	"hide armor",
+	"hide barding",
+	"scale mail",
+	"scale mail barding",
+	"chainmail",
+	"chainmail barding",
+	"breastplate",
+	"breastplate barding",
+	"splint mail",
+	"splint mail barding",
+	"banded mail",
+	"banded mail barding",
+	"half-plate",
+	"half-plate armor",
+	"half-plate barding",
+	"full plate",
+	"full plate armor",
+	"full plate barding",
+	"plate barding",
+	"bracers of armor",
+	"mithral chain shirt",
+};
+acshieldmatch = {
+	"buckler",
+	"light shield",
+	"light wooden shield",
+	"light steel shield",
+	"heavy shield",
+	"heavy wooden shield",
+	"heavy steel shield",
+	"tower shield",
+};
+acdeflectionmatch = {
+	"ring of protection"
+};
 -- Spell effects supported in spell descriptions
 spelleffects = {
 	"blinded",
@@ -352,8 +527,8 @@ naturaldmgtypes = {
 	["claw"] =  "piercing,slashing",
 	["foreclaw"] =  "piercing,slashing",
 	["gore"] = "piercing",
-	["hoof"] = "piercing",
-	["hoove"] = "piercing",
+	["hoof"] = "bludgeoning",
+	["hoove"] = "bludgeoning",
 	["horn"] = "piercing",
 	["pincer"] = "bludgeoning",
 	["quill"] = "piercing",
@@ -507,7 +682,6 @@ psskilldata = {
 	"Bluff",
 	"Climb",
 	"Diplomacy",
-	"Gather Information",
 	"Heal",
 	"Jump",
 	"Intimidate",

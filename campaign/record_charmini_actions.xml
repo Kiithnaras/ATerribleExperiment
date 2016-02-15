@@ -8,43 +8,18 @@
 <root>
 	<windowclass name="charmini_weapon">
 		<margins control="0,0,0,5" />
-		<script>
-			function onInit()
-				onViewDataChanged();
-				onTypeChanged();
-				onAmmoChanged();
-			end
-			
-			function onViewDataChanged()
-				local bRanged = (type.getValue() == 1);
-				local nAmmo = maxammo.getValue();
-
-				rangeincrement.setVisible(bRanged);
-				range_label.setVisible(bRanged);
-				maxammo.setVisible(bRanged and (nAmmo &gt; 0));
-				ammo_label.setVisible(bRanged and (nAmmo &gt; 0));
-				ammocounter.setVisible(bRanged and (nAmmo &gt; 0));
-			end
-			
-			function onTypeChanged()
-				onViewDataChanged();
-			end
-			
-			function onAmmoChanged()
-				onViewDataChanged();
-			end
-		</script>
+		<script file="campaign/scripts/charmini_weapon.lua" />
 		<sheetdata>
 			<hn name="critatkrange" />
 			<hn name="critdmgmult" />
 
 			<state_charweapontype name="type">
-				<anchored position="insidetopright" offset="185,3" />
+				<anchored position="insidetopright" offset="187,3" />
 				<readonly />
 			</state_charweapontype>
 
 			<genericcontrol name="attackicons">
-				<anchored position="insidetopright" offset="150,5" width="30" height="20" />
+				<anchored position="insidetopright" offset="152,5" width="30" height="20" />
 				<frame name="fieldlight" offset="5,5,5,5" />
 			</genericcontrol>
 			<number_charweaponfullattack name="attacks">
@@ -52,24 +27,31 @@
 				<readonly />
 			</number_charweaponfullattack>
 			<number_charweaponattacktotal name="attack1">
-				<anchored position="insidetopright" offset="115,5" width="30" height="20" />
+				<anchored position="insidetopright" offset="117,5" width="30" height="20" />
 				<frame name="fieldlight" offset="5,5,5,5" />
 				<modifier>0</modifier>
 				<name>Attack 1</name>
 				<source><name>attack1modifier</name><op>+</op></source>
 			</number_charweaponattacktotal>
 			
-			<genericcontrol name="damageframe">
+			<simplestringc name="damageview">
 				<anchored position="insidetopright" offset="5,5" width="105" height="20" />
-				<frame name="slottedbonus" offset="5,5,5,5" />
-			</genericcontrol>
-			<diefield name="damagedice">
-				<anchored to="damageframe" position="insidetopleft" width="63" height="20" />
-				<script file="campaign/scripts/char_weapondamage.lua" />
-			</diefield>
-			<number_charweapondamagetotal name="damagetotalbonus">
-				<anchored to="damageframe" position="insidetopright" width="43" height="20" />
-			</number_charweapondamagetotal>
+				<multilinespacing>20</multilinespacing>
+				<frame name="fielddark" offset="7,5,7,5" />
+				<stateframe>
+					<hover name="rowshade" offset="7,5,7,5" />
+				</stateframe>
+				<cursor hover="hand" />
+				<readonly />
+				<script>
+					function onDoubleClick(x,y)
+						return window.onDamageAction();
+					end			
+					function onDragStart(button, x, y, draginfo)
+						return window.onDamageAction(draginfo);
+					end
+				</script>
+			</simplestringc>
 
 			<stringu name="name">
 				<anchored position="insidetopleft" offset="5,5" height="20">
@@ -78,28 +60,23 @@
 				<readonly />
 			</stringu>
 			
-			<label name="range_label">
+			<label name="label_range">
 				<anchored to="name" position="belowleft" offset="10,5" />
 				<static textres="charmini_label_weaponrange" />
 			</label>
 			<simplenumber name="rangeincrement">
-				<anchored to="range_label" position="righthigh" offset="5,0" width="35" height="20" />
+				<anchored to="label_range" position="righthigh" offset="5,0" width="35" height="20" />
 				<frame name="fieldlight" offset="7,5,7,5" />
 				<readonly />
 			</simplenumber>
-			<label name="ammo_label">
+			<label name="label_ammo">
 				<anchored to="rangeincrement" position="righthigh" offset="10,0" />
 				<static textres="charmini_label_weaponammo" />
 			</label>
 			<simplenumber name="maxammo">
-				<anchored to="ammo_label" position="righthigh" offset="5,0" width="35" height="20" />
+				<anchored to="label_ammo" position="righthigh" offset="5,0" width="35" height="20" />
 				<frame name="fieldlight" offset="7,5,7,5" />
 				<readonly />
-				<script>
-					function onValueChanged()
-						window.onAmmoChanged();
-					end
-				</script>
 			</simplenumber>
 			<state_charammocounter name="ammocounter">
 				<anchored to="maxammo" position="righthigh" offset="5,0" />

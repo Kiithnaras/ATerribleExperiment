@@ -370,7 +370,11 @@ function modAttack(rSource, rTarget, rRoll)
 		rRoll.sDesc = rRoll.sDesc .. " " .. table.concat(aAddDesc, " ");
 	end
 	for _,vDie in ipairs(aAddDice) do
-		table.insert(rRoll.aDice, "p" .. string.sub(vDie, 2));
+		if vDie:sub(1,1) == "-" then
+			table.insert(rRoll.aDice, "-p" .. vDie:sub(3));
+		else
+			table.insert(rRoll.aDice, "p" .. vDie:sub(2));
+		end
 	end
 	rRoll.nMod = rRoll.nMod + nAddMod;
 end
@@ -396,8 +400,9 @@ function onAttack(rSource, rTarget, rRoll)
 		if sDefenseVal then
 			nDefenseVal = tonumber(sDefenseVal);
 		end
-		nMissChance = 0;
+		nMissChance = tonumber(string.match(rRoll.sDesc, "%[MISS CHANCE (%d+)%%%]")) or 0;
 		rMessage.text = string.gsub(rMessage.text, " %[AC %d+%]", "");
+		rMessage.text = string.gsub(rMessage.text, " %[MISS CHANCE %d+%%%]", "");
 	else
 		nDefenseVal, nAtkEffectsBonus, nDefEffectsBonus, nMissChance = ActorManager2.getDefenseValue(rSource, rTarget, rRoll);
 		if nAtkEffectsBonus ~= 0 then
@@ -490,16 +495,18 @@ function onAttack(rSource, rTarget, rRoll)
 		table.insert(rAction.aMessages, "[CHECK FOR CRITICAL]");
 	end
 	
-	if rRoll.sType ~= "critconfirm" and nMissChance > 0 then
+	if ((rRoll.sType == "critconfirm") or not rAction.bCritThreat) and (nMissChance > 0) then
 		table.insert(rAction.aMessages, "[MISS CHANCE " .. nMissChance .. "%]");
 	end
 
 	Comm.deliverChatMessage(rMessage);
 
+	local bRollMissChance = false;
 	if rRoll.sType == "critconfirm" then
 		if rAction.sResult == "crit" then
 			setCritState(rSource, rTarget);
 		end
+		bRollMissChance = true;
 	else
 		if rAction.bCritThreat then
 			local rCritConfirmRoll = { sType = "critconfirm", aDice = {"d6","d6","d6"} };
@@ -510,6 +517,9 @@ function onAttack(rSource, rTarget, rRoll)
 			else
 				rCritConfirmRoll.sDesc = rRoll.sDesc .. " [CONFIRM]";
 			end
+			if nMissChance > 0 then
+				rCritConfirmRoll.sDesc = rCritConfirmRoll.sDesc .. "[MISS CHANCE " .. nMissChance .. "%]";
+			end
 			rCritConfirmRoll.nMod = rRoll.nMod + nCCMod;
 			
 			if nDefenseVal then
@@ -517,11 +527,13 @@ function onAttack(rSource, rTarget, rRoll)
 			end
 			
 			ActionsManager.roll(rSource, rTarget, rCritConfirmRoll);
+		elseif (rAction.sResult ~= "miss") and (rAction.sResult ~= "fumble") then
+			bRollMissChance = true;
 		end
-		if (nMissChance > 0) and (rAction.sResult ~= "miss") and (rAction.sResult ~= "fumble") then
-			local rMissChanceRoll = { sType = "misschance", sDesc = rRoll.sDesc .. " [MISS CHANCE " .. nMissChance .. "%]", aDice = { "d100", "d10" }, nMod = 0 };
-			ActionsManager.roll(rSource, rTarget, rMissChanceRoll);
-		end
+	end
+	if bRollMissChance and (nMissChance > 0) then
+		local rMissChanceRoll = { sType = "misschance", sDesc = rRoll.sDesc .. " [MISS CHANCE " .. nMissChance .. "%]", aDice = { "d100", "d10" }, nMod = 0 };
+		ActionsManager.roll(rSource, rTarget, rMissChanceRoll);
 	end
 
 	if rTarget then
@@ -578,6 +590,7 @@ function onMissChance(rSource, rTarget, rRoll)
 		rMessage.text = rMessage.text .. " [MISS]";
 		if rTarget then
 			rMessage.icon = "roll_attack_miss";
+			clearCritState(rSource, rTarget);
 		else
 			rMessage.icon = "roll_attack";
 		end
@@ -588,7 +601,7 @@ function onMissChance(rSource, rTarget, rRoll)
 			rMessage.icon = "roll_attack_glance";
 		else
 			rMessage.icon = "roll_attack";
-		end  ]]
+		end]]
 	else
 		rMessage.text = rMessage.text .. " [HIT]";
 		if rTarget then
@@ -654,10 +667,17 @@ function setCritState(rSource, rTarget)
 end
 
 function clearCritState(rSource)
-	local sSourceCT = ActorManager.getCTNodeName(rSource);
-	if sSourceCT ~= "" then
-		aCritState[sSourceCT] = nil;
+	if rTarget then
+		return isCrit(rSource, rTarget);
 	end
+
+	local sSourceCT = ActorManager.getCTNodeName(rSource);
+	if sSourceCT == "" then
+		return false;
+	end
+
+	aCritState[sSourceCT] = nil;
+	return true;
 end
 
 function isCrit(rSource, rTarget)

@@ -4,23 +4,23 @@
 --
 
 function onInit()
-	local sNode = getDatabaseNode().getNodeName();
-	for _,v in pairs(DataCommon.abilities) do
-		DB.addHandler(sNode .. "." .. v, "onUpdate", updateAbility);
-	end
-	DB.addHandler(sNode .. ".locked", "onUpdate", onLockChanged);
-
 	TypeChanged();
 	updateAbility();
 	onLockChanged();
+
+	local node = getDatabaseNode();
+	for _,v in pairs(DataCommon.abilities) do
+		DB.addHandler(DB.getPath(node, v), "onUpdate", updateAbility);
+	end
+	DB.addHandler(DB.getPath(node, "locked"), "onUpdate", onLockChanged);
 end
 
 function onClose()
-	local sNode = getDatabaseNode().getNodeName();
+	local node = getDatabaseNode();
 	for _,v in pairs(DataCommon.abilities) do
-		DB.removeHandler(sNode .. "." .. v, "onUpdate", updateAbility);
+		DB.removeHandler(DB.getPath(node, v), "onUpdate", updateAbility);
 	end
-	DB.removeHandler(sNode .. ".locked", "onUpdate", onLockChanged);
+	DB.removeHandler(DB.getPath(node, "locked"), "onUpdate", onLockChanged);
 end
 
 function onModeChanged()

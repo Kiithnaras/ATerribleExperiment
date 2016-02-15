@@ -157,6 +157,7 @@
 			<filter_utility />
 			
 			<resize_utilitybox3 />
+			<helper_modifiers />
 			<close_utilitybox3 />
 		</sheetdata>
 	</windowclass>

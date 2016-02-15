@@ -39,6 +39,7 @@
 	<string name="will">Will</string>
 	<string name="fortitude">Fortitude</string>
 	<string name="reflex">Reflex</string>
+	<string name="will_long">Will</string>
 	<string name="save">Save</string>
 	<string name="savingthrow">Saving Throw</string>
 	<string name="init">Init</string>
@@ -54,6 +55,8 @@
 	<string name="evencl">Even CLs</string>
 	<string name="oddcl">Odd CLs</string>
 	<string name="dc">DC</string>
+	<string name="yes">Yes</string>
+	<string name="no">No</string>
 	
 	<string name="menu_dieclear">Clear Dice</string>
 	<string name="menu_rest">Rest</string>
@@ -90,28 +93,10 @@
 	<string name="option_label_PSMN">Party: Show characters to clients</string>
 	<string name="option_label_INIT">Add: Auto NPC initiative</string>
 	<string name="option_label_ANPC">Chat: Anonymize NPC attacks</string>
-	<string name="option_label_SHPH">View: Show health to clients</string>
-	<string name="option_label_WNDC">View: Wound Categories</string>
-	<string name="option_label_TNPCE">Token: Show Enemy effects</string>
-	<string name="option_label_TNPCH">Token: Show Enemy health</string>
-	<string name="option_label_TPCE">Token: Show Ally effects</string>
-	<string name="option_label_TPCH">Token: Show Ally health</string>
-	<string name="option_val_all">All</string>
-	<string name="option_val_friendly">Friendly</string>
 	<string name="option_val_multi">Multi</string>
 	<string name="option_val_pc">PC</string>
 	<string name="option_val_npc">NPC</string>
 	<string name="option_val_group">Group</string>
-	<string name="option_val_detailed">Detailed</string>
-	<string name="option_val_simple">Simple</string>
-	<string name="option_val_icons">Icons</string>
-	<string name="option_val_iconshover">Icons Hover</string>
-	<string name="option_val_mark">Mark</string>
-	<string name="option_val_markhover">Mark Hover</string>
-	<string name="option_val_bar">Bar</string>
-	<string name="option_val_barhover">Bar Hover</string>
-	<string name="option_val_dot">Dot</string>
-	<string name="option_val_dothover">Dot Hover</string>
 	<string name="option_val_max">Max</string>
 	<string name="option_val_random">Random</string>
 	<string name="option_val_standard">Standard</string>
@@ -125,6 +110,28 @@
 	<string name="option_label_HRST">CT: Auto stabilization rolls</string>
 	<string name="option_label_HRFC">Attack: Fumble/Crit Tables</string>
 
+	<!-- Languages -->
+	<string name="language_value_abyssal">Abyssal</string>
+	<string name="language_value_aklo">Aklo</string>
+	<string name="language_value_aquan">Aquan</string>
+	<string name="language_value_auran">Auran</string>
+	<string name="language_value_celestial">Celestial</string>
+	<string name="language_value_common">Common</string>
+	<string name="language_value_draconic">Draconic</string>
+	<string name="language_value_druidic">Druidic</string>
+	<string name="language_value_dwarven">Dwarven</string>
+	<string name="language_value_elven">Elven</string>
+	<string name="language_value_giant">Giant</string>
+	<string name="language_value_gnoll">Gnoll</string>
+	<string name="language_value_gnome">Gnome</string>
+	<string name="language_value_goblin">Goblin</string>
+	<string name="language_value_ignan">Ignan</string>
+	<string name="language_value_infernal">Infernal</string>
+	<string name="language_value_orc">Orc</string>
+	<string name="language_value_sylvan">Sylvan</string>
+	<string name="language_value_terran">Terran</string>
+	<string name="language_value_undercommon">Undercommon</string>
+	
 	<!-- Combat Tracker -->
 	<string name="ct_label_hptemp">Tmp</string>
 	<string name="ct_label_nonlethal">Sbd</string>
@@ -133,7 +140,7 @@
 	<string name="ct_label_immediate">Imm?</string>
 	<string name="ct_label_speed">Spd</string>
 	<string name="ct_label_attack">Atk</string>
-	<string name="ct_label_specialdef">Special</string>
+	<string name="ct_label_specialqualities">Special</string>
 	<string name="ct_label_effectappliedby">Applied by:</string>
 	<string name="ct_label_effecttargets">Targets:</string>
 
@@ -151,10 +158,6 @@
 	<string name="ct_tooltip_effectdragtarget">Drag onto new effect target</string>
 	<string name="ct_tooltip_effectdur">Duration</string>
 	<string name="ct_tooltip_effectinit">Initiative to adjust on</string>
-	
-	<string name="ct_menu_effecttargeting">Targeting</string>
-	<string name="ct_menu_effecttargetingfriend">Target all allies</string>
-	<string name="ct_menu_effecttargetingnonfriend">Target all non-allies</string>
 	
 	<string name="ct_message_rest">Party taking short rest.</string>
 	<string name="ct_message_restovernight">Party taking overnight rest.</string>
@@ -220,13 +223,8 @@
 	<string name="ps_tooltip_showrollon">Show Roll Results</string>
 	<string name="ps_tooltip_showrolloff">Hide Roll Results</string>
 	
+	<string name="ps_label_award">Award</string>
 	<string name="ps_menu_awardxp">Award XP</string>
-	<string name="ps_menu_awardxpone">Award XP - One</string>
-	<string name="ps_menu_awardxpall">Award XP - All</string>
-	<string name="ps_menu_delete">Delete Entries</string>
-	<string name="ps_menu_deleteone">Delete Entry</string>
-	<string name="ps_menu_deleteall">Delete Entries - All</string>
-
 	<string name="ps_message_xpaward">Awarded XP to the Party.</string>
 
 	<!-- Modifiers -->
@@ -244,6 +242,9 @@
 	<string name="modifier_label_dmghalf">Half</string>
 	
 	<!-- Effects -->
+	<string name="effect_label_conditions">Conditions</string>
+	<string name="effect_label_custom">Custom</string>
+
 	<string name="effect_label_durunitrnd">RND</string>
 	<string name="effect_label_durunitmin">MIN</string>
 	<string name="effect_label_durunithr">HR</string>
@@ -343,6 +344,8 @@
 	<string name="char_tooltip_xp">XP</string>
 	<string name="char_tooltip_xpneeded">XP Needed</string>
 	<string name="char_tooltip_speed">Speed</string>
+	<string name="char_tooltip_atkmelee">Melee Attack</string>
+	<string name="char_tooltip_atkranged">Ranged Attack</string>
 
 	<string name="char_label_skillnotice">Notice</string>
 	<string name="char_label_skillsearch">Search</string>
@@ -424,12 +427,6 @@
 	<string name="char_label_weaponnumatt">#att</string>
 	<string name="char_label_weaponattacks">Attacks</string>
 	<string name="char_label_weapondamage">Damage</string>
-	<string name="char_label_weaponatkdetail">Attack</string>
-	<string name="char_label_weaponcritrange">Crit Rng</string>
-	<string name="char_label_weapondmgdetail">Damage</string>
-	<string name="char_label_weaponcritmult">Crit Mult</string>
-	<string name="char_label_weapondmgtype">Dmg Type</string>
-	<string name="char_label_weaponproperties">Properties</string>
 	<string name="char_label_weaponrange">Range</string>
 	<string name="char_label_weaponammo">Ammo</string>
 	<string name="char_label_spells">Spells</string>
@@ -568,48 +565,17 @@
 	<string name="spell_label_ccdetail">Conc. Check</string>
 	<string name="spell_tooltip_toggle">Click to edit / hide details</string>
 	
+	<string name="spell_tooltip_casterprep">Prepared spell caster (Wizard)</string>
+	<string name="spell_tooltip_casterspontaneous">Spontaneous spell caster (Sorcerer)</string>
+	<string name="spell_tooltip_casterpoints">Points spell caster (Psion)</string>
+	
 	<string name="spell_label_cast">Cast</string>
 	<string name="spell_tooltip_usepower">Use Power</string>
 	<string name="spell_tooltip_castspell">Cast Spell</string>
 	<string name="spell_label_atk">Atk</string>
-	<string name="spell_label_atkdetail">Attack</string>
-	<string name="spell_label_atktypenone">None</string>
-	<string name="spell_label_atktypemelee">Melee</string>
-	<string name="spell_label_atktyperanged">Ranged</string>
-	<string name="spell_label_atktypemtouch">M Touch</string>
-	<string name="spell_label_atktypertouch">R Touch</string>
-	<string name="spell_label_atktypegrapple">CMB</string>
-	<string name="spell_label_clcdetail">Lvl Chk</string>
-	<string name="spell_label_srnotallowed">SR Not Allowed?</string>
-	<string name="spell_label_savetypenone">None</string>
-	<string name="spell_label_savetypefort">Fort</string>
-	<string name="spell_label_savetyperef">Ref</string>
-	<string name="spell_label_savetypewill">Will</string>
 	<string name="spell_label_dmg">Dmg</string>
-	<string name="spell_label_dmgdetail">Damage</string>
-	<string name="spell_label_dmgtype">Dmg Type</string>
-	<string name="spell_label_dmgspell">Spell Damage?</string>
-	<string name="spell_label_metamagic">Metamagic</string>
-	<string name="spell_label_metamagicempower">Empower</string>
-	<string name="spell_label_metamagicmaximize">Maximize</string>
 	<string name="spell_label_heal">Heal</string>
-	<string name="spell_label_healtype">Type</string>
-	<string name="spell_label_healtypenormal">HP</string>
-	<string name="spell_label_healtypetemp">TEMP</string>
-	<string name="spell_label_healdetail">Heal</string>
-	<string name="spell_label_duration">Duration</string>
 
-	<string name="spell_tooltip_dicemax">Maximum dice by caster level</string>
-	<string name="spell_tooltip_abilitymult">Multiple of CL or statistic to apply</string>
-	<string name="spell_tooltip_abilitymax">Maximum ability or caster level value</string>
-	<string name="spell_tooltip_casterprep">Prepared spell caster (Wizard)</string>
-	<string name="spell_tooltip_casterspontaneous">Spontaneous spell caster (Sorcerer)</string>
-	<string name="spell_tooltip_casterpoints">Points spell caster (Psion)</string>
-	<string name="spell_tooltip_targetself">Apply to self</string>
-	<string name="spell_tooltip_targetother">Apply to current target</string>
-	<string name="spell_tooltip_durabilitymult">Stat duration multiple</string>
-	<string name="spell_tooltip_durabilitymax">Max stat duration value</string>
-	
 	<string name="spell_error_dropclassmissing">Unable to determine class for moved spell, please drop within a class.</string>
 	<string name="spell_error_dropclasslevelmissing">Unable to determine class or level for new spell, please drop within a class level.</string>
 	
@@ -681,4 +647,95 @@
 	<string name="ref_label_effecttarget">Effect/Target</string>
 	<string name="ref_label_duration">Duration</string>
 	<string name="ref_label_sr">Spell Resist.</string>
+
+	<!-- Editors -->
+	<string name="weapon_title">Weapon</string>
+	<string name="weapon_label_name">Name</string>
+	<string name="weapon_label_properties">Properties</string>
+	<string name="weapon_header_attack">ATTACK</string>
+	<string name="weapon_label_atkstat">Stat</string>
+	<string name="weapon_label_atkbonus">Bonus</string>
+	<string name="weapon_label_atkbonusper">Per Atk Bonus</string>
+	<string name="weapon_label_critrange">Crit</string>
+	<string name="weapon_header_damage">DAMAGE</string>
+	<string name="weapon_label_dmgdice">Dice</string>
+	<string name="weapon_label_dmgstat">Mult x Stat (Max)</string>
+	<string name="weapon_tooltip_dmgstatmult">Multiple of ability bonus</string>
+	<string name="weapon_tooltip_dmgstatmax">Maximum ability bonus to apply (before multiple)</string>
+	<string name="weapon_label_dmgbonus">Bonus</string>
+	<string name="weapon_label_dmgcritmult">Crit</string>
+	<string name="weapon_label_dmgtype">Type</string>
+
+	<string name="power_label_name">Name</string>
+	<string name="power_label_targeting">Targeting</string>
+	<string name="power_label_targetnormal">Targets</string>
+	<string name="power_label_targetself">Self</string>
+	<string name="power_label_metamagic">Metamagic</string>
+	<string name="power_label_metamagicempower">Empower</string>
+	<string name="power_label_metamagicmaximize">Maximize</string>
+	<string name="power_tooltip_targetself">Apply to Self</string>
+	<string name="power_tooltip_targetnormal">Apply to current targets</string>
+
+	<string name="power_tooltip_cast">CAST</string>
+	<string name="power_tooltip_save">SAVE</string>
+	<string name="power_tooltip_attack">ATK</string>
+	<string name="power_tooltip_damage">DMG</string>
+	<string name="power_tooltip_heal">HEAL</string>
+	<string name="power_tooltip_effect">EFFECT</string>
+
+	<string name="power_title_cast">Spell/Ability Use</string>
+	<string name="power_header_cast_attack">ATTACK</string>
+	<string name="power_label_atktypenone">None</string>
+	<string name="power_label_atktypemelee">Melee</string>
+	<string name="power_label_atktyperanged">Ranged</string>
+	<string name="power_label_atktypemtouch">M Touch</string>
+	<string name="power_label_atktypertouch">R Touch</string>
+	<string name="power_label_atktypegrapple">CMB</string>
+	<string name="power_header_cast_clc">CASTER LEVEL CHECK</string>
+	<string name="power_label_srnotallowed">SR Not Allowed?</string>
+	<string name="power_header_cast_save">SAVE</string>
+	<string name="power_label_savetypenone">None</string>
+	<string name="power_label_savetypefort">Fort</string>
+	<string name="power_label_savetyperef">Ref</string>
+	<string name="power_label_savetypewill">Will</string>
+	<string name="power_label_savedctype_ability">Class DC + </string>
+	<string name="power_label_savedctype_fixed">Fixed</string>
+	
+	<string name="power_title_damage">Spell/Ability Damage</string>
+	<string name="power_label_spelldmg">Spell Dmg?</string>
+	<string name="power_header_damage">DAMAGE</string>
+	<string name="power_tooltip_dicemax">Maximum caster level for dice multiple</string>
+	<string name="power_tooltip_statmult">Multiple of caster level or ability</string>
+	<string name="power_tooltip_statmax">Maximum caster level or ability for multiple</string>
+	<string name="power_label_dmgtype">Type</string>
+	<string name="power_label_dmg_dice">Dice</string>
+	<string name="power_label_dmg_dicemult">Dice Multiplier (Max)</string>
+	<string name="power_label_dmg_stat">Mult x Stat (Max)</string>
+	<string name="power_label_dmg_bonus">Bonus</string>
+
+	<string name="power_title_heal">Spell/Ability Heal</string>
+	<string name="power_header_heal">HEAL</string>
+	<string name="power_label_healtype">Type</string>
+	<string name="power_label_healtypenormal">HP</string>
+	<string name="power_label_healtypetemp">TEMP</string>
+	<string name="power_label_heal_dice">Dice</string>
+	<string name="power_label_heal_dicemult">Dice Multiplier (Max)</string>
+	<string name="power_label_heal_stat">Mult x Stat (Max)</string>
+	<string name="power_label_heal_bonus">Bonus</string>
+
+	<string name="power_title_effect">Spell/Ability Effect</string>
+	<string name="power_header_effect">DESCRIPTION / CONDITIONS / MODIFIERS</string>
+	<string name="power_header_effect_duration">DURATION</string>
+	<string name="power_header_effect_other">TARGETING / EXPENDITURE</string>
+	<string name="power_label_effect_apply">Expend?</string>
+	<string name="power_label_effect_applyall">Never</string>
+	<string name="power_label_effect_applyaction">On next action</string>
+	<string name="power_label_effect_applyroll">On next roll</string>
+	<string name="power_label_effect_applysingle">Once per modifier</string>
+	<string name="power_tooltip_durmult">Multiple of CL or ability</string>
+	<string name="power_label_effect_durdice">Dice</string>
+	<string name="power_label_effect_durdicemult">Dice Multiplier (Max)</string>
+	<string name="power_label_effect_durstat">Mult x Stat (Max)</string>
+	<string name="power_label_effect_durmod">Fixed</string>
+	<string name="power_label_effect_durunit">Units</string>
 </root>
