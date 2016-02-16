@@ -652,14 +652,14 @@ function evalAbilityHelper(rActor, sEffectAbility)
 		nAbility = ActorManager2.getAbilityBonus(rActor, "strength");
 	elseif sShortAbility == "DEX" then
 		nAbility = ActorManager2.getAbilityBonus(rActor, "dexterity");
-	elseif sShortAbility == "CON" then
-		nAbility = ActorManager2.getAbilityBonus(rActor, "constitution");
+	elseif sShortAbility == "END" then
+		nAbility = ActorManager2.getAbilityBonus(rActor, "endurance");
 	elseif sShortAbility == "INT" then
 		nAbility = ActorManager2.getAbilityBonus(rActor, "intelligence");
-	elseif sShortAbility == "WIS" then
-		nAbility = ActorManager2.getAbilityBonus(rActor, "wisdom");
-	elseif sShortAbility == "CHA" then
-		nAbility = ActorManager2.getAbilityBonus(rActor, "charisma");
+	elseif sShortAbility == "PER" then
+		nAbility = ActorManager2.getAbilityBonus(rActor, "perception");
+	elseif sShortAbility == "PRS" then
+		nAbility = ActorManager2.getAbilityBonus(rActor, "presence");
 	elseif sShortAbility == "LVL" then
 		nAbility = ActorManager2.getAbilityBonus(rActor, "level");
 	end

@@ -126,18 +126,18 @@ function modSkill(rSource, rTarget, rRoll)
 			if sActionStat == "strength" or sActionStat == "dexterity" then
 				bEffects = true;
 				nAddMod = nAddMod - 4;
-			elseif sSkillLower == "search" or sSkillLower == "perception" then
+			elseif sSkillLower == "search" or sSkillLower == "notice" then
 				bEffects = true;
 				nAddMod = nAddMod - 4;
 			end
 		elseif EffectManager.hasEffectCondition(rSource, "Dazzled") then
-			if sSkillLower == "spot" or sSkillLower == "search" or sSkillLower == "perception" then
+			if sSkillLower == "spot" or sSkillLower == "search" or sSkillLower == "notice" then
 				bEffects = true;
 				nAddMod = nAddMod - 1;
 			end
 		end
 		if EffectManager.hasEffectCondition(rSource, "Fascinated") then
-			if sSkillLower == "spot" or sSkillLower == "listen" or sSkillLower == "perception" then
+			if sSkillLower == "spot" or sSkillLower == "listen" or sSkillLower == "notice" then
 				bEffects = true;
 				nAddMod = nAddMod - 4;
 			end

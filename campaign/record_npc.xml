@@ -401,16 +401,16 @@
 				<anchored to="dexterity" />
 				<static textres="dex" />
 			</label_fieldtop>
-			<number_npc_ability name="constitution">
+			<number_npc_ability name="endurance">
 				<anchored to="strength" width="25" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
-				<target>constitution</target>
+				<target>endurance</target>
 			</number_npc_ability>
-			<label_fieldtop name="constitution_label">
-				<anchored to="constitution" />
-				<static textres="con" />
+			<label_fieldtop name="endurance_label">
+				<anchored to="endurance" />
+				<static textres="end" />
 			</label_fieldtop>
 			<number_npc_ability name="intelligence">
 				<anchored to="strength" width="25" height="20">
@@ -423,27 +423,27 @@
 				<anchored to="intelligence" />
 				<static textres="int" />
 			</label_fieldtop>
-			<number_npc_ability name="wisdom">
+			<number_npc_ability name="perception">
 				<anchored to="strength" width="25" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
-				<target>wisdom</target>
+				<target>perception</target>
 			</number_npc_ability>
-			<label_fieldtop name="wisdom_label">
-				<anchored to="wisdom" />
-				<static textres="wis" />
+			<label_fieldtop name="perception_label">
+				<anchored to="perception" />
+				<static textres="per" />
 			</label_fieldtop>
-			<number_npc_ability name="charisma">
+			<number_npc_ability name="presence">
 				<anchored to="strength" width="25" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
-				<target>charisma</target>
+				<target>presence</target>
 			</number_npc_ability>
-			<label_fieldtop name="charisma_label">
-				<anchored to="charisma" />
-				<static textres="cha" />
+			<label_fieldtop name="presence_label">
+				<anchored to="presence" />
+				<static textres="prs" />
 			</label_fieldtop>
 			
 			<label_column name="babgrp_label">

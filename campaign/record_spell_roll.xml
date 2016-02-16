@@ -342,8 +342,8 @@
 				<anchored to="label_statmultx" position="righthigh" offset="5,0" width="60" />
 				<parameters>
 					<defaultlabelres>dash</defaultlabelres>
-					<labelsres>cl|evencl|oddcl|str|dex|con|int|wis|cha</labelsres>
-					<values>cl|halfcl|oddcl|strength|dexterity|constitution|intelligence|wisdom|charisma</values>
+					<labelsres>cl|evencl|oddcl|str|dex|end|int|per|prs</labelsres>
+					<values>cl|halfcl|oddcl|strength|dexterity|endurance|intelligence|perception|presence</values>
 				</parameters>
 			</cycler_ability>
 			<label name="statmaxparen">
@@ -580,8 +580,8 @@
 				<anchored to="label_statmultx" position="righthigh" offset="5,0" width="60" />
 				<parameters>
 					<defaultlabelres>dash</defaultlabelres>
-					<labelsres>cl|evencl|oddcl|str|dex|con|int|wis|cha</labelsres>
-					<values>cl|halfcl|oddcl|strength|dexterity|constitution|intelligence|wisdom|charisma</values>
+					<labelsres>cl|evencl|oddcl|str|dex|end|int|per|prs</labelsres>
+					<values>cl|halfcl|oddcl|strength|dexterity|endurance|intelligence|perception|presence</values>
 				</parameters>
 			</cycler_ability>
 			<label name="statmaxparen">
@@ -731,8 +731,8 @@
 				<anchored to="label_durstatmultx" position="righthigh" offset="5,0" width="60" />
 				<parameters>
 					<defaultlabelres>dash</defaultlabelres>
-					<labelsres>cl|evencl|oddcl|str|dex|con|int|wis|cha</labelsres>
-					<values>cl|halfcl|oddcl|strength|dexterity|constitution|intelligence|wisdom|charisma</values>
+					<labelsres>cl|evencl|oddcl|str|dex|end|int|per|prs</labelsres>
+					<values>cl|halfcl|oddcl|strength|dexterity|endurance|intelligence|perception|presence</values>
 				</parameters>
 			</cycler_ability>
 			<label name="durstatmaxparen">

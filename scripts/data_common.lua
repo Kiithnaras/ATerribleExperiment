@@ -11,28 +11,28 @@ end
 abilities = {
 	"strength",
 	"dexterity",
-	"constitution",
+	"endurance",
 	"intelligence",
-	"wisdom",
-	"charisma"
+	"perception",
+	"presence"
 };
 
 ability_ltos = {
 	["strength"] = "STR",
 	["dexterity"] = "DEX",
-	["constitution"] = "CON",
+	["endurance"] = "END",
 	["intelligence"] = "INT",
-	["wisdom"] = "WIS",
-	["charisma"] = "CHA"
+	["perception"] = "PER",
+	["presence"] = "PRS"
 };
 
 ability_stol = {
 	["STR"] = "strength",
 	["DEX"] = "dexterity",
-	["CON"] = "constitution",
+	["END"] = "endurance",
 	["INT"] = "intelligence",
-	["WIS"] = "wisdom",
-	["CHA"] = "charisma"
+	["PER"] = "perception",
+	["PRS"] = "presence"
 };
 
 -- Saves
@@ -550,7 +550,7 @@ naturaldmgtypes = {
 -- Skill properties
 sensesdata = {
 	["Notice"] = {
-			stat = "wisdom"
+			stat = "perception"
 		},
 }
 
@@ -560,7 +560,7 @@ skilldata = {
 			armorcheckmultiplier = 1
 		},
 	["Bluff"] = {
-			stat = "charisma"
+			stat = "presence"
 		},
 	["Climb"] = {
 			stat = "strength",
@@ -571,21 +571,21 @@ skilldata = {
 			stat = "intelligence"
 		},
 	["Concentration"] = {
-			stat = "wisdom",
+			stat = "perception",
 			-- 'custom' set to true will allow the skill used for
 			-- bonuses to cycle instead of being static. It will
-			-- start with charisma.
+			-- start with presence.
 			custom = true
 		},
 	["Diplomacy"] = {
-			stat = "charisma"
+			stat = "presence"
 		},
 	["Disable Device"] = {
 			stat = "intelligence",
 			trainedonly = 1
 		},
 	["Disguise"] = {
-			stat = "charisma"
+			stat = "presence"
 		},
 	["Escape Artist"] = {
 			stat = "dexterity",
@@ -596,14 +596,14 @@ skilldata = {
 			armorcheckmultiplier = 4
 		},
 	["Handle Animal"] = {
-			stat = "charisma",
+			stat = "presence",
 			trainedonly = 1
 		},
 	["Heal"] = {
-			stat = "wisdom"
+			stat = "perception"
 		},
 	["Intimidate"] = {
-			stat = "charisma"
+			stat = "presence"
 		},
 	["Knowledge"] = {
 			sublabeling = true,
@@ -615,15 +615,15 @@ skilldata = {
 			trainedonly = 1
 		},
 	["Notice"] = {
-			stat = "wisdom"
+			stat = "perception"
 		},
 	["Perform"] = {
 			sublabeling = true,
-			stat = "charisma"
+			stat = "presence"
 		},
 	["Profession"] = {
 			sublabeling = true,
-			stat = "wisdom",
+			stat = "perception",
 			trainedonly = 1
 		},
 	["Ride"] = {
@@ -633,7 +633,7 @@ skilldata = {
 			stat = "intelligence"
 		},
 	["Sense Motive"] = {
-			stat = "wisdom"
+			stat = "perception"
 		},
 	["Sleight of Hand"] = {
 			stat = "dexterity",
@@ -650,7 +650,7 @@ skilldata = {
 			armorcheckmultiplier = 1
 		},
 	["Survival"] = {
-			stat = "wisdom"
+			stat = "perception"
 		},
 	["Swim"] = {
 			stat = "strength",
@@ -665,10 +665,10 @@ currency = { "PP", "GP", "SP", "CP" };
 psabilitydata = {
 	"Strength",
 	"Dexterity",
-	"Constitution",
+	"Endurance",
 	"Intelligence",
-	"Wisdom",
-	"Charisma"
+	"Perception",
+	"Presence"
 };
 
 pssavedata = {

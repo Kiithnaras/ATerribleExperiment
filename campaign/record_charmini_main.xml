@@ -162,12 +162,12 @@
 				<anchored to="constitution" />
 				<description textres="char_tooltip_int" />
 			</number_charabilityscore>
-			<number_charabilityscore name="wisdom" source="abilities.wisdom.score">
+			<number_charabilityscore name="perception" source="abilities.perception.score">
 				<anchored to="intelligence" />
 				<description textres="char_tooltip_wis" />
 			</number_charabilityscore>
-			<number_charabilityscore name="charisma" source="abilities.charisma.score">
-				<anchored to="wisdom" />
+			<number_charabilityscore name="presence" source="abilities.presence.score">
+				<anchored to="perception" />
 				<description textres="char_tooltip_cha" />
 			</number_charabilityscore>
 			
@@ -188,12 +188,12 @@
 				<static textres="intelligence" />
 			</string_charabilitylabel>
 			<string_charabilitylabel>
-				<anchored to="wisdom" />
-				<static textres="wisdom" />
+				<anchored to="perception" />
+				<static textres="perception" />
 			</string_charabilitylabel>
 			<string_charabilitylabel>
-				<anchored to="charisma" />
-				<static textres="charisma" />
+				<anchored to="presence" />
+				<static textres="presence" />
 			</string_charabilitylabel>
 			
 			<number_charabilitydamage name="strengthdamage" source="abilities.strength.damage">
@@ -216,14 +216,14 @@
 				<target>intelligence</target>
 				<description textres="char_tooltip_intdamage" />
 			</number_charabilitydamage>
-			<number_charabilitydamage name="wisdomdamage" source="abilities.wisdom.damage">
-				<anchored to="wisdom" />
-				<target>wisdom</target>
+			<number_charabilitydamage name="perceptiondamage" source="abilities.perception.damage">
+				<anchored to="perception" />
+				<target>perception</target>
 				<description textres="char_tooltip_wisdamage" />
 			</number_charabilitydamage>
-			<number_charabilitydamage name="charismadamage" source="abilities.charisma.damage">
-				<anchored to="charisma" />
-				<target>charisma</target>
+			<number_charabilitydamage name="presencedamage" source="abilities.presence.damage">
+				<anchored to="presence" />
+				<target>presence</target>
 				<description textres="char_tooltip_chadamage" />
 			</number_charabilitydamage>
 			
@@ -251,16 +251,16 @@
 				<modifierfield>abilities.intelligence.bonusmodifier</modifierfield>
 				<description textres="char_tooltip_intbonus" />
 			</number_charabilitybonus>
-			<number_charabilitybonus name="wisdombonus" source="abilities.wisdom.bonus">
-				<anchored to="wisdom" />
-				<target>wisdom</target>
-				<modifierfield>abilities.wisdom.bonusmodifier</modifierfield>
+			<number_charabilitybonus name="perceptionbonus" source="abilities.perception.bonus">
+				<anchored to="perception" />
+				<target>perception</target>
+				<modifierfield>abilities.perception.bonusmodifier</modifierfield>
 				<description textres="char_tooltip_wisbonus" />
 			</number_charabilitybonus>
-			<number_charabilitybonus name="charismabonus" source="abilities.charisma.bonus">
-				<anchored to="charisma" />
-				<target>charisma</target>
-				<modifierfield>abilities.charisma.bonusmodifier</modifierfield>
+			<number_charabilitybonus name="presencebonus" source="abilities.presence.bonus">
+				<anchored to="presence" />
+				<target>presence</target>
+				<modifierfield>abilities.presence.bonusmodifier</modifierfield>
 				<description textres="char_tooltip_chabonus" />
 			</number_charabilitybonus>
 
@@ -350,13 +350,12 @@
 				<anchored to="search" />
 				<static textres="char_label_skillsearch" />
 			</label_charmainskill>
-			<button_charmainskill name="perception">
-				<skill>skill_value_perception</skill>
-				<invisible />
+			<button_charmainskill name="notice">
+				<skill>skill_value_notice</skill>
 			</button_charmainskill>
-			<label_charmainskill name="label_perception">
-				<anchored to="perception" />
-				<static textres="char_label_skillperception" />
+			<label_charmainskill name="label_notice">
+				<anchored to="notice" />
+				<static textres="char_label_skillnotice" />
 				<invisible />
 			</label_charmainskill>
 			<string_labeled name="senses">

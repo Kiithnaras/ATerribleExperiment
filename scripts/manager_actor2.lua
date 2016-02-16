@@ -189,14 +189,14 @@ function getAbilityDamage(rActor, sAbility)
 			nStatDamage = DB.getValue(nodeActor, "abilities.strength.damage", 0);
 		elseif sShort == "dex" then
 			nStatDamage = DB.getValue(nodeActor, "abilities.dexterity.damage", 0);
-		elseif sShort == "con" then
-			nStatDamage = DB.getValue(nodeActor, "abilities.constitution.damage", 0);
+		elseif sShort == "end" then
+			nStatDamage = DB.getValue(nodeActor, "abilities.endurance.damage", 0);
 		elseif sShort == "int" then
 			nStatDamage = DB.getValue(nodeActor, "abilities.intelligence.damage", 0);
-		elseif sShort == "wis" then
-			nStatDamage = DB.getValue(nodeActor, "abilities.wisdom.damage", 0);
-		elseif sShort == "cha" then
-			nStatDamage = DB.getValue(nodeActor, "abilities.charisma.damage", 0);
+		elseif sShort == "per" then
+			nStatDamage = DB.getValue(nodeActor, "abilities.perception.damage", 0);
+		elseif sShort == "prs" then
+			nStatDamage = DB.getValue(nodeActor, "abilities.presence.damage", 0);
 		end
 	end
 	
@@ -226,14 +226,14 @@ function getAbilityScore(rActor, sAbility)
 			nStatScore = DB.getValue(nodeActor, "abilities.strength.score", 0);
 		elseif sShort == "dex" then
 			nStatScore = DB.getValue(nodeActor, "abilities.dexterity.score", 0);
-		elseif sShort == "con" then
-			nStatScore = DB.getValue(nodeActor, "abilities.constitution.score", 0);
+		elseif sShort == "end" then
+			nStatScore = DB.getValue(nodeActor, "abilities.endurance.score", 0);
 		elseif sShort == "int" then
 			nStatScore = DB.getValue(nodeActor, "abilities.intelligence.score", 0);
-		elseif sShort == "wis" then
-			nStatScore = DB.getValue(nodeActor, "abilities.wisdom.score", 0);
-		elseif sShort == "cha" then
-			nStatScore = DB.getValue(nodeActor, "abilities.charisma.score", 0);
+		elseif sShort == "per" then
+			nStatScore = DB.getValue(nodeActor, "abilities.perception.score", 0);
+		elseif sShort == "prs" then
+			nStatScore = DB.getValue(nodeActor, "abilities.presence.score", 0);
 		end
 	else
 		if sShort == "lev" then
@@ -261,14 +261,14 @@ function getAbilityScore(rActor, sAbility)
 			nStatScore = DB.getValue(nodeActor, "strength", 0);
 		elseif sShort == "dex" then
 			nStatScore = DB.getValue(nodeActor, "dexterity", 0);
-		elseif sShort == "con" then
-			nStatScore = DB.getValue(nodeActor, "constitution", 0);
+		elseif sShort == "end" then
+			nStatScore = DB.getValue(nodeActor, "endurance", 0);
 		elseif sShort == "int" then
 			nStatScore = DB.getValue(nodeActor, "intelligence", 0);
-		elseif sShort == "wis" then
-			nStatScore = DB.getValue(nodeActor, "wisdom", 0);
-		elseif sShort == "cha" then
-			nStatScore = DB.getValue(nodeActor, "charisma", 0);
+		elseif sShort == "per" then
+			nStatScore = DB.getValue(nodeActor, "perception", 0);
+		elseif sShort == "prs" then
+			nStatScore = DB.getValue(nodeActor, "presence", 0);
 		end
 	end
 	

@@ -54,28 +54,28 @@
 				<description textres="char_tooltip_dexbonus" />
 			</number_charabilitybonus>
 
-			<number_charabilityscore name="constitution" source="abilities.constitution.score">
+			<number_charabilityscore name="endurance" source="abilities.endurance.score">
 				<anchored to="dexterity" />
 				<description textres="char_tooltip_con" />
 			</number_charabilityscore>
 			<string_charabilitylabel>
-				<anchored to="constitution" />
-				<static textres="constitution" />
+				<anchored to="endurance" />
+				<static textres="endurance" />
 			</string_charabilitylabel>
-			<number_charabilitydamage name="constitutiondamage" source="abilities.constitution.damage">
-				<anchored to="constitution" />
-				<target>constitution</target>
+			<number_charabilitydamage name="endurancedamage" source="abilities.endurance.damage">
+				<anchored to="endurance" />
+				<target>endurance</target>
 				<description textres="char_tooltip_condamage" />
 			</number_charabilitydamage>
-			<number_charabilitybonus name="constitutionbonus" source="abilities.constitution.bonus">
-				<anchored to="constitution" />
-				<target>constitution</target>
-				<modifierfield>abilities.constitution.bonusmodifier</modifierfield>
+			<number_charabilitybonus name="endurancebonus" source="abilities.endurance.bonus">
+				<anchored to="endurance" />
+				<target>endurance</target>
+				<modifierfield>abilities.endurance.bonusmodifier</modifierfield>
 				<description textres="char_tooltip_conbonus" />
 			</number_charabilitybonus>
 
 			<number_charabilityscore name="intelligence" source="abilities.intelligence.score">
-				<anchored to="constitution" />
+				<anchored to="endurance" />
 				<description textres="char_tooltip_int" />
 			</number_charabilityscore>
 			<string_charabilitylabel>
@@ -94,43 +94,43 @@
 				<description textres="char_tooltip_intbonus" />
 			</number_charabilitybonus>
 
-			<number_charabilityscore name="wisdom" source="abilities.wisdom.score">
+			<number_charabilityscore name="perception" source="abilities.perception.score">
 				<anchored to="intelligence" />
 				<description textres="char_tooltip_wis" />
 			</number_charabilityscore>
 			<string_charabilitylabel>
-				<anchored to="wisdom" />
-				<static textres="wisdom" />
+				<anchored to="perception" />
+				<static textres="perception" />
 			</string_charabilitylabel>
-			<number_charabilitydamage name="wisdomdamage" source="abilities.wisdom.damage">
-				<anchored to="wisdom" />
-				<target>wisdom</target>
+			<number_charabilitydamage name="perceptiondamage" source="abilities.perception.damage">
+				<anchored to="perception" />
+				<target>perception</target>
 				<description textres="char_tooltip_wisdamage" />
 			</number_charabilitydamage>
-			<number_charabilitybonus name="wisdombonus" source="abilities.wisdom.bonus">
-				<anchored to="wisdom" />
-				<target>wisdom</target>
-				<modifierfield>abilities.wisdom.bonusmodifier</modifierfield>
+			<number_charabilitybonus name="perceptionbonus" source="abilities.perception.bonus">
+				<anchored to="perception" />
+				<target>perception</target>
+				<modifierfield>abilities.perception.bonusmodifier</modifierfield>
 				<description textres="char_tooltip_wisbonus" />
 			</number_charabilitybonus>
 
-			<number_charabilityscore name="charisma" source="abilities.charisma.score">
-				<anchored to="wisdom" />
+			<number_charabilityscore name="presence" source="abilities.presence.score">
+				<anchored to="perception" />
 				<description textres="char_tooltip_cha" />
 			</number_charabilityscore>
 			<string_charabilitylabel>
-				<anchored to="charisma" />
-				<static textres="charisma" />
+				<anchored to="presence" />
+				<static textres="presence" />
 			</string_charabilitylabel>
-			<number_charabilitydamage name="charismadamage" source="abilities.charisma.damage">
-				<anchored to="charisma" />
-				<target>charisma</target>
+			<number_charabilitydamage name="presencedamage" source="abilities.presence.damage">
+				<anchored to="presence" />
+				<target>presence</target>
 				<description textres="char_tooltip_chadamage" />
 			</number_charabilitydamage>
-			<number_charabilitybonus name="charismabonus" source="abilities.charisma.bonus">
-				<anchored to="charisma" />
-				<target>charisma</target>
-				<modifierfield>abilities.charisma.bonusmodifier</modifierfield>
+			<number_charabilitybonus name="presencebonus" source="abilities.presence.bonus">
+				<anchored to="presence" />
+				<target>presence</target>
+				<modifierfield>abilities.presence.bonusmodifier</modifierfield>
 				<description textres="char_tooltip_chabonus" />
 			</number_charabilitybonus>
 

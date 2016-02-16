@@ -67,8 +67,8 @@ function linkPCSkills(nodeSkills)
 			linkPCSkill(v, nodePS, "listen");
 		elseif sLabel == "search" then
 			linkPCSkill(v, nodePS, "search");
-		elseif sLabel == "perception" then
-			linkPCSkill(v, nodePS, "perception");
+		elseif sLabel == "notice" then
+			linkPCSkill(v, nodePS, "notice");
 		elseif sLabel == "sense motive" then
 			linkPCSkill(v, nodePS, "sensemotive");
 		
@@ -161,18 +161,18 @@ function linkPCFields(nodePS)
 	PartyManager.linkRecordField(nodeChar, nodePS, "hp.nonlethal", "number", "nonlethal");
 	
 	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.strength.score", "number", "strength");
-	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.constitution.score", "number", "constitution");
+	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.endurance.score", "number", "endurance");
 	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.dexterity.score", "number", "dexterity");
 	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.intelligence.score", "number", "intelligence");
-	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.wisdom.score", "number", "wisdom");
-	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.charisma.score", "number", "charisma");
+	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.perception.score", "number", "perception");
+	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.presence.score", "number", "presence");
 
 	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.strength.bonus", "number", "strcheck");
-	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.constitution.bonus", "number", "concheck");
+	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.endurance.bonus", "number", "concheck");
 	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.dexterity.bonus", "number", "dexcheck");
 	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.intelligence.bonus", "number", "intcheck");
-	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.wisdom.bonus", "number", "wischeck");
-	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.charisma.bonus", "number", "chacheck");
+	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.perception.bonus", "number", "wischeck");
+	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.presence.bonus", "number", "chacheck");
 
 	PartyManager.linkRecordField(nodeChar, nodePS, "ac.totals.general", "number", "ac");
 	PartyManager.linkRecordField(nodeChar, nodePS, "ac.totals.flatfooted", "number", "flatfootedac");

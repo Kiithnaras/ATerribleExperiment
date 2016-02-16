@@ -43,7 +43,7 @@
 			</label>
 			<label name="conlabel">
 				<anchored to="dexlabel" position="righthigh" offset="8,0" width="25" />
-				<static textres="con" />
+				<static textres="end" />
 				<center />
 			</label>
 			<label name="intlabel">
@@ -53,12 +53,12 @@
 			</label>
 			<label name="wislabel">
 				<anchored to="intlabel" position="righthigh" offset="8,0" width="25" />
-				<static textres="wis" />
+				<static textres="per" />
 				<center />
 			</label>
 			<label name="chalabel">
 				<anchored to="wislabel" position="righthigh" offset="8,0" width="25" />
-				<static textres="cha" />
+				<static textres="prs" />
 				<center />
 			</label>
 			<label name="aclabel">
@@ -310,17 +310,17 @@
 			<number_ps_ability name="dexterity">
 				<anchored to="strength" />
 			</number_ps_ability>			
-			<number_ps_ability name="constitution">
+			<number_ps_ability name="endurance">
 				<anchored to="dexterity" />
 			</number_ps_ability>			
 			<number_ps_ability name="intelligence">
-				<anchored to="constitution" />
+				<anchored to="endurance" />
 			</number_ps_ability>			
-			<number_ps_ability name="wisdom">
+			<number_ps_ability name="perception">
 				<anchored to="intelligence" />
 			</number_ps_ability>		
-			<number_ps_ability name="charisma">
-				<anchored to="wisdom" />
+			<number_ps_ability name="presence">
+				<anchored to="perception" />
 			</number_ps_ability>	
 			<number_ps_abilitycheck name="strcheck">
 				<anchored to="strength" />
@@ -331,24 +331,24 @@
 				<target>dexterity</target>
 			</number_ps_abilitycheck>
 			<number_ps_abilitycheck name="concheck">
-				<anchored to="constitution" />
-				<target>constitution</target>
+				<anchored to="endurance" />
+				<target>endurance</target>
 			</number_ps_abilitycheck>
 			<number_ps_abilitycheck name="intcheck">
 				<anchored to="intelligence" />
 				<target>intelligence</target>
 			</number_ps_abilitycheck>
 			<number_ps_abilitycheck name="wischeck">
-				<anchored to="wisdom" />
-				<target>wisdom</target>
+				<anchored to="perception" />
+				<target>perception</target>
 			</number_ps_abilitycheck>
 			<number_ps_abilitycheck name="chacheck">
-				<anchored to="charisma" />
-				<target>charisma</target>
+				<anchored to="presence" />
+				<target>presence</target>
 			</number_ps_abilitycheck>			
 			
 			<number_ps_defense name="ac">
-				<anchored to="charisma">
+				<anchored to="presence">
 					<left offset="15" />
 				</anchored>
 			</number_ps_defense>				

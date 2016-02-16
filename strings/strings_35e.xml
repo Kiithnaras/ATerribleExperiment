@@ -11,16 +11,16 @@
 	<string name="dash">-</string>
 	<string name="str">Str</string>
 	<string name="dex">Dex</string>
-	<string name="con">End</string>
+	<string name="end">End</string>
 	<string name="int">Int</string>
-	<string name="wis">Per</string>
-	<string name="cha">Prs</string>
+	<string name="per">Per</string>
+	<string name="prs">Prs</string>
 	<string name="strength">Strength</string>
-	<string name="constitution">Endurance</string>
+	<string name="endurance">Endurance</string>
 	<string name="dexterity">Dexterity</string>
 	<string name="intelligence">Intelligence</string>
-	<string name="wisdom">Perception</string>
-	<string name="charisma">Presence</string>
+	<string name="perception">Perception</string>
+	<string name="presence">Presence</string>
 	<string name="lvl">Lvl</string>
 	<string name="level">Level</string>
 	<string name="hp">HP</string>
@@ -184,7 +184,6 @@
 	<string name="ps_label_spot">Spt</string>
 	<string name="ps_label_listen">Lst</string>
 	<string name="ps_label_search">Src</string>
-	<string name="ps_label_perception">Per</string>
 	<string name="ps_label_sensemotive">SM</string>
 	<string name="ps_label_knowledge">Knowledge</string>
 	<string name="ps_label_knowarcana">Arc</string>
@@ -207,6 +206,7 @@
 	<string name="ps_label_hide">Hid</string>
 	<string name="ps_label_movesilent">MS</string>
 	<string name="ps_label_stealth">Stl</string>
+	<string name="ps_label_notice">Not</string>
 
 	<string name="ps_label_groupskill">Skill Check</string>
 
@@ -277,7 +277,6 @@
 	<string name="skill_value_knowplanes">Planes</string>
 	<string name="skill_value_knowreligion">Religion</string>
 	<string name="skill_value_notice">Notice</string>
-	<string name="skill_value_perception">Perception</string>
 	<string name="skill_value_perform">Perform</string>
 	<string name="skill_value_profession">Profession</string>
 	<string name="skill_value_search">Search</string>

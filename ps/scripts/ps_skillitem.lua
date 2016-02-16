@@ -12,7 +12,6 @@ function onSystemChanged()
 	spot.setVisible(false);
 	listen.setVisible(false);
 	search.setVisible(true);
-	perception.setVisible(false);
 	sensemotive.setVisible(true);
 	
 	gatherinfo.setVisible(false);

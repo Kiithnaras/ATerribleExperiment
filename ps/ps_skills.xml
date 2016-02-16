@@ -28,13 +28,13 @@
 				<static textres="ps_label_listen" />
 				<tooltip textres="skill_value_listen" />
 			</label_ps_skill>
+			<label_ps_skill name="noticelabel">
+				<static textres="ps_label_notice" />
+				<tooltip textres="skill_value_notice" />
+			</label_ps_skill>
 			<label_ps_skill name="searchlabel">
 				<static textres="ps_label_search" />
 				<tooltip textres="skill_value_search" />
-			</label_ps_skill>
-			<label_ps_skill name="perceptionlabel">
-				<static textres="ps_label_perception" />
-				<tooltip textres="skill_value_perception" />
 			</label_ps_skill>
 			<label_ps_skill name="smlabel">
 				<static textres="ps_label_sensemotive" />
@@ -266,11 +266,11 @@
 			<number_ps_skill name="listen">
 				<skill>Listen</skill>
 			</number_ps_skill>
+			<number_ps_skill name="notice">
+				<skill>Notice</skill>
+			</number_ps_skill>
 			<number_ps_skill name="search">
 				<skill>Search</skill>
-			</number_ps_skill>
-			<number_ps_skill name="perception">
-				<skill>Perception</skill>
 			</number_ps_skill>
 			<number_ps_skill name="sensemotive">
 				<skill>Sense Motive</skill>
